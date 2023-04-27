@@ -4,19 +4,27 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    public List<Transform> MasumeList;   // マスの配列
-    //[SerializeField]private int nowSqueare = 0;  　// 現在踏んでいるマスの値
+    public static MapManager instance;
+    public List<Transform> MasumeList;            // マスの配列
+    [SerializeField]private int nowMasume = 0;  　// 現在踏んでいるマスの値
 
-    public static int moveSqueare; // 動くマス数
-    public int hp;                 // 体力
-    private bool yourTurn = false; // 自分のターン
+    public static int MoveSqueare; // 動くマス数
+    public int Hp;                 // 体力
+    private bool YourTurn = false; // 自分のターン
 
+
+    //void Awake()
+    //{
+    //    if (instance == null)
+    //    {
+    //        instance = this;
+    //    }
+    //}
 
     // Start is called before the first frame update
     void Start()
     {
-        //最初のマスに配置
-        transform.position = MasumeList[0].transform.position;
+
     }
 
     // Update is called once per frame
@@ -26,22 +34,30 @@ public class MapManager : MonoBehaviour
     }
 
     // マスの移動
-    void Move()
-    {
-        //if(nowSqueare <= Squeares.Length -1)
-        //{
-        //    return;
-        //}
-    }
-
-    // HPの増減
-    //void HpInDecrease()
+    //void Move()
     //{
-
+    //    //if(nowSqueare <= Squeares.Length -1)
+    //    //{
+    //    //    return;
+    //    //}
     //}
 
-    #region マスの移動
-    public Vector3 MasumePos(int masume)
+    #region HPを増やす
+    public void HpOneUp()
+    {
+        Hp++;
+    }
+    #endregion
+
+    #region HP情報を取得
+    public int GetHp()
+    {
+        return Hp;
+    }
+    #endregion
+
+    #region マスごとの座標リストを取得
+    public Vector3 GetMasumePos(int masume)
     {
         return MasumeList[masume].position; // 外部から座標をアクセス可能にする
     }
