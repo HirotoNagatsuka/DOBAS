@@ -5,8 +5,8 @@ using UnityEngine.UI;
 
 public class DiceStage : MonoBehaviour
 {
-    [SerializeField] Text DiceNumText;
-    [SerializeField] GameObject DiceThrow;
+
+    [SerializeField] DiceManager diceManager;
     private int number;
 
     void Start()
@@ -45,20 +45,8 @@ public class DiceStage : MonoBehaviour
     /// <summary>
     /// サイコロ出目確定.
     /// </summary>
-    public void ConfirmNumber()
+    public void ReturnNumber()
     {
-        if (number == 4)
-        {
-            DiceNumText.text = "Attack";
-        }
-        else if(number == 5 || number == 6)
-        {
-            DiceNumText.text = "Doubt";
-        }
-        else
-        {
-            DiceNumText.text = number.ToString();
-        }
-        DiceThrow.GetComponent<DiceThrow>().HiddenDice();
+        diceManager.GetComponent<DiceManager>().ConfirmNumber(number);
     }
 }
