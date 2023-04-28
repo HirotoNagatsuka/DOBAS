@@ -16,12 +16,19 @@ public class GameManager : MonoBehaviour
     public int AtPower;
     public int HaveCard;
     public int LocaInfo;
+
+    private int Index = 0;
+    public int EndPt = 0;
     //-1:非ゲーム状態 1:ゲーム中 2:ゲーム終了
     private int GameFlg;
 
+    private bool TarnFlg;
     GameObject UI;
-    public GameObject[] Players;
-    TestPlayerTarn[] PlayersTpt;
+    
+    TestPlayerTarn[] Players;
+
+    //TestPlayerTarn[] SortPlayers;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -49,12 +56,14 @@ public class GameManager : MonoBehaviour
         NowGameState = GameState.SetGame;
         //プレイヤーを探す(仮)
         GameObject[] PlayerArray = GameObject.FindGameObjectsWithTag("player");
-        Players = new GameObject[PlayerArray.Length];
-        PlayersTpt = new TestPlayerTarn[PlayerArray.Length];
+        
+        Players = new TestPlayerTarn[PlayerArray.Length];
+        //SortPlayers = new TestPlayerTarn[PlayerArray.Length];
+        
+        //配列にプレイヤー挿入
         for (int i = 0; i < PlayerArray.Length; i++)
         {
-            Players[i] = PlayerArray[i];
-            PlayersTpt[i] = Players[i].GetComponent<TestPlayerTarn>();
+            Players[i] = PlayerArray[i].GetComponent<TestPlayerTarn>();
         }
         //UIを探す(仮)
         UI = GameObject.Find("PlayerUI");
@@ -80,6 +89,21 @@ public class GameManager : MonoBehaviour
         //    KeyOperation();
         //}
     }
+    //void SetNextPlayer()
+    //{      
+    //    Index++;
+    //    for (int i = 0; i < Players.Length; i++)
+    //    {
+    //        if(Players[i].TestOrder == Index)
+    //        {
+
+    //        }
+    //    }
+    //    if (Index >= Players.Length)
+    //    {
+    //        Index = 0;
+    //    }
+    //}
     #region ゲーム状況
     public void StateGame(int Param)
     {
@@ -95,21 +119,61 @@ public class GameManager : MonoBehaviour
     #endregion
     void MainGame()
     {
-        for (int i = 0; i < 4; i++)
-        {
-            Debug.Log(Players[i]);
-            PlayersTpt[i].Test();
-           if(PlayersTpt[i].TestOrder == i+1 && !PlayersTpt[i].TarnEnd)
-           {
-              PlayersTpt[i].Tarn = true;
-           }
-           
-        }
+        //if (Input.GetKeyDown(KeyCode.Return))
+        //{
+        //    Players[Index].TarnEnd = true;
+        //    if (Index > Players.Length)
+        //    {
+        //        Index = 0;
+        //    }
+        //    else
+        //    {
+        //        Index++;
+        //    }
+        //    for(int i = 0;i <= Players.Length; i++)
+        //    {
+        //        Players[i].Tarn = false; 
+        //    }          
+        //}
+        //if (!Players[Index].Tarn)
+        //{ 
+        //    Debug.Log(Players[Index]);
+        //    //Players[i].Test();
+
+        //    Players[Index].Tarn = true;
+        //}
         
+        //未完
+        for (int i = 0; i < Players.Length; i++)
+        {
+            if (!Players[Index].Tarn)
+            {
+                Debug.Log(Players[Index]);
+                Players[Index].Tarn = true;
+            }
+            if (Players[Index].TarnEnd)
+            {
+                Players[Index].Tarn = false;
+                Players[Index].TarnEnd = false;
+                Index++;
+            }
+            if (Index >= Players.Length)
+            {
+                Index = 0;
+            }          
+        }
     }
     void EndGame()
     {
        
+    }
+    public void GemeOverJudge()
+    {
+        EndPt++;
+        if(EndPt == Players.Length - 1)
+        {
+            NowGameState = GameState.EndGame;
+        }
     }
     //強制終了処理
     void KeyOperation()

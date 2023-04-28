@@ -235,7 +235,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
-  TestOrder: 3
+  GameEnd: 0
+  TestOrder: 4
+  GmObj: {fileID: 1196845328}
 --- !u!1 &406585021
 GameObject:
   m_ObjectHideFlags: 0
@@ -432,7 +434,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
-  TestOrder: 4
+  GameEnd: 0
+  TestOrder: 2
+  GmObj: {fileID: 1196845328}
 --- !u!1 &592772620
 GameObject:
   m_ObjectHideFlags: 0
@@ -639,7 +643,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
-  TestOrder: 2
+  GameEnd: 0
+  TestOrder: 1
+  GmObj: {fileID: 1196845328}
 --- !u!1 &1196845328
 GameObject:
   m_ObjectHideFlags: 0
@@ -669,12 +675,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d48cefe08a5dd174bb915993aca0ea80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NowGameState: 0
+  NowGameState: 1
   Hp: 0
   AtPower: 0
   HaveCard: 0
   LocaInfo: 0
-  Players: []
+  EndPt: 0
 --- !u!4 &1196845330
 Transform:
   m_ObjectHideFlags: 0
@@ -802,4 +808,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
-  TestOrder: 1
+  GameEnd: 0
+  TestOrder: 3
+  GmObj: {fileID: 1196845328}
