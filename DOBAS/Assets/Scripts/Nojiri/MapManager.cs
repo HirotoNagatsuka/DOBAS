@@ -4,27 +4,30 @@ using UnityEngine;
 
 public class MapManager : MonoBehaviour
 {
-    public static MapManager instance;            // 参照用
-    public List<Transform> MasumeList;            // マスの配列
-    //public int ListNum;    // マス配列の番号
-    public int Hp;         // 体力
+    public static MapManager instance;        // 参照用
+    public List<Transform> MasumeList;        // マスの配列
 
-    [SerializeField] private int NowMasume = 0;   // 現在踏んでいるマスの値
-    [SerializeField] private int saikoro;   // サイコロの出目(1～4)
-    private bool i = true; 
+    private int Hp = 4;    // 体力
+    private int Card;
+
+    [SerializeField] private int NowMasume;   // 現在踏んでいるマスの値
+    private int Saikoro;                      // サイコロの出目(1～6)
+    private bool MyTurn = true;
 
     // 参照用
-    //void Awake()
-    //{
-    //    if (instance == null)
-    //    {
-    //        instance = this;
-    //    }
-    //}
+    public void Awake()
+    {
+        if (instance == null)
+        {
+            instance = this;
+        }
+    }
 
     // Start is called before the first frame update
     void Start()
     {
+        NowMasume = 0;
+
         //初期位置
         //transform.position = MasumeList[NowMasume].position;
     }
@@ -32,60 +35,82 @@ public class MapManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (i == true)
-        {
-            NowMasume += saikoro; //現在のマス
-            Activate();
-            i = false;
-        }
+        //if (MyTurn == true)
+        //{
+        //    //NowMasume += Saikoro; //現在のマス
+        //    Activate();
+        //    MyTurn = false;
+        //}
     }
 
     //マスの効果振り分け
-    void Activate()
+    public void Activate()
     {
         switch(NowMasume)
         {
             case 0:
                 // スタートor周回
-                Debug.Log(NowMasume);
+                Debug.Log("周回" + NowMasume);
                 break;
             case 1:
                 // カードマス
-                Debug.Log(NowMasume);
+                CardOneUp();
                 break;
             case 2:
                 // 〇マス移動
-                Debug.Log(NowMasume);
+                Debug.Log("移動" + NowMasume);
                 break;
             case 3:
                 // HP増える
                 HpOneUp();
-                Debug.Log(NowMasume);
-                Debug.Log(Hp);
                 break;
             case 4:
                 // 攻撃マス
-                Debug.Log(NowMasume);
+                Attack();
                 break;
             case 5:
                 // 効果なし
-                Debug.Log(NowMasume);
+                Debug.Log("効果なし" + NowMasume);
                 break;
             default:
                 break;
         }
     }
 
-    //マスの移動
-    void Move()
+    #region マスの移動
+    public void Move()
     {
+        Saikoro = MapPlayer.ins.Num;
+        NowMasume += Saikoro;
         transform.position = MasumeList[NowMasume].position;
+        Activate();
     }
+    #endregion
 
     #region HPを増やす
     public void HpOneUp()
     {
         Hp++;
+
+        Debug.Log("HP増マス" + NowMasume);
+        Debug.Log("HP" + Hp);
+    }
+    #endregion
+
+    #region カードを増やす
+    public void CardOneUp()
+    {
+        Card++;
+
+        Debug.Log("カードマス" + NowMasume);
+        Debug.Log(Card + "枚");
+    }
+    #endregion
+
+    #region 攻撃
+    public void Attack()
+    {
+        Debug.Log("攻撃" + NowMasume);
     }
     #endregion
 
