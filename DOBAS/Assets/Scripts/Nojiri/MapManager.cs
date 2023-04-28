@@ -88,8 +88,7 @@ public class MapManager : MonoBehaviour
     public void Move()
     {
         //Saikoro = MapPlayer.GetComponent<MapPlayer>().DiceNum;
-        Saikoro = MapPlayer.ins.DiceNum;
-        NowMasume += Saikoro;
+        NowMasume = MapPlayer.ins.Sum;
         Activate();
     }
     #endregion
