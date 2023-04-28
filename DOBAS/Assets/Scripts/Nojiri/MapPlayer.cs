@@ -5,9 +5,9 @@ using UnityEngine;
 public class MapPlayer : MonoBehaviour
 {
     public static MapPlayer ins;
-    [SerializeField] GameObject MapManager;
-    public int Num;   // サイコロの出目(1～6)
-    private int start = 0;
+    [SerializeField] GameObject MapManager; // MapManager参照
+    public int DiceNum;                     // サイコロの出目(1～6)
+    private int Sum = 0;                    // 出目の合計
 
     public void Awake()
     {
@@ -21,7 +21,7 @@ public class MapPlayer : MonoBehaviour
     void Start()
     {
         //最初のマスに配置
-        transform.position = MapManager.GetComponent<MapManager>().MasumeList[start].position;
+        transform.position = MapManager.GetComponent<MapManager>().MasumeList[Sum].position;
     }
 
     // Update is called once per frame
@@ -29,22 +29,24 @@ public class MapPlayer : MonoBehaviour
     {
         DiceStart();
         //Debug.Log("サイコロの目");
-        //Debug.Log(Num);
+        //Debug.Log(DiceNum);
     }
 
     public void DiceStart()
     {
-        if (Num == 0)
+        // サイコロが0の時
+        if (DiceNum == 0)
         {
-            Num = Random.Range(1, 6);
-            start += Num;
-            transform.position = MapManager.GetComponent<MapManager>().MasumeList[start].position;
-            MapManager.GetComponent<MapManager>().Move();
+            DiceNum = Random.Range(1, 6);  // サイコロを振る
+            Sum += DiceNum;
+            transform.position = MapManager.GetComponent<MapManager>().MasumeList[Sum].position; // マスの座標へ移動
+            MapManager.GetComponent<MapManager>().Move();  // MapManagerのMove関数処理を行う
         }
     }
 
+    // ターン事にサイコロの初期化
     public void DiceReset()
     {
-        Num = 0;
+        DiceNum = 0;
     }
 }
