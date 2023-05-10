@@ -41,48 +41,49 @@ public class MapManager : MonoBehaviour
         //}
     }
 
-    //マスの効果振り分け
+    # region マスの効果振り分け
     public void Activate()
     {
         switch(NowMasume)
         {
             case 0:
                 // スタートor周回
-                Debug.Log("周回" + NowMasume);
+                Debug.Log("周回：" + NowMasume + "マス目");
                 break;
             case 1:
+            case 6:
                 // カードマス
                 CardOneUp();
                 break;
             case 2:
-            case 6:
+            case 9:
                 // 〇マス移動
-                Debug.Log("移動" + NowMasume);
+                Debug.Log("移動：" + NowMasume + "マス目");
                 break;
             case 3:
+            case 7:
                 // HP増える
                 HpOneUp();
                 break;
             case 4:
+            case 10:
                 // 攻撃マス
                 Attack();
                 break;
             case 5:
                 // 効果なし
-                Debug.Log("効果なし" + NowMasume);
-                break;
-            case 7:
+                Debug.Log("効果なし：" + NowMasume + "マス目");
                 break;
             case 8:
-                break;
-            case 9:
-                break;
-            case 10:
+                // HP減る
+                Debug.Log("HP減る：" + NowMasume + "マス目");
                 break;
             default:
+                Debug.Log(NowMasume + "マス目");
                 break;
         }
     }
+    #endregion
 
     #region マスの移動
     public void Move()
@@ -98,7 +99,7 @@ public class MapManager : MonoBehaviour
     {
         Hp++;
 
-        Debug.Log("HP増マス" + NowMasume);
+        Debug.Log("HP増マス：" + NowMasume + "マス目");
         Debug.Log("HP" + Hp);
     }
     #endregion
@@ -108,7 +109,7 @@ public class MapManager : MonoBehaviour
     {
         Card++;
 
-        Debug.Log("カードマス" + NowMasume);
+        Debug.Log("カードマス：" + NowMasume + "マス目");
         Debug.Log(Card + "枚");
     }
     #endregion
@@ -116,7 +117,7 @@ public class MapManager : MonoBehaviour
     #region 攻撃
     public void Attack()
     {
-        Debug.Log("攻撃" + NowMasume);
+        Debug.Log("攻撃：" + NowMasume + "マス目");
     }
     #endregion
 
