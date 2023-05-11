@@ -9,9 +9,14 @@ public class MapPlayer : MonoBehaviour
 
     [SerializeField] GameObject MapManager; // MapManager参照
     private int DiceNum;                    // サイコロの出目(1～6)
+    private const int Shukai = 20;
     private bool DiceTrigger = true;        // サイコロを振ったかどうか
-    private float Speed = 3.0f;             // マスを進む速度
+    private const float Speed = 10.0f;      // マスを進む速度
 
+    public int Card = 0;
+    public int Hp = 4;
+
+    // 参照用
     public void Awake()
     {
         if(ins == null)
@@ -27,16 +32,54 @@ public class MapPlayer : MonoBehaviour
         transform.position = MapManager.GetComponent<MapManager>().MasumeList[Sum].position;
 
         // コルーチンの開始
-        StartCoroutine("Delay");
+        StartCoroutine("Action");
     }
 
     // Update is called once per frame
     void Update()
     {
+        Vector3 PlayerPos = transform.position;
+        Vector3 TargetPos = MapManager.GetComponent<MapManager>().MasumeList[Sum].position;
 
+        // 移動モーション
+        transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, Speed * Time.deltaTime);
     }
 
-    IEnumerator Delay()
+    private void OnTriggerStay(Collider collision)
+    {
+        if (DiceTrigger == false)
+        {
+            if (collision.gameObject.tag == "Start")
+            {
+                Debug.Log("Startマス");
+            }
+            else if (collision.gameObject.tag == "Card")
+            {
+                Card = MapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
+                Debug.Log(Card);
+                DiceTrigger = true;
+            }
+            else if (collision.gameObject.tag == "Move")
+            {
+                Sum = MapManager.GetComponent<MapManager>().Move(Sum);  // MapManagerのMove関数処理を行う
+                Debug.Log(Sum);
+                DiceTrigger = true;
+            }
+            else if (collision.gameObject.tag == "Hp")
+            {
+                Hp = MapManager.GetComponent<MapManager>().HpOneUp(Hp);  // MapManagerのHpOneUp関数処理を行う
+                Debug.Log(Hp);
+                DiceTrigger = true;
+            }
+            else if (collision.gameObject.tag == "Attack")
+            {
+                MapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+                DiceTrigger = true;
+            }
+        }
+    }
+
+    IEnumerator Action()
     {
         while (true)
         {
@@ -45,11 +88,31 @@ public class MapPlayer : MonoBehaviour
             // サイコロを振って進む
             DiceStart();
 
-            yield return new WaitForSeconds(1);
+            yield return new WaitForSeconds(3);
 
             // サイコロの初期化
-            DiceReset();
+            //DiceReset();
         }
+    }
+
+    IEnumerator Delay(int num)
+    {
+        // 一マスづつ進ませる
+        for (int i = 0; i < num; i++)
+        {
+            Sum++;  // 現在のマス番号(サイコロ目の合計)
+
+            // スタート地点に戻る
+            if (Sum >= Shukai)
+            {
+                Sum = 0;
+            }
+
+            yield return new WaitForSeconds(0.5f); // 0.5秒待つ
+        }
+
+        MapManager.GetComponent<MapManager>().Reference();  // MapManagerのReference関数処理を行う
+        DiceTrigger = false; // サイコロを振った(ターンの終わり)
     }
 
     public void DiceStart()
@@ -58,32 +121,16 @@ public class MapPlayer : MonoBehaviour
         if (DiceTrigger == true)
         {
             DiceNum = Random.Range(1, 6);  // サイコロを振る
-            //Sum += DiceNum;
             Debug.Log("Dice" + DiceNum);
-
-            // 一マスづつ進ませる
-            for (int i = 0; i < DiceNum; i++)
-            {
-                Sum++;  // 現在のマス番号(サイコロ目の合計)
-
-                // スタート地点に戻る
-                if (Sum >= 20)
-                {
-                    Sum = 0;
-                }
-
-                transform.position = MapManager.GetComponent<MapManager>().MasumeList[Sum].position; // マスの座標へ移動
-            }
-
-            MapManager.GetComponent<MapManager>().Move();  // MapManagerのMove関数処理を行う
-            DiceTrigger = false; // サイコロを振った(ターンの終わり)
+            
+            // コルーチンの開始
+            StartCoroutine("Delay", DiceNum);
         }
     }
 
     // ターン事にサイコロの初期化
-    public void DiceReset()
-    {
-        DiceTrigger = true;
-        //Debug.Log(DiceNum);
-    }
+    //public void DiceReset()
+    //{
+    //    DiceTrigger = true;
+    //}
 }

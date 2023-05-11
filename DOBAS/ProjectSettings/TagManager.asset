@@ -4,7 +4,11 @@
 TagManager:
   serializedVersion: 2
   tags:
-  - Stage
+  - Start
+  - Card
+  - Move
+  - Hp
+  - Attack
   layers:
   - Default
   - TransparentFX
@@ -12,8 +16,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Masu
   - 
   - 
   - 

@@ -10,10 +10,8 @@ public class MapManager : MonoBehaviour
     //[SerializeField] GameObject MapPlayer;    // MapManager参照
     [SerializeField] private int NowMasume;   // 現在踏んでいるマスの値
 
-    private int Hp = 4;          // 体力
-    private int Card;            // カード枚数
-    private int Saikoro;         // サイコロの出目(1～6)
-    private bool MyTurn = true;  // 自分のターン
+    private int Hp = 4;            // 体力
+    private int Card;              // カード枚数
 
     //// 参照用
     //public void Awake()
@@ -33,84 +31,124 @@ public class MapManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        //if (MyTurn == true)
-        //{
-        //    //NowMasume += Saikoro; //現在のマス
-        //    Activate();
-        //    MyTurn = false;
-        //}
+
     }
 
-    # region マスの効果振り分け
-    public void Activate()
-    {
-        switch(NowMasume)
-        {
-            case 0:
-                // スタートor周回
-                Debug.Log("周回：" + NowMasume + "マス目");
-                break;
-            case 1:
-            case 6:
-                // カードマス
-                CardOneUp();
-                break;
-            case 2:
-            case 9:
-                // 〇マス移動
-                Debug.Log("移動：" + NowMasume + "マス目");
-                break;
-            case 3:
-            case 7:
-                // HP増える
-                HpOneUp();
-                break;
-            case 4:
-            case 10:
-                // 攻撃マス
-                Attack();
-                break;
-            case 5:
-                // 効果なし
-                Debug.Log("効果なし：" + NowMasume + "マス目");
-                break;
-            case 8:
-                // HP減る
-                Debug.Log("HP減る：" + NowMasume + "マス目");
-                break;
-            default:
-                Debug.Log(NowMasume + "マス目");
-                break;
-        }
-    }
-    #endregion
+    //# region マスの効果振り分け
+    //public void Activate()
+    //{
+    //    switch(NowMasume)
+    //    {
+    //        case 0:
+    //            // スタートor周回
+    //            Debug.Log("周回：" + NowMasume + "マス目");
+    //            break;
 
-    #region マスの移動
-    public void Move()
+    //        case 1:
+    //        case 6:
+    //        case 10:
+    //        case 13:
+    //        case 17:
+    //        case 23:
+    //            // カードマス
+    //            CardOneUp();
+    //            break;
+
+    //        case 2:
+    //        case 9:
+    //        case 15:
+    //        case 19:
+    //            // 〇マス移動
+    //            MapPlayer.ins.Sum += 3;
+    //            Debug.Log("3マス移動：" + NowMasume + "マス目");
+    //            //Move();
+    //            break;
+
+    //        case 3:
+    //        case 7:
+    //        case 8:
+    //        case 14:
+    //        case 21:
+    //        case 24:
+    //            // HP増減
+    //            HpOneUp();
+    //            break;
+
+    //        case 4:
+    //        case 11:
+    //        case 16:
+    //        case 20:
+    //        case 25:
+    //            // 攻撃マス
+    //            Attack();
+    //            break;
+
+    //        case 5:
+    //        case 12:
+    //        case 18:
+    //        case 22:
+    //            // 効果なし
+    //            Debug.Log("効果なし：" + NowMasume + "マス目");
+    //            break;
+
+    //        default:
+    //            Debug.Log(NowMasume + "マス目");
+    //            break;
+    //    }
+    //}
+    //#endregion
+
+    #region プレイヤーからの値の取り出し
+    public void Reference()
     {
-        //Saikoro = MapPlayer.GetComponent<MapPlayer>().DiceNum;
         NowMasume = MapPlayer.ins.Sum;
-        Activate();
-    }
-    #endregion
 
-    #region HPを増やす
-    public void HpOneUp()
-    {
-        Hp++;
-
-        Debug.Log("HP増マス：" + NowMasume + "マス目");
-        Debug.Log("HP" + Hp);
+        //Activate();
     }
     #endregion
 
     #region カードを増やす
-    public void CardOneUp()
+    public int CardOneUp(int card)
     {
-        Card++;
-
+        card++;
         Debug.Log("カードマス：" + NowMasume + "マス目");
-        Debug.Log(Card + "枚");
+        Debug.Log(card + "枚");
+
+        return card;
+    }
+    #endregion
+
+
+    #region マスの移動
+    public int Move(int move)
+    {
+        if (NowMasume == 2 || NowMasume == 9 || NowMasume == 19)
+        {
+            for (int i = 0; i < 3; i++)
+            {
+                move++;
+            }
+            Debug.Log("3マス移動：" + NowMasume + "マス目");
+        }
+        else if (NowMasume == 15)
+        {
+            move += 1;
+            Debug.Log("1マス移動：" + NowMasume + "マス目");
+        }
+
+        return move;
+    }
+    #endregion
+
+    #region HPを増減
+    public int HpOneUp(int hp)
+    {
+        hp++;
+
+        Debug.Log("HP増マス：" + NowMasume + "マス目");
+        Debug.Log("HP" + hp);
+
+        return hp;
     }
     #endregion
 
