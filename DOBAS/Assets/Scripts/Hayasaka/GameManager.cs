@@ -16,8 +16,9 @@ public class GameManager : MonoBehaviour
     public int AtPower;
     public int HaveCard;
     public int LocaInfo;
+    public int Votes = 0;
 
-    private int Index = 0;
+    public int Index = 0;
     public int EndPt = 0;
     //-1:”ñƒQ[ƒ€ó‘Ô 1:ƒQ[ƒ€’† 2:ƒQ[ƒ€I—¹
     private int GameFlg;
@@ -68,11 +69,6 @@ public class GameManager : MonoBehaviour
         //UI‚ğ’T‚·(‰¼)
         UI = GameObject.Find("PlayerUI");
 
-        //Hp = 4;
-        //AtPower = 1;
-        //HaveCard = 0;
-        //LocaInfo = 0;
-
         //try
         //{
         //    if (Player)
@@ -89,21 +85,7 @@ public class GameManager : MonoBehaviour
         //    KeyOperation();
         //}
     }
-    //void SetNextPlayer()
-    //{      
-    //    Index++;
-    //    for (int i = 0; i < Players.Length; i++)
-    //    {
-    //        if(Players[i].TestOrder == Index)
-    //        {
-
-    //        }
-    //    }
-    //    if (Index >= Players.Length)
-    //    {
-    //        Index = 0;
-    //    }
-    //}
+    
     #region ƒQ[ƒ€ó‹µ
     public void StateGame(int Param)
     {
@@ -118,54 +100,91 @@ public class GameManager : MonoBehaviour
     }
     #endregion
     void MainGame()
-    {
-        //if (Input.GetKeyDown(KeyCode.Return))
-        //{
-        //    Players[Index].TarnEnd = true;
-        //    if (Index > Players.Length)
-        //    {
-        //        Index = 0;
-        //    }
-        //    else
-        //    {
-        //        Index++;
-        //    }
-        //    for(int i = 0;i <= Players.Length; i++)
-        //    {
-        //        Players[i].Tarn = false; 
-        //    }          
-        //}
-        //if (!Players[Index].Tarn)
-        //{ 
-        //    Debug.Log(Players[Index]);
-        //    //Players[i].Test();
-
-        //    Players[Index].Tarn = true;
-        //}
-        
-        //–¢Š®
+    {         
         for (int i = 0; i < Players.Length; i++)
         {
+            if (Index >= Players.Length)
+            {
+                Index = 0;
+            }
             if (!Players[Index].Tarn)
             {
                 Debug.Log(Players[Index]);
                 Players[Index].Tarn = true;
             }
-            if (Players[Index].TarnEnd)
-            {
-                Players[Index].Tarn = false;
-                Players[Index].TarnEnd = false;
-                Index++;
-            }
-            if (Index >= Players.Length)
-            {
-                Index = 0;
-            }          
+            
         }
     }
     void EndGame()
     {
        
+    }
+    public void EndJudge(bool Flg)
+    {
+        if (Flg)
+        {
+            Index++;
+        }
+    }
+    
+    public void DoutDis(int Number)
+    {
+        for (int i = 0; i < Players.Length; i++)
+        {
+            Players[i].DoutDec = true;
+        }
+        if (Players[Index].Tarn)
+        {
+            if (Number == 5 || Number == 6)
+            {
+                Debug.Log("‰R–Ú");
+                Players[Index].DoutFlg = true;
+            }
+            else
+            {
+                Debug.Log("^–Ú");
+                Players[Index].DoutFlg = false; 
+            }
+        }
+    }
+    public void DoutJudge()
+    {
+        Debug.Log(Votes);
+        for (int i = 0; i < Players.Length; i++)
+        {
+            Players[i].DoutDec = false;
+            Players[i].Count = 5.0f;
+        }
+        for (int i = 0; i < Players.Length; i++)
+        {
+            if (Players[Index].DoutFlg) 
+            {
+                if (Players[i].MyDec)
+                {
+                    Debug.Log(Players[Index] + "‚Í‰R‚Â‚¢‚Ä‚½‚í");
+                    break;
+                }
+            }
+            if (!Players[Index].DoutFlg)
+            {
+                if (Players[i].MyDec)
+                {
+                    Debug.Log(Players[Index] + "‚Í‰R‚Â‚¢‚Ä‚È‚¢");
+                    break;
+                }
+            }
+            if (!Players[i].MyDec)
+            {
+                Votes++;
+            }
+            if(Votes == 4)
+            {
+                Debug.Log("ƒXƒ‹[");
+            }
+        }  
+        Players[Index].TarnEnd = true; // ŠÔ·‚Å‘¼‚ÌTARNEND‚ªƒIƒ“‚É‚È‚Á‚Ä‚¢‚é‰Â”\«
+        Votes = 0;
+
     }
     public void GemeOverJudge()
     {
