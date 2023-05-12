@@ -27,9 +27,11 @@ public class DiceManager : MonoBehaviour
     private int Number;
     public int DeclarationNum;//宣言番号.
     public bool Doubt;
+    [SerializeField] MapPlayer mapPlayer;
 
     private void Start()
     {
+        //mapPlayer = GetComponent<MapPlayer>();
         Dice = Instantiate(DicePrefab, DiceCamera.transform.position, Quaternion.identity, kodomo);
         Dice.transform.position = CameraPos;
         CameraPos = DiceCamera.transform.position;
@@ -165,6 +167,8 @@ public class DiceManager : MonoBehaviour
 
     private void DeclarationResult()
     {
+        mapPlayer.StartDelay(DeclarationNum);
+        /*
         if (Doubt)
         {
             ResultPanel[4].SetActive(false);
@@ -172,24 +176,43 @@ public class DiceManager : MonoBehaviour
         else
         {
             ResultPanel[DeclarationNum - 1].SetActive(false);
-        }
+        }*/
+        //後々修正.
+        ResultPanel[0].SetActive(false);
+        ResultPanel[1].SetActive(false);
+        ResultPanel[2].SetActive(false);
+        ResultPanel[3].SetActive(false);
+        ResultPanel[4].SetActive(false);
+
+
         Debug.Log("出目：" + DeclarationNum);
         DiceNumText.text = " ";
         DiceCamera.SetActive(false);
         Dice.SetActive(false);
         DiceFlg = false;
-        DiceShakeButton.SetActive(true);
+        DiceInit();
+        /*
         ReasoningPanel.SetActive(true);
         ReasoningPanel.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = SaikoroSprite[DeclarationNum-1];
-        testGManager.StartDoubtTime();
+        testGManager.StartDoubtTime();*/
     }
 
     public void DiceInit()
     {
+        DiceNumText.text = " ";
+        DeclarationNum = 0;
         ReasoningPanel.SetActive(false);
         DiceCamera.SetActive(false);
         Dice.SetActive(false);
         DiceFlg = false;
         DiceShakeButton.SetActive(true);
+    }
+
+    /// <summary>
+    /// 宣言された出目を返す関数
+    /// </summary>
+    public int ReturnDeclarationNum()
+    {
+        return DeclarationNum;
     }
 }
