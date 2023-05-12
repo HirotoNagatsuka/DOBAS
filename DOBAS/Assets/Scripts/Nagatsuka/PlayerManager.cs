@@ -21,6 +21,7 @@ public class PlayerManager : MonoBehaviour
     #endregion
 
     public int TestAddHP;
+    [SerializeField] DiceManager diceManager;
 
     [SerializeField]
     Player Player;//Playerのクラスをインスペクター上で見れるようにする.
@@ -60,4 +61,14 @@ public class PlayerManager : MonoBehaviour
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
     }
 
+    public void PushBelieveButton()
+    {
+        Debug.Log("信じる!");
+        diceManager.DiceInit();
+    }
+    public void PushDoubtButton()
+    {
+        Debug.Log("ダウト!");
+        diceManager.DiceInit();
+    }
 }

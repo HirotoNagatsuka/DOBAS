@@ -7,17 +7,22 @@ public class TestGManager : MonoBehaviour
 {
     [SerializeField] Text HaveTimeText;
     float HaveTime;//各プレイヤーの持ち時間.
+    float DoubtTime;//ダウト宣言の持ち時間.
+    bool DoubtFlg;
     
     // Start is called before the first frame update
     void Start()
     {
         HaveTime = 13;
+        DoubtFlg = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        ChangeHaveTime();
+        if (DoubtFlg) ChangeDoubtTime();
+        else ChangeHaveTime();
+ 
     }
 
     private void ChangeHaveTime()
@@ -37,12 +42,25 @@ public class TestGManager : MonoBehaviour
             Debug.Log("ターン強制終了");
         }        
     }
-
-    /// <summary>
-    /// サイコロを振る関数.
-    /// </summary>
-    public void ShakeDice()
+    public void StartDoubtTime()
     {
-
+        DoubtTime = 10;
+        DoubtFlg = true;
+    }
+    private void ChangeDoubtTime()
+    {
+        if (DoubtTime > 0)//残り時間が残っているなら.
+        {
+            DoubtTime -= Time.deltaTime;
+            HaveTimeText.color = Color.red;
+            
+            HaveTimeText.text = DoubtTime.ToString("0");//小数点以下を表示しない.
+        }
+        else//0以下になったら.
+        {
+            DoubtTime = 0;
+            Debug.Log("ターン強制終了");
+            DoubtFlg = false;
+        }
     }
 }
