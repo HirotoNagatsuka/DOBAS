@@ -397,8 +397,27 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f8872e784b458d499978f33366a4fda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Dice: {fileID: 3310249835269611495, guid: baf45781312b4994ebc07f9a2cebac12, type: 3}
+  testGManager: {fileID: 0}
+  DicePrefab: {fileID: 0}
   num: 1
+  SaikoroSprite:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  DiceCamera: {fileID: 0}
+  DiceNumText: {fileID: 0}
+  ResultPanel:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  ReasoningPanel: {fileID: 0}
+  kodomo: {fileID: 0}
+  DiceShakeButton: {fileID: 0}
+  DeclarationNum: 0
+  Doubt: 0
 --- !u!4 &1322863243
 Transform:
   m_ObjectHideFlags: 0
@@ -525,4 +544,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8926883836ca56947a55ae8a749d869a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DiceNumText: {fileID: 0}
+  diceManager: {fileID: 0}
