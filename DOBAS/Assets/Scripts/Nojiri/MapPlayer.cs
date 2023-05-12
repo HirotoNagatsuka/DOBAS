@@ -92,7 +92,7 @@ public class MapPlayer : MonoBehaviour
             yield return new WaitForSeconds(3);
 
             // ƒTƒCƒRƒ‚Ì‰Šú‰»
-            //DiceReset();
+            DiceReset();
         }
     }
 
