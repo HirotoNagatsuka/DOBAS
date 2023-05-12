@@ -12,6 +12,7 @@ public class MapPlayer : MonoBehaviour
     private const int Shukai = 20;
     private bool DiceTrigger = true;        // サイコロを振ったかどうか
     private const float Speed = 10.0f;      // マスを進む速度
+    private int MoveMasu;                   // Moveマスを踏んだ時の進むマス数
 
     public int Card = 0;
     public int Hp = 4;
@@ -49,36 +50,72 @@ public class MapPlayer : MonoBehaviour
     // マスに触れたときタグを参照して効果を呼び出す
     private void OnTriggerStay(Collider collision)
     {
+
+        /* 次直す
+         * マスに止まった時に効果を１～２秒間くらい表示
+         * そのあとにマスの効果を発動
+         * たぶんOnTriggerStayで読んでるのが原因
+         */
+
         if (DiceTrigger == false)
         {
             if (collision.gameObject.tag == "Start")
             {
-                Debug.Log("Startマス");
+                Debug.Log("周回ボーナスゲット！");
+                StartCoroutine("Dis");
             }
             else if (collision.gameObject.tag == "Card")
             {
-                Card = MapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
+                Debug.Log("カード１枚ゲット！");
+                StartCoroutine("Dis");
+
+                //Card = MapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
                 Debug.Log("カード：" + Card + "枚");
                 DiceTrigger = true;
             }
             else if (collision.gameObject.tag == "Move")
             {
-                Sum = MapManager.GetComponent<MapManager>().Move(Sum);  // MapManagerのMove関数処理を行う
+                Debug.Log("3マス進む！");
+                StartCoroutine("Dis");
+
+                MoveMasu = MapManager.GetComponent<MapManager>().Move(MoveMasu);  // MapManagerのMove関数処理を行う
+
+                // １マスづつ進む
+                StartCoroutine("Delay", MoveMasu);
+
                 Debug.Log("移動完了");
+                MoveMasu = 0;
                 DiceTrigger = true;
             }
             else if (collision.gameObject.tag == "Hp")
             {
+                Debug.Log("HP１回復！！");
+                StartCoroutine("Dis");
+
                 Hp = MapManager.GetComponent<MapManager>().HpOneUp(Hp);  // MapManagerのHpOneUp関数処理を行う
                 Debug.Log("HP：" + Hp);
                 DiceTrigger = true;
             }
             else if (collision.gameObject.tag == "Attack")
             {
+                Debug.Log("他のプレイヤーを攻撃！");
+                StartCoroutine("Dis");
+
                 MapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
                 DiceTrigger = true;
             }
+            else
+            {
+                Debug.Log("普通のマス");
+            }
         }
+    }
+
+    IEnumerator Dis()
+    {
+        Debug.Log("コルーチン発動");
+        yield return new WaitForSeconds(2);
+        Card = MapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
     }
 
     IEnumerator Action()
@@ -98,7 +135,7 @@ public class MapPlayer : MonoBehaviour
 
     IEnumerator Delay(int num)
     {
-        // 一マスづつ進ませる
+        // １マスづつ進ませる
         for (int i = 0; i < num; i++)
         {
             Sum++;  // 現在のマス番号(サイコロ目の合計)

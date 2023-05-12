@@ -123,10 +123,7 @@ public class MapManager : MonoBehaviour
     {
         if (NowMasume == 2 || NowMasume == 9 || NowMasume == 19)
         {
-            for (int i = 0; i < 3; i++)
-            {
-                move++;
-            }
+            move += 3;
             Debug.Log("3マス移動：" + NowMasume + "マス目");
         }
         else if (NowMasume == 15)
