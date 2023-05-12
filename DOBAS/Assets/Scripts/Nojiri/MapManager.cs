@@ -10,8 +10,8 @@ public class MapManager : MonoBehaviour
     //[SerializeField] GameObject MapPlayer;    // MapManager参照
     [SerializeField] private int NowMasume;   // 現在踏んでいるマスの値
 
-    private int Hp = 4;            // 体力
-    private int Card;              // カード枚数
+    //private int Hp = 4;            // 体力
+    //private int Card;              // カード枚数
 
     //// 参照用
     //public void Awake()
@@ -112,7 +112,6 @@ public class MapManager : MonoBehaviour
     {
         card++;
         Debug.Log("カードマス：" + NowMasume + "マス目");
-        Debug.Log(card + "枚");
 
         return card;
     }
@@ -146,7 +145,6 @@ public class MapManager : MonoBehaviour
         hp++;
 
         Debug.Log("HP増マス：" + NowMasume + "マス目");
-        Debug.Log("HP" + hp);
 
         return hp;
     }
@@ -159,12 +157,12 @@ public class MapManager : MonoBehaviour
     }
     #endregion
 
-    #region HP情報を取得
-    public int GetHp()
-    {
-        return Hp;
-    }
-    #endregion
+    //#region HP情報を取得
+    //public int GetHp()
+    //{
+    //    return Hp;
+    //}
+    //#endregion
 
     #region マスごとの座標リストを取得
     public Vector3 GetMasumePos(int masume)

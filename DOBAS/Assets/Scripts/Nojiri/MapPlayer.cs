@@ -45,6 +45,7 @@ public class MapPlayer : MonoBehaviour
         transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, Speed * Time.deltaTime);
     }
 
+    // マスに触れたときタグを参照して効果を呼び出す
     private void OnTriggerStay(Collider collision)
     {
         if (DiceTrigger == false)
@@ -56,19 +57,19 @@ public class MapPlayer : MonoBehaviour
             else if (collision.gameObject.tag == "Card")
             {
                 Card = MapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
-                Debug.Log(Card);
+                Debug.Log("カード：" + Card + "枚");
                 DiceTrigger = true;
             }
             else if (collision.gameObject.tag == "Move")
             {
                 Sum = MapManager.GetComponent<MapManager>().Move(Sum);  // MapManagerのMove関数処理を行う
-                Debug.Log(Sum);
+                Debug.Log("移動完了");
                 DiceTrigger = true;
             }
             else if (collision.gameObject.tag == "Hp")
             {
                 Hp = MapManager.GetComponent<MapManager>().HpOneUp(Hp);  // MapManagerのHpOneUp関数処理を行う
-                Debug.Log(Hp);
+                Debug.Log("HP：" + Hp);
                 DiceTrigger = true;
             }
             else if (collision.gameObject.tag == "Attack")
@@ -129,8 +130,8 @@ public class MapPlayer : MonoBehaviour
     }
 
     // ターン事にサイコロの初期化
-    //public void DiceReset()
-    //{
-    //    DiceTrigger = true;
-    //}
+    public void DiceReset()
+    {
+        DiceTrigger = true;
+    }
 }
