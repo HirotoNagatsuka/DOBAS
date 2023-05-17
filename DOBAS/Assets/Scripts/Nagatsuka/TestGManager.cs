@@ -13,7 +13,7 @@ public class TestGManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        HaveTime = 13;
+        HaveTime = 60;
         DoubtFlg = false;
     }
 
@@ -22,7 +22,6 @@ public class TestGManager : MonoBehaviour
     {
         if (DoubtFlg) ChangeDoubtTime();
         else ChangeHaveTime();
- 
     }
 
     private void ChangeHaveTime()
