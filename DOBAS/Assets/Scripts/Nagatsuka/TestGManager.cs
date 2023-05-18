@@ -2,27 +2,68 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class TestGManager : MonoBehaviour
+public class TestGManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     [SerializeField] Text HaveTimeText;
     float HaveTime;//各プレイヤーの持ち時間.
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
-    
+    bool timeflg;
+
     // Start is called before the first frame update
     void Start()
     {
         HaveTime = 60;
         DoubtFlg = false;
+        timeflg = false;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            //photonView.RPC(nameof(RpcSendMessage), RpcTarget.All, "こんにちは");
+            photonView.RPC(nameof(StartTimer), RpcTarget.All);
+        }
+
         if (DoubtFlg) ChangeDoubtTime();
-        else ChangeHaveTime();
+        //else ChangeHaveTime();
+        else if (timeflg) HaveTime -= Time.deltaTime;
+        HaveTimeText.text = HaveTime.ToString("0");
     }
+
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // timeを送信する
+            stream.SendNext(HaveTime);
+        }
+        else
+        {
+            // timeを受信する
+            HaveTime = (float)stream.ReceiveNext();
+        }
+    }
+    [PunRPC]
+    private void StartTimer()
+    {
+        timeflg = true;
+    }
+
+    [PunRPC]
+    private void RpcSendMessage(string message)
+    {
+        timeflg = true;
+        Debug.Log(message);
+    }
+
+
+
 
     private void ChangeHaveTime()
     {

@@ -133,7 +133,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   diceManager: {fileID: 0}
-  mapManager: {fileID: 0}
   Player:
     Name: N.H
     HP: 4

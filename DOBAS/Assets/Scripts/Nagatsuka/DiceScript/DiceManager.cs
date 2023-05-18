@@ -31,6 +31,8 @@ public class DiceManager : MonoBehaviour
     [SerializeField] MapPlayer mapPlayer;
     [SerializeField] PlayerManager playerManager;
 
+    public bool FinishFlg;//Photonテスト用.
+
     private void Start()
     {
         //mapPlayer = GetComponent<MapPlayer>();
@@ -42,6 +44,7 @@ public class DiceManager : MonoBehaviour
         Dice.SetActive(false);
         DiceCamera.SetActive(false);
         DiceFlg = false;
+        FinishFlg = false;
     }
 
     /// <summary>
@@ -169,7 +172,8 @@ public class DiceManager : MonoBehaviour
 
     private void DeclarationResult()
     {
-        playerManager.StartDelay(DeclarationNum);
+        FinishFlg = true;
+        //playerManager.StartDelay(DeclarationNum);
         // mapPlayer.StartDelay(DeclarationNum);
         /*
         if (Doubt)
@@ -193,11 +197,8 @@ public class DiceManager : MonoBehaviour
         DiceCamera.SetActive(false);
         Dice.SetActive(false);
         DiceFlg = false;
-        DiceInit();
-        /*
-        ReasoningPanel.SetActive(true);
-        ReasoningPanel.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = SaikoroSprite[DeclarationNum-1];
-        testGManager.StartDoubtTime();*/
+        Invoke("DiceInit", 2.0f);
+        //DiceInit();
     }
 
     public void DiceInit()
@@ -209,6 +210,7 @@ public class DiceManager : MonoBehaviour
         Dice.SetActive(false);
         DiceFlg = false;
         DiceShakeButton.SetActive(true);
+        //FinishFlg = false;
     }
 
     /// <summary>

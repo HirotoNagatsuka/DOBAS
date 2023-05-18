@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System;
+using Photon.Pun;
+using Photon.Realtime;
 
 [Serializable]
 class Player
@@ -12,7 +14,7 @@ class Player
     public int Attack;  //攻撃力を格納.
 }
 
-public class PlayerManager : MonoBehaviour
+public class PlayerManager : MonoBehaviourPunCallbacks
 {
     #region 定数宣言
     //UI表示に使用する定数値
@@ -29,8 +31,8 @@ public class PlayerManager : MonoBehaviour
     [Header("[SerializeField]宣言")]
     [SerializeField]
     DiceManager diceManager;//DiceManager参照用.
-    [SerializeField] 
-    MapManager mapManager; // MapManager参照.
+    GameObject mapManagerObj; // MapManagerのGameObject参照.
+    MapManager mapManager;
     [SerializeField]
     Player Player;//Playerのクラスをインスペクター上で見れるようにする.
     #endregion
@@ -42,6 +44,8 @@ public class PlayerManager : MonoBehaviour
     private bool DiceTrigger = true;        // サイコロを振ったかどうか
 
     public int Card = 0;//多分使わない(カード枚数だけの表示).
+
+    private int deme;
 
     #region Unityイベント(Awake・Start・Update・OnTrigger)
 
@@ -57,10 +61,11 @@ public class PlayerManager : MonoBehaviour
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         //PlayerUI.gameObject.transform.GetChild(NAME_UI).GetComponent<Text>().text = Player.Name.ToString();//名前の表示.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
-
+        mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
+        diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //diceManager = GetComponent<DiceManager>();
         //最初のマスに配置.
-        //transform.position = mapManager.MasumeList[0].position;//初期値0.
+        transform.position = mapManager.MasumeList[0].position;//初期値0.
 
         // コルーチンの開始
         //StartCoroutine("Action");
@@ -68,12 +73,27 @@ public class PlayerManager : MonoBehaviour
 
     private void Update()
     {
-        Vector3 PlayerPos = transform.position;
-        //Vector3 TargetPos = mapManager.MasumeList[Sum].position;
+        if (photonView.IsMine)
+        {
+            Vector3 PlayerPos = transform.position;
+            Vector3 TargetPos = mapManager.MasumeList[Sum].position;
 
-        //// 移動モーション
-        //transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
+            //// 移動モーション
+            transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
+            if (diceManager.FinishFlg) FinishDice();
+        }
     }
+    /// <summary>
+    /// サイコロを振り終わったら呼び出す関数.
+    /// </summary>
+     public void FinishDice()
+    {
+        deme = diceManager.DeclarationNum;
+        StartDelay(deme);
+        diceManager.FinishFlg = false;
+    }
+
+
 
     /// <summary>
     /// マスに触れたときタグを参照して効果を呼び出す
@@ -140,6 +160,7 @@ public class PlayerManager : MonoBehaviour
 
     public void StartDelay(int num)
     {
+        Debug.Log("StartDeley起動");
         // コルーチンの開始
         StartCoroutine("Delay", num);
     }
