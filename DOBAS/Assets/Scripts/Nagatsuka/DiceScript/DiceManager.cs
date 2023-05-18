@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+
 public class DiceManager : MonoBehaviour
 {
     [SerializeField] TestGManager testGManager;
@@ -28,6 +29,7 @@ public class DiceManager : MonoBehaviour
     public int DeclarationNum;//êÈåæî‘çÜ.
     public bool Doubt;
     [SerializeField] MapPlayer mapPlayer;
+    [SerializeField] PlayerManager playerManager;
 
     private void Start()
     {
@@ -167,7 +169,8 @@ public class DiceManager : MonoBehaviour
 
     private void DeclarationResult()
     {
-        mapPlayer.StartDelay(DeclarationNum);
+        playerManager.StartDelay(DeclarationNum);
+        // mapPlayer.StartDelay(DeclarationNum);
         /*
         if (Doubt)
         {

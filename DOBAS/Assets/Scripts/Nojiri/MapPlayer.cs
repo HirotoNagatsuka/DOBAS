@@ -33,7 +33,7 @@ public class MapPlayer : MonoBehaviour
         transform.position = MapManager.GetComponent<MapManager>().MasumeList[Sum].position;
 
         // コルーチンの開始
-        StartCoroutine("Action");
+        //StartCoroutine("Action");
     }
 
     // Update is called once per frame

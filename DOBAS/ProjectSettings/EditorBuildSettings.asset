@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Demos/PhotonTestScene.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/Nagatsuka/PlayerMultiTest.unity
+    guid: 3a22c676eda5ea347b4e9510a4458bb0
   m_configObjects: {}

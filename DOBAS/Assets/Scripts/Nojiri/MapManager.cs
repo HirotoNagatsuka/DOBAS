@@ -101,7 +101,8 @@ public class MapManager : MonoBehaviour
     #region プレイヤーからの値の取り出し
     public void Reference()
     {
-        NowMasume = MapPlayer.ins.Sum;
+        NowMasume = PlayerManager.ins.Sum;
+        //NowMasume = MapPlayer.ins.Sum;
 
         //Activate();
     }
