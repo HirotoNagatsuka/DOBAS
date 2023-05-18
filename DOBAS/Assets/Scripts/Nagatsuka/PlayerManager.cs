@@ -10,14 +10,13 @@ using Photon.Realtime;
 class Player
 {
     public string Name; //名前を格納.
+    public int MaxHP;   //HPの最大値;
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
     public Sprite[] HeartSprites;//HP用画像の配列.
-    public GameObject HeartPrefab;//HP用の画像.
-    public Transform kodomo; //子オブジェクト生成位置.
 }
 
-public class PlayerManager : MonoBehaviourPunCallbacks
+public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region 定数宣言
     //UI表示に使用する定数値
@@ -91,6 +90,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
+           // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];
         }
     }
     /// <summary>
@@ -99,10 +99,39 @@ public class PlayerManager : MonoBehaviourPunCallbacks
      public void FinishDice()
     {
         deme = diceManager.DeclarationNum;
-        StartDelay(deme);
+        if (diceManager.DeclarationNum == 4)
+        {
+            photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
+            //EnemyAttack();
+        }
+        else
+        {
+            StartDelay(deme);
+        }
         diceManager.FinishFlg = false;
     }
 
+    [PunRPC]
+    void EnemyAttack()
+    {
+        Player.HP--;
+
+        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];
+    }
+
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // 自身のアバターのスタミナを送信する
+            stream.SendNext(Player.HP);
+        }
+        else
+        {
+            // 他プレイヤーのアバターのスタミナを受信する
+            Player.HP = (int)stream.ReceiveNext();
+        }
+    }
 
 
     /// <summary>

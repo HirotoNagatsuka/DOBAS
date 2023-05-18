@@ -210,8 +210,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   diceManager: {fileID: 0}
   Player:
-    Name: N.H
-    HP: 4
+    Name: TNC
+    MaxHP: 0
+    HP: 3
     Attack: 1
     HeartSprites:
     - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
@@ -219,8 +220,6 @@ MonoBehaviour:
     - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
     - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
     - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
-    HeartPrefab: {fileID: 7426718351203515211, guid: 7309e57259fadca449b8d4e3efccf49e, type: 3}
-    kodomo: {fileID: 2880743979669279130}
   Sum: 0
   Card: 0
 --- !u!114 &8095048837821938304
@@ -242,6 +241,7 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 2880743978407534243}
   - {fileID: 6084958965139046418}
   sceneViewId: 0
   InstantiationId: 0
