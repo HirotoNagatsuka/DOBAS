@@ -482,6 +482,7 @@ MonoBehaviour:
   Doubt: 0
   mapPlayer: {fileID: 0}
   playerManager: {fileID: 0}
+  FinishFlg: 0
 --- !u!4 &90861572
 Transform:
   m_ObjectHideFlags: 0

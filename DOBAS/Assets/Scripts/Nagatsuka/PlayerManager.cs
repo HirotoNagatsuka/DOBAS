@@ -12,6 +12,9 @@ class Player
     public string Name; //名前を格納.
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
+    public Sprite[] HeartSprites;//HP用画像の配列.
+    public GameObject HeartPrefab;//HP用の画像.
+    public Transform kodomo; //子オブジェクト生成位置.
 }
 
 public class PlayerManager : MonoBehaviourPunCallbacks
@@ -21,6 +24,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     const int PLAYER_UI = 0;
     const int NAME_UI = 0;
     const int HP_UI = 1;
+
+    const float HEART_POS_X = -200;//初期値.
+    const float HEART_POS_Y = 280f;//HP画像の表示位置.
 
     //野尻の方で宣言した定数
     private const int SHUKAI = 26;//マスの数（Playerで宣言しているので後々変更）.
@@ -60,7 +66,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks
     {
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         //PlayerUI.gameObject.transform.GetChild(NAME_UI).GetComponent<Text>().text = Player.Name.ToString();//名前の表示.
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP -1];//HPの表示.
+
+        //Dice = Instantiate(Player.HeartPrefab, new Vector3(0f,HeartPosY,0f), Quaternion.identity, kodomo);
+
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //diceManager = GetComponent<DiceManager>();
