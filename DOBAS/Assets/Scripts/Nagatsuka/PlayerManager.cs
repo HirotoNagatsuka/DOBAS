@@ -68,16 +68,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP -1];//HPの表示.
 
-        //Dice = Instantiate(Player.HeartPrefab, new Vector3(0f,HeartPosY,0f), Quaternion.identity, kodomo);
-
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //diceManager = GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
-
-        // コルーチンの開始
-        //StartCoroutine("Action");
     }
 
     private void Update()
@@ -90,49 +85,19 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
-           // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];
+            if (Player.HP <= 0){
+                PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = null;
+            }
+            else if(Player.HP >= Player.MaxHP)
+            {
+                PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.MaxHP -1];
+            }
+            else
+            {
+                PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP -1];
+            }
         }
     }
-    /// <summary>
-    /// サイコロを振り終わったら呼び出す関数.
-    /// </summary>
-     public void FinishDice()
-    {
-        deme = diceManager.DeclarationNum;
-        if (diceManager.DeclarationNum == 4)
-        {
-            photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
-            //EnemyAttack();
-        }
-        else
-        {
-            StartDelay(deme);
-        }
-        diceManager.FinishFlg = false;
-    }
-
-    [PunRPC]
-    void EnemyAttack()
-    {
-        Player.HP--;
-
-        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];
-    }
-
-    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // 自身のアバターのスタミナを送信する
-            stream.SendNext(Player.HP);
-        }
-        else
-        {
-            // 他プレイヤーのアバターのスタミナを受信する
-            Player.HP = (int)stream.ReceiveNext();
-        }
-    }
-
 
     /// <summary>
     /// マスに触れたときタグを参照して効果を呼び出す
@@ -173,6 +138,45 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     #endregion
+
+    /// <summary>
+    /// サイコロを振り終わったら呼び出す関数.
+    /// </summary>
+    public void FinishDice()
+    {
+        deme = diceManager.DeclarationNum;
+        if (diceManager.DeclarationNum == 4)
+        {
+            photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
+            //EnemyAttack();
+        }
+        else
+        {
+            StartDelay(deme);
+        }
+        diceManager.FinishFlg = false;
+    }
+
+    [PunRPC]
+    void EnemyAttack()
+    {
+        Player.HP--;
+    }
+
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            // 自身のアバターのスタミナを送信する
+            stream.SendNext(Player.HP);
+        }
+        else
+        {
+            // 他プレイヤーのアバターのスタミナを受信する
+            Player.HP = (int)stream.ReceiveNext();
+        }
+    }
+
 
     /// <summary>
     /// 1マスずつ進ませるコルーチン

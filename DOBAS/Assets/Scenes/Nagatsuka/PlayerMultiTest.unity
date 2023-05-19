@@ -1111,8 +1111,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7370eb9db94dcf41b6f1b77ba8374d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: God
-  PlayerPrefab: {fileID: 0}
+  Name: HutDozyo
   MapManager: {fileID: 1889339050}
 --- !u!4 &342413199
 Transform:
