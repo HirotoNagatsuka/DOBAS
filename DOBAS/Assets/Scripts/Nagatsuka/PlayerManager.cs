@@ -36,7 +36,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("[SerializeField]宣言")]
     [SerializeField]
     DiceManager diceManager;//DiceManager参照用.
-    GameObject mapManagerObj; // MapManagerのGameObject参照.
     MapManager mapManager;
     [SerializeField]
     Player Player;//Playerのクラスをインスペクター上で見れるようにする.
@@ -56,10 +55,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public void Awake()
     {
-        if (ins == null)
-        {
-            ins = this;
-        }
+    //    if (ins == null)
+    //    {
+    //        ins = this;
+    //    }
     }
     private void Start()
     {
@@ -73,6 +72,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         //diceManager = GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
+        Player.MaxHP = 5;
     }
 
     private void Update()
@@ -88,7 +88,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             if (Player.HP <= 0){
                 PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = null;
             }
-            else if(Player.HP >= Player.MaxHP)
+            else if(Player.HP > Player.MaxHP)
             {
                 PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.MaxHP -1];
             }
