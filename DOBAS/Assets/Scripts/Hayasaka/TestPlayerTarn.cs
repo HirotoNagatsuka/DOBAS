@@ -14,8 +14,7 @@ public class TestPlayerTarn : MonoBehaviour
     public int TestOrder;   // 仮順番割り当て
 
     public float Count = 5.0f;//ダウト宣言時間.
-    string Massge = "のターン";
-    string OrderLog;
+
     [SerializeField] GameManager gameManager;
     // Start is called before the first frame update
     void Start()
@@ -26,7 +25,6 @@ public class TestPlayerTarn : MonoBehaviour
         DoutDec = false;
         MyDec = false;
         Saikoro = 0;
-        Massge += TestOrder.ToString();
     }
 
     // Update is called once per frame
@@ -86,9 +84,5 @@ public class TestPlayerTarn : MonoBehaviour
         {
             gameManager.DoutJudge();
         }
-    }
-    public void Test()
-    {
-        Debug.Log(TestOrder);
     }
 }
