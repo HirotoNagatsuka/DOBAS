@@ -28,7 +28,7 @@ public class MapManager : MonoBehaviour
 
         Debug.Log("NowTag：" + Now);
 
-        NowMasume = MapPlayer.ins.Sum; // 消す予定
+        //NowMasume = MapPlayer.ins.Sum; // 消す予定
     }
     #endregion
 
@@ -49,7 +49,7 @@ public class MapManager : MonoBehaviour
     {
         if (tag == "Move")
         {
-            move += 3;
+            move = 3;
             Debug.Log("3マス移動：" + NowMasume + "マス目");
         }
 
