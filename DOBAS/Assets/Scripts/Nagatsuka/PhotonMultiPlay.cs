@@ -8,9 +8,6 @@ public class PhotonMultiPlay : MonoBehaviourPunCallbacks
 {
     public string Name;//プレイヤーの名前.
 
-    [SerializeField]
-    GameObject PlayerPrefab;//プレイヤーのプレファブ.
-
     [SerializeField] GameObject MapManager; // MapManager参照
     // Start is called before the first frame update
     void Start()
@@ -28,16 +25,6 @@ public class PhotonMultiPlay : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-        // MapManager.GetComponent<MapManager>().MasumeList[Sum].position;
-        //PhotonNetwork.Instantiate("Avatar", position, Quaternion.identity);
         PhotonNetwork.Instantiate("Player", position, Quaternion.identity);
-    }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            PhotonNetwork.NickName = Name;
-        }
     }
 }

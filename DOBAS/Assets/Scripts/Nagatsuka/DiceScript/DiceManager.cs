@@ -6,7 +6,6 @@ using UnityEngine.UI;
 
 public class DiceManager : MonoBehaviour
 {
-    [SerializeField] TestGManager testGManager;
     public GameObject DicePrefab;//サイコロのプレファブを入れる.
     private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
     public int num;
@@ -16,7 +15,6 @@ public class DiceManager : MonoBehaviour
     private int rotateZ;
     #endregion
 
-    [SerializeField] Sprite[] SaikoroSprite = new Sprite[4];
     [SerializeField] GameObject DiceCamera;
     [SerializeField] Text DiceNumText;
     [SerializeField] GameObject[] ResultPanel=new GameObject[5];//出目のパネル用.
@@ -35,7 +33,6 @@ public class DiceManager : MonoBehaviour
 
     private void Start()
     {
-        //mapPlayer = GetComponent<MapPlayer>();
         Dice = Instantiate(DicePrefab, DiceCamera.transform.position, Quaternion.identity, kodomo);
         Dice.transform.position = CameraPos;
         CameraPos = DiceCamera.transform.position;
@@ -68,7 +65,10 @@ public class DiceManager : MonoBehaviour
         DiceShakeButton.SetActive(false);
     }
 
-    // コルーチン本体
+    /// <summary>
+    /// コルーチン本体
+    /// 出目をテキストで表示後、少し時間を開けてからパネルを表示する.
+    /// </summary>
     private IEnumerator HiddenDiceCoroutine()
     {
         // 2秒間待つ
@@ -99,6 +99,9 @@ public class DiceManager : MonoBehaviour
         StartCoroutine(HiddenDiceCoroutine());
     }
 
+    /// <summary>
+    /// サイコロを振るボタンを押したら呼ばれる関数.
+    /// </summary>
     public void PushShakeDiceButton()
     {
         if (DiceFlg == false)
@@ -170,6 +173,10 @@ public class DiceManager : MonoBehaviour
     }
     #endregion
 
+    /// <summary>
+    /// 宣言された出目をプレイヤーに返す関数
+    /// 終了後、サイコロを初期設定に戻す.
+    /// </summary>
     private void DeclarationResult()
     {
         FinishFlg = true;
