@@ -108,7 +108,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private void OnTriggerStay(Collider collision)
     {
         string NowTag = collision.tag; // タグを取得
-        Debug.Log("OnTrigger起動");
         // 行動終了時、マスの効果発動
         if (ActionFlg == false)
         {
@@ -210,6 +209,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         // タグごとに分類
         if (tag == "Start") // スタートマス
         {
+            // Message.csからShowText()を呼ぶ
             Debug.Log("周回ボーナスゲット！");
             yield return new WaitForSeconds(2); // 2秒待つ
         }

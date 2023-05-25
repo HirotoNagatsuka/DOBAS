@@ -21,14 +21,12 @@ public class MapManager : MonoBehaviour
 
     }
 
-    #region プレイヤーに衝突しているオブジェクトのタグを取得
+    #region プレイヤー側で衝突しているオブジェクトのタグを取得
     public void ColliderReference(Collider plyCollision)
     {
         string Now = plyCollision.tag; // タグを取得
 
         Debug.Log("NowTag：" + Now);
-
-        //NowMasume = MapPlayer.ins.Sum; // 消す予定
     }
     #endregion
 
@@ -36,7 +34,6 @@ public class MapManager : MonoBehaviour
     public int CardOneUp(int card)
     {
         card++;
-        Debug.Log("カードマス：" + NowMasume + "マス目");
         Debug.Log("カード：" + card + "枚");
 
         return card;
@@ -50,7 +47,6 @@ public class MapManager : MonoBehaviour
         if (tag == "Move")
         {
             move = 3;
-            Debug.Log("3マス移動：" + NowMasume + "マス目");
         }
 
         return move;
@@ -62,23 +58,24 @@ public class MapManager : MonoBehaviour
     {
         hp++;
 
-        Debug.Log("HP増マス：" + NowMasume + "マス目");
-
         return hp;
     }
     #endregion
 
-    #region 攻撃
+    #region 攻撃(仮)
     public void Attack()
     {
-        Debug.Log("攻撃：" + NowMasume + "マス目");
+
     }
     #endregion
 
-    //#region HP情報を取得
-    //public int GetHp()
+    //こっちを使う予定
+    //#region 攻撃
+    //public int Attack(int hp)
     //{
-    //    return Hp;
+    //    hp--;
+
+    //    return hp;
     //}
     //#endregion
 

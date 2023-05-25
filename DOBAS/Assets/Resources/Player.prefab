@@ -92,6 +92,7 @@ GameObject:
   - component: {fileID: 2880743978407534243}
   - component: {fileID: 8095048837821938304}
   - component: {fileID: 6084958965139046418}
+  - component: {fileID: -506772394112522087}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -215,11 +216,11 @@ MonoBehaviour:
     HP: 3
     Attack: 1
     HeartSprites:
-    - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
-    - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
-    - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
-    - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
-    - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
+    - {fileID: 21300000, guid: 9eaadf4117ecc3e47ac062b2875e81d6, type: 3}
+    - {fileID: 21300000, guid: 6f164e72e53e0f443ab62324cdb137ec, type: 3}
+    - {fileID: 21300000, guid: 3c70de387ad68aa43ae4a8981dc54179, type: 3}
+    - {fileID: 21300000, guid: 4b60a44c273d697409a87c91bac688ce, type: 3}
+    - {fileID: 21300000, guid: 9085dd9367b0c1c4ea0b3042fa0b531f, type: 3}
   Sum: 0
   Card: 0
 --- !u!114 &8095048837821938304
@@ -262,6 +263,19 @@ MonoBehaviour:
   m_SynchronizeRotation: 1
   m_SynchronizeScale: 0
   m_UseLocal: 1
+--- !u!114 &-506772394112522087
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2880743978407534251}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2bfd04a05e566e24980ab1874e451395, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MessageLog: 
 --- !u!1 &2880743978811479248
 GameObject:
   m_ObjectHideFlags: 0
@@ -386,7 +400,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2880743978811479248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 247ad4cbc637cc94189bd9b95b082ecd, type: 3}
+  m_Script: {fileID: 11500000, guid: 10aea9d601b81454ea303c86896374a6, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &2880743978811479250
