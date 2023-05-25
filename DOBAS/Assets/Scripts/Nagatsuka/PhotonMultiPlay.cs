@@ -27,15 +27,21 @@ public class PhotonMultiPlay : MonoBehaviourPunCallbacks
     // </summary>
     public void OnPhotonPlayerConnected()
     {
+        Debug.Log("入室");
         TurnManager.PlayerNum++;
+
     }
     public override void OnJoinedRoom()
     {
+        //Debug.Log(PhotonNetwork.PlayerList.ActorNumber)
         gameManager.NowGameState = GameManager.GameState.SetGame;
-        if (gameManager.NowGameState == GameManager.GameState.InGame)
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)//自身がマスタークライアントかを判定する
         {
-            var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-            //PhotonNetwork.Instantiate("Player", position, Quaternion.identity);
+            gameManager.IsTurnNum = 1;
+        }
+        else
+        {
+            gameManager.IsTurnNum = 2;
         }
     }
 }

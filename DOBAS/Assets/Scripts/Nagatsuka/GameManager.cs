@@ -23,8 +23,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject CanvasUI;
     [SerializeField] GameObject StartButton;
 
-    TestPlayerTarn[] Players;
-    private int WhoseTurn = 0;
+    public int WhoseTurn = 1;
     public int Votes = 0;
     public int MaxPlayers;//プレイヤーの最大人数.
 
@@ -35,7 +34,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     bool timeflg;
 
     [SerializeField] GameObject ShakeDiceButton;
-    public bool IsTurn;//自分のターンか.
+    public int IsTurnNum;//何番目にターンが来るか.
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -44,8 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         HaveTime = 60;
         DoubtFlg = false;
         timeflg = false;
-
-        SetUp();
+       // SetUp();
     }
 
     // Update is called once per frame
@@ -53,10 +51,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (NowGameState == GameState.InGame)//ゲームモードがゲーム中なら.
         {
-            if (IsTurn) ShakeDiceButton.SetActive(true);
+            Debug.Log(PhotonNetwork.LocalPlayer.ActorNumber);
+            if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn) ShakeDiceButton.SetActive(true);
             else ShakeDiceButton.SetActive(false);
 
-            ChangeTurn();
+            //ChangeTurn();
             if (Input.GetKeyDown(KeyCode.P))
             {
                 photonView.RPC(nameof(StartTimer), RpcTarget.All);
@@ -70,7 +69,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             // ゲームの状況管理
             if (NowGameState == GameState.InGame)
             {
-                MainGame();
+               // MainGame();
             }
             if (NowGameState == GameState.EndGame)
             {
@@ -88,37 +87,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
+    public void FinishDice()
+    {
+        photonView.RPC(nameof(ChangeTurn), RpcTarget.All);
+    }
     /// <summary>
-    /// マスタークライアントならばターンを管理する.
+    /// ターンを管理する.
     /// </summary>
-    void ChangeTurn()
+    [PunRPC]
+    public void ChangeTurn()
     {
-        if (PhotonNetwork.LocalPlayer.IsMasterClient)//自身がマスタークライアントかを判定する
-        {
-            Debug.Log("私がマスタークライアントです");
-
-
-        }
+        if (WhoseTurn == MaxPlayers) WhoseTurn = 1;
+        else WhoseTurn++;
     }
 
 
-
-
-    void SetUp()
-    {
-        // ゲーム前状態
-        NowGameState = GameState.InitGame;
-        //プレイヤーを探す(仮)
-        GameObject[] PlayerArray = GameObject.FindGameObjectsWithTag("player");
-
-        Players = new TestPlayerTarn[PlayerArray.Length];
-
-        //配列にプレイヤー挿入
-        for (int i = 0; i < PlayerArray.Length; i++)
-        {
-            Players[i] = PlayerArray[i].GetComponent<TestPlayerTarn>();
-        }
-    }
     #region ゲーム状況
     public void StateGame(int Param)
     {
@@ -132,22 +115,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
     #endregion
-    void MainGame()
-    {
-        for (int i = 0; i < Players.Length; i++)
-        {
-            if (WhoseTurn >= Players.Length)
-            {
-                WhoseTurn = 0;
-            }
-            if (!Players[WhoseTurn].Tarn)
-            {
-                Debug.Log(Players[WhoseTurn]);
-                Players[WhoseTurn].Tarn = true;
-            }
 
-        }
-    }
     void EndGame()
     {
 
@@ -160,79 +128,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
-    public void DoutDis(int Number)
-    {
-        for (int i = 0; i < Players.Length; i++)
-        {
-            Players[i].DoutDec = true;
-        }
-        if (Players[WhoseTurn].Tarn)
-        {
-            if (Number == 5 || Number == 6)
-            {
-                Debug.Log("嘘目");
-                Players[WhoseTurn].DoutFlg = true;
-            }
-            else
-            {
-                Debug.Log("真目");
-                Players[WhoseTurn].DoutFlg = false;
-            }
-        }
-    }
-    public void DoutJudge()
-    {
-        Debug.Log(Votes);
-        for (int i = 0; i < Players.Length; i++)
-        {
-            Players[i].DoutDec = false;
-            Players[i].Count = 5.0f;
-        }
-        for (int i = 0; i < Players.Length; i++)
-        {
-            if (Players[WhoseTurn].DoutFlg)
-            {
-                if (Players[i].MyDec)
-                {
-                    Debug.Log(Players[WhoseTurn] + "は嘘ついてたわ");
-                    break;
-                }
-            }
-            if (!Players[WhoseTurn].DoutFlg)
-            {
-                if (Players[i].MyDec)
-                {
-                    Debug.Log(Players[WhoseTurn] + "は嘘ついてない");
-                    break;
-                }
-            }
-            if (!Players[i].MyDec)
-            {
-                Votes++;
-            }
-            if (Votes == 4)
-            {
-                Debug.Log("スルー");
-            }
-        }
-        Players[WhoseTurn].TarnEnd = true; // 時間差で他のTARNENDがオンになっている可能性
-        Votes = 0;
-
-    }
-
-    
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
         {
-            // timeを送信する
-            stream.SendNext(HaveTime);
+            stream.SendNext(HaveTime);// timeを送信する
+            stream.SendNext(WhoseTurn);
         }
         else
         {
-            // timeを受信する
-            HaveTime = (float)stream.ReceiveNext();
+            HaveTime = (float)stream.ReceiveNext(); // timeを受信する
+            WhoseTurn = (int)stream.ReceiveNext();
         }
     }
     [PunRPC]
@@ -292,4 +199,66 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             DoubtFlg = false;
         }
     }
+    #region 早坂ダウト判定
+    //public void DoutDis(int Number)
+    //{
+    //    for (int i = 0; i < Players.Length; i++)
+    //    {
+    //        Players[i].DoutDec = true;
+    //    }
+    //    if (Players[WhoseTurn].Tarn)
+    //    {
+    //        if (Number == 5 || Number == 6)
+    //        {
+    //            Debug.Log("嘘目");
+    //            Players[WhoseTurn].DoutFlg = true;
+    //        }
+    //        else
+    //        {
+    //            Debug.Log("真目");
+    //            Players[WhoseTurn].DoutFlg = false;
+    //        }
+    //    }
+    //}
+    //public void DoutJudge()
+    //{
+    //    Debug.Log(Votes);
+    //    for (int i = 0; i < Players.Length; i++)
+    //    {
+    //        Players[i].DoutDec = false;
+    //        Players[i].Count = 5.0f;
+    //    }
+    //    for (int i = 0; i < Players.Length; i++)
+    //    {
+    //        if (Players[WhoseTurn].DoutFlg)
+    //        {
+    //            if (Players[i].MyDec)
+    //            {
+    //                Debug.Log(Players[WhoseTurn] + "は嘘ついてたわ");
+    //                break;
+    //            }
+    //        }
+    //        if (!Players[WhoseTurn].DoutFlg)
+    //        {
+    //            if (Players[i].MyDec)
+    //            {
+    //                Debug.Log(Players[WhoseTurn] + "は嘘ついてない");
+    //                break;
+    //            }
+    //        }
+    //        if (!Players[i].MyDec)
+    //        {
+    //            Votes++;
+    //        }
+    //        if (Votes == 4)
+    //        {
+    //            Debug.Log("スルー");
+    //        }
+    //    }
+    //    Players[WhoseTurn].TarnEnd = true; // 時間差で他のTARNENDがオンになっている可能性
+    //    Votes = 0;
+
+    //}
+
+    #endregion
 }

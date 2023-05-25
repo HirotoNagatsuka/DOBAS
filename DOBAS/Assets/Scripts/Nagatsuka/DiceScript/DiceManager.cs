@@ -28,6 +28,7 @@ public class DiceManager : MonoBehaviour
     public bool Doubt;
     [SerializeField] MapPlayer mapPlayer;
     [SerializeField] PlayerManager playerManager;
+    [SerializeField] GameManager gameManager;
 
     public bool FinishFlg;//Photonテスト用.
 
@@ -217,7 +218,7 @@ public class DiceManager : MonoBehaviour
         Dice.SetActive(false);
         DiceFlg = false;
         DiceShakeButton.SetActive(true);
-        //FinishFlg = false;
+        gameManager.FinishDice();
     }
 
     /// <summary>

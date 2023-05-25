@@ -42,7 +42,7 @@ public class TestPlayerTarn : MonoBehaviour
             // 才衣目送信？
             if (Input.GetKeyDown(KeyCode.F) && !TarnEnd)
             {
-                gameManager.DoutDis(Saikoro);
+               // gameManager.DoutDis(Saikoro);
             }
             // ターン終了
             if (Input.GetKeyDown(KeyCode.Return)　&& TarnEnd)
@@ -76,13 +76,13 @@ public class TestPlayerTarn : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.P) && DoutDec)
             {
                 MyDec = true; // 嘘ついてるだろ宣言
-                gameManager.DoutJudge();
+               // gameManager.DoutJudge();
                 DoutDec = false;
             }
         }
         if (Count <= 0.0f)
         {
-            gameManager.DoutJudge();
+            //gameManager.DoutJudge();
         }
     }
 }

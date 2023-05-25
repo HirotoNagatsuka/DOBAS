@@ -71,8 +71,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine)
         {
-
-
             Vector3 PlayerPos = transform.position;
             Vector3 TargetPos = mapManager.MasumeList[Sum].position;
 
