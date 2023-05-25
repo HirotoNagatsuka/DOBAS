@@ -12,15 +12,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public enum GameState
     {
+        InitGame,//初期状態.
         SetGame,
         InGame,
         EndGame,
     }
     public GameState NowGameState;//現在のゲームモード.
 
+    [Header("ゲーム開始時に表示するもの")]
+    [SerializeField] GameObject CanvasUI;
+    [SerializeField] GameObject StartButton;
+
     TestPlayerTarn[] Players;
     private int WhoseTurn = 0;
     public int Votes = 0;
+    public int MaxPlayers;//プレイヤーの最大人数.
 
     [SerializeField] Text HaveTimeText;
     float HaveTime;//各プレイヤーの持ち時間.
@@ -28,6 +34,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     bool DoubtFlg;
     bool timeflg;
 
+    [SerializeField] GameObject ShakeDiceButton;
+    public bool IsTurn;//自分のターンか.
+
+    #region Unityイベント(Start・Update)
     // Start is called before the first frame update
     void Start()
     {
@@ -38,13 +48,68 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         SetUp();
     }
 
+    // Update is called once per frame
+    void Update()
+    {
+        if (NowGameState == GameState.InGame)//ゲームモードがゲーム中なら.
+        {
+            if (IsTurn) ShakeDiceButton.SetActive(true);
+            else ShakeDiceButton.SetActive(false);
+
+            ChangeTurn();
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                photonView.RPC(nameof(StartTimer), RpcTarget.All);
+            }
+
+            if (DoubtFlg) ChangeDoubtTime();
+            //else ChangeHaveTime();
+            else if (timeflg) HaveTime -= Time.deltaTime;
+            HaveTimeText.text = HaveTime.ToString("0");
+
+            // ゲームの状況管理
+            if (NowGameState == GameState.InGame)
+            {
+                MainGame();
+            }
+            if (NowGameState == GameState.EndGame)
+            {
+                EndGame();
+            }
+        }
+        else if (NowGameState == GameState.SetGame)
+        {
+            int playercnt = PhotonNetwork.CurrentRoom.PlayerCount;
+            if (playercnt >= MaxPlayers)
+            {
+                StartButton.SetActive(true);
+            }
+        }
+    }
+    #endregion
+
+    /// <summary>
+    /// マスタークライアントならばターンを管理する.
+    /// </summary>
+    void ChangeTurn()
+    {
+        if (PhotonNetwork.LocalPlayer.IsMasterClient)//自身がマスタークライアントかを判定する
+        {
+            Debug.Log("私がマスタークライアントです");
+
+
+        }
+    }
+
+
+
+
     void SetUp()
     {
         // ゲーム前状態
-        NowGameState = GameState.SetGame;
+        NowGameState = GameState.InitGame;
         //プレイヤーを探す(仮)
         GameObject[] PlayerArray = GameObject.FindGameObjectsWithTag("player");
-        //if (PlayerArray != null) Debug.Log("中身ある");
 
         Players = new TestPlayerTarn[PlayerArray.Length];
 
@@ -155,32 +220,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.P))
-        {
-            //photonView.RPC(nameof(RpcSendMessage), RpcTarget.All, "こんにちは");
-            photonView.RPC(nameof(StartTimer), RpcTarget.All);
-        }
-
-        if (DoubtFlg) ChangeDoubtTime();
-        //else ChangeHaveTime();
-        else if (timeflg) HaveTime -= Time.deltaTime;
-        HaveTimeText.text = HaveTime.ToString("0");
-
-        // ゲームの状況管理
-        if (NowGameState == GameState.InGame)
-        {
-            //SceneManager.LoadScene("Main");
-            MainGame();
-        }
-        if (NowGameState == GameState.EndGame)
-        {
-            //SceneManager.LoadScene("End");
-            EndGame();
-        }
-    }
+    
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -201,14 +241,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         timeflg = true;
     }
 
-    [PunRPC]
-    private void RpcSendMessage(string message)
+    /// <summary>
+    /// 準備完了ボタンを押した際に呼び出す関数.
+    /// </summary>
+    public void PushGameStart()
     {
-        timeflg = true;
-        Debug.Log(message);
+        StartButton.SetActive(false);
+        NowGameState = GameState.InGame;
+        CanvasUI.SetActive(true);
+        var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+        PhotonNetwork.Instantiate("Player", position, Quaternion.identity);
     }
-
-
 
 
     private void ChangeHaveTime()

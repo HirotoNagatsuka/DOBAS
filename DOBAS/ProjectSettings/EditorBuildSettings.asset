@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Nagatsuka/PlayerMultiTest.unity
-    guid: 3a22c676eda5ea347b4e9510a4458bb0
+    path: Assets/Scenes/Nagatsuka/TurnScene.unity
+    guid: d8180a451927a494faafb87938d4bef4
   m_configObjects: {}

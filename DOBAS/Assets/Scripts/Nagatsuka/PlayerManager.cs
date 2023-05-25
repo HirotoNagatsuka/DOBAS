@@ -7,7 +7,7 @@ using Photon.Pun;
 using Photon.Realtime;
 
 [Serializable]
-class Player
+class PlayerStatus
 {
     public string Name; //名前を格納.
     public int MaxHP;   //HPの最大値;
@@ -38,7 +38,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     DiceManager diceManager;//DiceManager参照用.
     MapManager mapManager;
     [SerializeField]
-    Player Player;//Playerのクラスをインスペクター上で見れるようにする.
+    PlayerStatus Player;//Playerのクラスをインスペクター上で見れるようにする.
     #endregion
 
     private int MoveMasu;                   // Moveマスを踏んだ時の進むマス数
@@ -46,7 +46,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     GameObject PlayerUI;//子供のキャンバスを取得するための変数宣言.
 
-    public static PlayerManager ins;      // 参照用 
     public int Sum = 0;                     // 出目の合計
     private bool DiceTrigger = true;        // サイコロを振ったかどうか
 
@@ -54,25 +53,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private int deme;
 
-    #region Unityイベント(Awake・Start・Update・OnTrigger)
+    #region Unityイベント(Start・Update・OnTrigger)
 
-    public void Awake()
-    {
-    //    if (ins == null)
-    //    {
-    //        ins = this;
-    //    }
-    }
     private void Start()
     {
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
-        //PlayerUI.gameObject.transform.GetChild(NAME_UI).GetComponent<Text>().text = Player.Name.ToString();//名前の表示.
-        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP -1];//HPの表示.
 
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
-        //diceManager = GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.MaxHP = 5;
@@ -82,23 +71,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (photonView.IsMine)
         {
+
+
             Vector3 PlayerPos = transform.position;
             Vector3 TargetPos = mapManager.MasumeList[Sum].position;
 
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
-            if (Player.HP <= 0){
-                PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = null;
-            }
-            else if(Player.HP > Player.MaxHP)
-            {
-                PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.MaxHP -1];
-            }
-            else
-            {
-                PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP -1];
-            }
+            
         }
     }
 
@@ -149,7 +130,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         if (diceManager.DeclarationNum == 4)
         {
             photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
-            //EnemyAttack();
         }
         else
         {
@@ -161,7 +141,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void EnemyAttack()
     {
-        Player.HP--;
+        //Player.HP--;
+        ChangeHP(-1);
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -233,8 +214,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("HP１回復！！");
             yield return new WaitForSeconds(2);
 
-            Player.HP = mapManager.GetComponent<MapManager>().HpOneUp(Player.HP);  // MapManagerのHpOneUp関数処理を行う
+            //Player.HP = mapManager.GetComponent<MapManager>().HpOneUp(Player.HP);  // MapManagerのHpOneUp関数処理を行う
             Debug.Log("HP：" + Player.HP);
+            photonView.RPC(nameof(ChangeHP), RpcTarget.All,1);
+            //ChangeHP(1);
         }
         else if (tag == "Attack") //攻撃マス
         {
@@ -263,6 +246,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// HPが変化するときに呼び出す関数
     /// 変化量を引数にし、HPを変えた後UIにも反映する.
     /// </summary>
+    [PunRPC]
     public void ChangeHP(int addHP)
     {
         if(Player.HP == 0)//HPが0になったら.
@@ -271,7 +255,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("ゲームオーバー");
         }
         else Player.HP += addHP;//0でないなら変化させる.
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+
     }
 
     public void PushBelieveButton()
@@ -284,27 +270,4 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("ダウト!");
         diceManager.DiceInit();
     }
-
-    #region 野尻のソースで必要かわからないもの
-    IEnumerator Action()
-    {
-        while (true)
-        {
-            yield return new WaitForSeconds(3);
-
-            // サイコロを振って進む
-
-            yield return new WaitForSeconds(3);
-
-            // サイコロの初期化
-            DiceReset();
-        }
-    }
-
-    // ターン事にサイコロの初期化
-    public void DiceReset()
-    {
-        DiceTrigger = true;
-    }
-    #endregion
 }
