@@ -13,22 +13,18 @@ public class TestPlayerTarn : MonoBehaviour
     public int  Saikoro;
     public int TestOrder;   // 仮順番割り当て
 
-    public float Count = 5.0f;
-    string Massge = "のターン";
-    string OrderLog;
-    public GameObject GmObj;
-    GameManager Gm;
+    public float Count = 5.0f;//ダウト宣言時間.
+
+    [SerializeField] GameManager gameManager;
     // Start is called before the first frame update
     void Start()
     {
-        Gm = GmObj.GetComponent<GameManager>();
         Tarn = false;
         TarnEnd = false;
         DoutFlg = false;
         DoutDec = false;
         MyDec = false;
         Saikoro = 0;
-        Massge += TestOrder.ToString();
     }
 
     // Update is called once per frame
@@ -36,7 +32,7 @@ public class TestPlayerTarn : MonoBehaviour
     {
         if (Tarn)
         {
-            Debug.Log(OrderLog + Massge);
+            //Debug.Log(OrderLog + Massge);
             // ダウと目出すか(仮)
             if (Input.GetKeyDown(KeyCode.R))
             {
@@ -46,7 +42,7 @@ public class TestPlayerTarn : MonoBehaviour
             // 才衣目送信？
             if (Input.GetKeyDown(KeyCode.F) && !TarnEnd)
             {
-                Gm.DoutDis(Saikoro);
+               // gameManager.DoutDis(Saikoro);
             }
             // ターン終了
             if (Input.GetKeyDown(KeyCode.Return)　&& TarnEnd)
@@ -55,11 +51,10 @@ public class TestPlayerTarn : MonoBehaviour
                 Tarn = false;
                 Saikoro = 0;
                 DoutFlg = false;
-                Gm.EndJudge(true);
+                //gameManager.EndJudge(true);
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {
-                Gm.GemeOverJudge();
                 TarnEnd = true;
             }
         }
@@ -81,17 +76,13 @@ public class TestPlayerTarn : MonoBehaviour
             if (Input.GetKeyDown(KeyCode.P) && DoutDec)
             {
                 MyDec = true; // 嘘ついてるだろ宣言
-                Gm.DoutJudge();
+               // gameManager.DoutJudge();
                 DoutDec = false;
             }
         }
         if (Count <= 0.0f)
         {
-            Gm.DoutJudge();
+            //gameManager.DoutJudge();
         }
-    }
-    public void Test()
-    {
-        Debug.Log(TestOrder);
     }
 }
