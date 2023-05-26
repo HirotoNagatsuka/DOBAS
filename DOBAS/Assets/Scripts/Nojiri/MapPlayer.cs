@@ -51,7 +51,7 @@ public class MapPlayer : MonoBehaviour
             yield return new WaitForSeconds(0.5f); // 0.5秒待つ
         }
         ActionFlg = false; // プレイヤーの行動終了(マス効果発動前)
-       // MoveMasu = 0;
+                           // MoveMasu = 0;
     }
 
     // 取得したタグごとに効果を発動
@@ -93,7 +93,8 @@ public class MapPlayer : MonoBehaviour
             Debug.Log("他のプレイヤーを攻撃！");
             yield return new WaitForSeconds(2);
 
-            /*Hp = */mapManager.GetComponent<MapManager>().Attack(/*Hp*/);  // MapManagerのAttack関数処理を行う
+            /*Hp = */
+            mapManager.GetComponent<MapManager>().Attack(/*Hp*/);  // MapManagerのAttack関数処理を行う
         }
         else // ノーマルマス
         {

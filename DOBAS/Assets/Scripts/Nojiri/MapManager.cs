@@ -6,8 +6,8 @@ public class MapManager : MonoBehaviour
 {
     public List<Transform> MasumeList;        // マスの配列
 
-    //[SerializeField] GameObject MapPlayer;    // MapManager参照
-    [SerializeField] private int NowMasume;   // 現在踏んでいるマスの値
+    [SerializeField] int NowMasume;   // 現在踏んでいるマスの値
+    [SerializeField] string Tag;      // タグ参照用
 
     // Start is called before the first frame update
     void Start()
@@ -24,9 +24,9 @@ public class MapManager : MonoBehaviour
     #region プレイヤー側で衝突しているオブジェクトのタグを取得
     public void ColliderReference(Collider plyCollision)
     {
-        string Now = plyCollision.tag; // タグを取得
+        string Tag = plyCollision.tag; // タグを取得
 
-        Debug.Log("NowTag：" + Now);
+        Debug.Log("NowTag：" + Tag);
     }
     #endregion
 

@@ -111,6 +111,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         // 行動終了時、マスの効果発動
         if (ActionFlg == false)
         {
+            GetComponent<Message>().ShowText(NowTag); //止まっているマス効果をテキストに表示(追記)
             mapManager.GetComponent<MapManager>().ColliderReference(collision);  // MapManagerのColliderReference関数処理を行う
             StartCoroutine("Activation", NowTag);  // Activationコルーチンを実行
         }
@@ -209,7 +210,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         // タグごとに分類
         if (tag == "Start") // スタートマス
         {
-            // Message.csからShowText()を呼ぶ
             Debug.Log("周回ボーナスゲット！");
             yield return new WaitForSeconds(2); // 2秒待つ
         }
