@@ -127,7 +127,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         deme = diceManager.DeclarationNum;
         if (diceManager.DeclarationNum == 4)
         {
-            photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
+            photonView.RPC(nameof(EnemyAttack), RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+            // photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
         }
         else
         {
@@ -137,10 +138,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    void EnemyAttack()
+    void EnemyAttack(int ID)
     {
-        //Player.HP--;
-        ChangeHP(-1);
+        if (PhotonNetwork.LocalPlayer.ActorNumber != ID)
+        //if(PhotonNetwork.LocalPlayer.ActorNumber != GameManager.WhoseTurn)
+        {
+            ChangeHP(-1);
+        }
+
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)

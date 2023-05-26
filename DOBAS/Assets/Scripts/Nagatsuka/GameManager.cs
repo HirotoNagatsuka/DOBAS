@@ -7,6 +7,12 @@ using Photon.Realtime;
 
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
+    #region 定数宣言(Const)
+
+    private const int FIRST_TURN = 1;//最初の人のターン.
+    #endregion
+
+
     #region public・SerializeField宣言
 
     /// <summary>
@@ -25,15 +31,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("SerializeField宣言")]
     [SerializeField] GameObject CanvasUI;       //ゲーム開始時にまとめてキャンバスを非表示にする.
     [SerializeField] GameObject StartButton;    //準備完了ボタン.
+    [SerializeField] GameObject StandByCanvas;  //準備完了キャンバス.
+    [SerializeField] Text StandByText;          //待機人数を表示するボタン.
+    [SerializeField] Text WhoseTurnText;        //誰のターンかのテキスト.
     [SerializeField] Text HaveTimeText;         //持ち時間テキスト.
+    [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
     [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
 
     [Header("public宣言")]
-    public int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
+    public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
     public int MaxPlayers;//プレイヤーの最大人数.
 
     #endregion
 
+    int ReadyPeople;//準備完了人数.
+    string TurnName;//誰のターンかの名前用.
 
     float HaveTime;//各プレイヤーの持ち時間.
     float DoubtTime;//ダウト宣言の持ち時間.
@@ -44,6 +56,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // Start is called before the first frame update
     void Start()
     {
+        WhoseTurn = FIRST_TURN;
         HaveTime = 60;
         DoubtFlg = false;
         timeflg = false;
@@ -56,10 +69,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (NowGameState == GameState.InGame)//ゲームモードがゲーム中なら.
         {
             Debug.Log(PhotonNetwork.LocalPlayer.ActorNumber);
-            if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn) ShakeDiceButton.SetActive(true);
-            else ShakeDiceButton.SetActive(false);
+            if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)
+            {
+                ShakeDiceButton.SetActive(true);
+                WhoseTurnText.text = "あなたのターン";
+            }
+            else
+            {
+                ShakeDiceButton.SetActive(false);
+                WhoseTurnText.text = "";
+            }
 
-            //ChangeTurn();
             if (Input.GetKeyDown(KeyCode.P))
             {
                 photonView.RPC(nameof(StartTimer), RpcTarget.All);
@@ -82,21 +102,27 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else if (NowGameState == GameState.SetGame)
         {
-            int playercnt = PhotonNetwork.CurrentRoom.PlayerCount;
-            if (playercnt >= MaxPlayers)
-            {
-                StartButton.SetActive(true);
-            }
+            StartButton.SetActive(true);
+            StandByText.text = "あと" +
+                                (MaxPlayers - ReadyPeople)
+                                + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
+            //int playercnt = PhotonNetwork.CurrentRoom.PlayerCount;
+            //if (playercnt >= MaxPlayers)
+            //{
+            //    StartButton.SetActive(true);
+            //}
         }
     }
     #endregion
 
+
+    #region ターン変更関連関数
     /// <summary>
-    /// さいころを振った後にRPCを呼び出す
+    /// さいころを振った後にRPCを呼び出し、ターンを変更する関数.
     /// </summary>
     public void FinishDice()
     {
-        photonView.RPC(nameof(ChangeTurn), RpcTarget.All);
+        photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
     }
 
     /// <summary>
@@ -106,10 +132,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void ChangeTurn()
     {
-        if (WhoseTurn == MaxPlayers) WhoseTurn = 1;//WhoseTurnがプレイヤーの最大数を超えたら1に戻す.
-        else WhoseTurn++;                          //次の人のターンにする.
-    }
+        if (WhoseTurn == MaxPlayers) WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
+        else WhoseTurn++;                                   //次の人のターンにする.
 
+        //if(PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンになったら名前を送る.
+        //{
+        //    TurnName = PhotonNetwork.NickName;
+        //    WhoseTurnText.text = PhotonNetwork.NickName + "のターン";//誰のターンかテキストで表示する.
+        //}
+    }
+    #endregion
 
     #region ゲーム状況
     public void StateGame(int Param)
@@ -131,7 +163,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     /// <summary>
-    /// 変数をPUNを使って同期する.
+    /// PUNを使って変数を同期する.
     /// </summary>
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
@@ -153,17 +185,48 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         timeflg = true;
     }
 
+    #region 準備完了操作関連
+
+    /// <summary>
+    /// 待機人数を増やす関数.
+    /// </summary>
+    [PunRPC]
+    private void AddReadyPeaple()
+    {
+        ReadyPeople++;
+    }
+    /// <summary>
+    /// 基底人数に達したらプレイヤーを生成する関数.
+    /// </summary>
+    [PunRPC]
+    private void StartGame()
+    {
+        StandByCanvas.SetActive(false); //準備完了関連のキャンバスを非表示にする.
+        NowGameState = GameState.InGame;//ゲームモードをInGameにする.
+        CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
+        var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
+        PhotonNetwork.Instantiate("Player", position, Quaternion.identity);//プレイヤーを生成する.
+    }
+
     /// <summary>
     /// 準備完了ボタンを押した際に呼び出す関数.
     /// </summary>
     public void PushGameStart()
     {
-        StartButton.SetActive(false);
-        NowGameState = GameState.InGame;
-        CanvasUI.SetActive(true);
-        var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-        PhotonNetwork.Instantiate("Player", position, Quaternion.identity);
+        photonView.RPC(nameof(AddReadyPeaple), RpcTarget.All);//準備完了人数を増やす.
+        StartButton.SetActive(false);                         //ボタンを押したら非表示にする.
+        if (ReadyPeople != MaxPlayers)                        //入室した人数が指定した数に満たない場合
+        {
+            StandByGroup.SetActive(true);                     //待機人数を表示するキャンバスを表示する.
+            StandByText.text = "あと" + (MaxPlayers - ReadyPeople )
+                                + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
+        }
+        else
+        {
+            photonView.RPC(nameof(StartGame), RpcTarget.All);//準備完了人数を増やす.
+        }
     }
+    #endregion
 
     /// <summary>
     /// 持ち時間を減らす関数

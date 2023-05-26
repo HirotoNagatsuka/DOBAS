@@ -28,7 +28,7 @@ public class PhotonMultiPlay : MonoBehaviourPunCallbacks
     public void OnPhotonPlayerConnected()
     {
         Debug.Log("“üŽº");
-        TurnManager.PlayerNum++;
+       // TurnManager.PlayerNum++;
 
     }
     public override void OnJoinedRoom()
