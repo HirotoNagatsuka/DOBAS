@@ -7,34 +7,38 @@ using Photon.Realtime;
 
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
+    #region public・SerializeField宣言
+
     /// <summary>
     /// ゲームの状況.
     /// </summary>
     public enum GameState
     {
-        InitGame,//初期状態.
-        SetGame,
-        InGame,
-        EndGame,
+        InitGame,   //初期状態(Photonと接続する前にカウント関数が呼ばれないように初期と準備を分ける).
+        SetGame,    //ゲーム準備状態.
+        InGame,     //ゲームプレイ状態.
+        EndGame,    //ゲーム終了状態.
     }
+    [Header("ゲームモード")]
     public GameState NowGameState;//現在のゲームモード.
 
-    [Header("ゲーム開始時に表示するもの")]
-    [SerializeField] GameObject CanvasUI;
-    [SerializeField] GameObject StartButton;
+    [Header("SerializeField宣言")]
+    [SerializeField] GameObject CanvasUI;       //ゲーム開始時にまとめてキャンバスを非表示にする.
+    [SerializeField] GameObject StartButton;    //準備完了ボタン.
+    [SerializeField] Text HaveTimeText;         //持ち時間テキスト.
+    [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
 
-    public int WhoseTurn = 1;
-    public int Votes = 0;
+    [Header("public宣言")]
+    public int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
     public int MaxPlayers;//プレイヤーの最大人数.
 
-    [SerializeField] Text HaveTimeText;
+    #endregion
+
+
     float HaveTime;//各プレイヤーの持ち時間.
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
-
-    [SerializeField] GameObject ShakeDiceButton;
-    public int IsTurnNum;//何番目にターンが来るか.
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -87,18 +91,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
+    /// <summary>
+    /// さいころを振った後にRPCを呼び出す
+    /// </summary>
     public void FinishDice()
     {
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);
     }
+
     /// <summary>
-    /// ターンを管理する.
+    /// ターンを管理する
+    /// WhoseTurnを変更してターンを変更する.
     /// </summary>
     [PunRPC]
     public void ChangeTurn()
     {
-        if (WhoseTurn == MaxPlayers) WhoseTurn = 1;
-        else WhoseTurn++;
+        if (WhoseTurn == MaxPlayers) WhoseTurn = 1;//WhoseTurnがプレイヤーの最大数を超えたら1に戻す.
+        else WhoseTurn++;                          //次の人のターンにする.
     }
 
 
@@ -120,15 +129,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
 
     }
-    public void EndJudge(bool Flg)
-    {
-        if (Flg)
-        {
-            WhoseTurn++;
-        }
-    }
 
-
+    /// <summary>
+    /// 変数をPUNを使って同期する.
+    /// </summary>
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
@@ -142,6 +146,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             WhoseTurn = (int)stream.ReceiveNext();
         }
     }
+
     [PunRPC]
     private void StartTimer()
     {
@@ -160,7 +165,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.Instantiate("Player", position, Quaternion.identity);
     }
 
-
+    /// <summary>
+    /// 持ち時間を減らす関数
+    /// </summary>
     private void ChangeHaveTime()
     {
         if (HaveTime > 0)//残り時間が残っているなら.
@@ -178,11 +185,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("ターン強制終了");
         }        
     }
+
     public void StartDoubtTime()
     {
-        DoubtTime = 10;
+        DoubtTime = 10;//ダウト指摘時間を設定
         DoubtFlg = true;
     }
+
+    /// <summary>
+    /// ダウト指摘時間の減少関数.
+    /// </summary>
     private void ChangeDoubtTime()
     {
         if (DoubtTime > 0)//残り時間が残っているなら.

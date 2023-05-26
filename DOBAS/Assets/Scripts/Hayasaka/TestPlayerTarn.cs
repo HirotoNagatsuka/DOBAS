@@ -51,7 +51,7 @@ public class TestPlayerTarn : MonoBehaviour
                 Tarn = false;
                 Saikoro = 0;
                 DoutFlg = false;
-                gameManager.EndJudge(true);
+                //gameManager.EndJudge(true);
             }
             if (Input.GetKeyDown(KeyCode.Escape))
             {

@@ -35,13 +35,5 @@ public class PhotonMultiPlay : MonoBehaviourPunCallbacks
     {
         //Debug.Log(PhotonNetwork.PlayerList.ActorNumber)
         gameManager.NowGameState = GameManager.GameState.SetGame;
-        if (PhotonNetwork.LocalPlayer.IsMasterClient)//自身がマスタークライアントかを判定する
-        {
-            gameManager.IsTurnNum = 1;
-        }
-        else
-        {
-            gameManager.IsTurnNum = 2;
-        }
     }
 }
