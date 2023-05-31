@@ -215,11 +215,11 @@ MonoBehaviour:
     HP: 3
     Attack: 1
     HeartSprites:
-    - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
-    - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
-    - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
-    - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
-    - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
+    - {fileID: 21300000, guid: 61dcbf6df82fbf642bba51ce32f06f93, type: 3}
+    - {fileID: 21300000, guid: a943e79810adb2c4b97959584ea32afd, type: 3}
+    - {fileID: 21300000, guid: 8bb61a4c1b5bab9478c62628ca237dea, type: 3}
+    - {fileID: 21300000, guid: b7af00b487afc194087efb07d5fb2cb9, type: 3}
+    - {fileID: 21300000, guid: 99522e51b8275fc4088862cdf61d2ea9, type: 3}
   Sum: 0
   Card: 0
 --- !u!114 &8095048837821938304
@@ -386,7 +386,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 2880743978811479248}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 247ad4cbc637cc94189bd9b95b082ecd, type: 3}
+  m_Script: {fileID: 11500000, guid: 0e7cc044e278ab34e9cd1217e86cc449, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!114 &2880743978811479250

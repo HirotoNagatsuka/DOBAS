@@ -27,10 +27,6 @@ public class CardClass : ScriptableObject
 	//　アイテムの名前
 	[SerializeField]
 	private string CardName;
-	//　アイテムの情報
-	[SerializeField]
-	private string Info;
-
 	//　アイテム攻撃力
 	[SerializeField]
 	private int Power;
@@ -56,11 +52,6 @@ public class CardClass : ScriptableObject
 	public string GetItemName()
 	{
 		return CardName;
-	}
-
-	public string GetInfo()
-	{
-		return Info;
 	}
 	public int GetPower()
 	{

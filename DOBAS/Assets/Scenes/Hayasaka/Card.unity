@@ -258,10 +258,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 875387258}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 69c634550a8e0ba48adaf5168c9d16a8, type: 3}
+  m_Script: {fileID: 11500000, guid: f1a307525b551d74892d7df67050f15a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CardMg: {fileID: 11400000, guid: 085ec176a5318684098e8010e398f63e, type: 2}
+  CardMg: {fileID: 11400000, guid: fdcc88ed3df33d14a9f9242310f89d0c, type: 2}
   RandomCardLists: 
 --- !u!1 &1105482748
 GameObject:
