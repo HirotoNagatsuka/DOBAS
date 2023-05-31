@@ -98,8 +98,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #endregion
 
-
-
     IEnumerator DelayMove(int num)
     {
         // １マスづつ進ませる
@@ -127,7 +125,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         deme = diceManager.DeclarationNum;
         if (diceManager.DeclarationNum == 4)
         {
-            photonView.RPC(nameof(EnemyAttack), RpcTarget.All, PhotonNetwork.LocalPlayer.ActorNumber);
+            photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
             // photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
         }
         else
@@ -138,11 +136,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    void EnemyAttack(int ID)
+    void EnemyAttack(PhotonMessageInfo info)
     {
-        if (PhotonNetwork.LocalPlayer.ActorNumber != ID)
-        //if(PhotonNetwork.LocalPlayer.ActorNumber != GameManager.WhoseTurn)
+        if(info.Sender.ActorNumber != GameManager.WhoseTurn)
         {
+            Debug.Log(info.Sender.ActorNumber);
             ChangeHP(-1);
         }
 
@@ -152,13 +150,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (stream.IsWriting)
         {
-            // 自身のアバターのスタミナを送信する
+            // 自身のアバターのHPを送信する
             stream.SendNext(Player.HP);
+            stream.SendNext(PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite);
         }
         else
         {
-            // 他プレイヤーのアバターのスタミナを受信する
+            // 他プレイヤーのアバターのHPを受信する
             Player.HP = (int)stream.ReceiveNext();
+            PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite= (Sprite)stream.ReceiveNext();
         }
     }
 

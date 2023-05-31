@@ -1002,7 +1002,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f7370eb9db94dcf41b6f1b77ba8374d5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Name: TNC
+  Name: CCC
   gameManager: {fileID: 919660204}
 --- !u!4 &342413199
 Transform:
@@ -3378,6 +3378,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
+  MaxPlayers: 2
+  HaveTime: 60
   CanvasUI: {fileID: 1030147747}
   StartButton: {fileID: 1818413046}
   StandByCanvas: {fileID: 1317459802}
@@ -3386,7 +3388,7 @@ MonoBehaviour:
   HaveTimeText: {fileID: 1104027714}
   StandByGroup: {fileID: 1797367920}
   ShakeDiceButton: {fileID: 1056243491}
-  MaxPlayers: 2
+  PlayersHP: 00000000000000000000000000000000
 --- !u!4 &919660205
 Transform:
   m_ObjectHideFlags: 0

@@ -8,10 +8,8 @@ using Photon.Realtime;
 public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region 定数宣言(Const)
-
     private const int FIRST_TURN = 1;//最初の人のターン.
     #endregion
-
 
     #region public・SerializeField宣言
 
@@ -28,7 +26,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("ゲームモード")]
     public GameState NowGameState;//現在のゲームモード.
 
-    [Header("SerializeField宣言")]
+    [Header("通信プレイ人数")]
+    public int MaxPlayers;//プレイヤーの最大人数.
+
+    [Header("プレイヤーの持ち時間")]
+    public float HaveTime;//各プレイヤーの持ち時間.
+
+    [Header("public・SerializeField宣言")]
     [SerializeField] GameObject CanvasUI;       //ゲーム開始時にまとめてキャンバスを非表示にする.
     [SerializeField] GameObject StartButton;    //準備完了ボタン.
     [SerializeField] GameObject StandByCanvas;  //準備完了キャンバス.
@@ -38,16 +42,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
     [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
 
-    [Header("public宣言")]
+    public int[] PlayersHP = new int[4];
+
     public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
-    public int MaxPlayers;//プレイヤーの最大人数.
 
     #endregion
 
-    int ReadyPeople;//準備完了人数.
+    private int ReadyPeople;//準備完了人数.
     string TurnName;//誰のターンかの名前用.
 
-    float HaveTime;//各プレイヤーの持ち時間.
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
@@ -57,9 +60,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     void Start()
     {
         WhoseTurn = FIRST_TURN;
-        HaveTime = 60;
         DoubtFlg = false;
         timeflg = false;
+        PlayersHP = new int[MaxPlayers];//Playerの人数分HP配列を用意.
        // SetUp();
     }
 
@@ -68,7 +71,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (NowGameState == GameState.InGame)//ゲームモードがゲーム中なら.
         {
-            Debug.Log(PhotonNetwork.LocalPlayer.ActorNumber);
+            //Debug.Log(PhotonNetwork.LocalPlayer.ActorNumber);
             if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)
             {
                 ShakeDiceButton.SetActive(true);
