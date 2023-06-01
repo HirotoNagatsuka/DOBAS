@@ -14,6 +14,8 @@ class PlayerStatus
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
     public Sprite[] HeartSprites;//HP用画像の配列.
+    //public string ID;//デバック用.
+    public int ID;//デバック用.
 }
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
@@ -27,6 +29,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     const float HEART_POS_X = -200;//初期値.
     const float HEART_POS_Y = 280f;//HP画像の表示位置.
 
+    const int ATTACK = 4;//攻撃マスの数字.
+
     //野尻の方で宣言した定数
     private const int SHUKAI = 26;//マスの数（Playerで宣言しているので後々変更）.
     private const float MOVE_SPEED = 10.0f;      // マスを進む速度.
@@ -37,6 +41,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField]
     DiceManager diceManager;//DiceManager参照用.
     MapManager mapManager;
+    GameManager gameManager;
     [SerializeField]
     PlayerStatus Player;//Playerのクラスをインスペクター上で見れるようにする.
     #endregion
@@ -58,13 +63,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private void Start()
     {
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP -1];//HPの表示.
+        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
 
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.MaxHP = 5;
+        //Player.ID = PhotonNetwork.LocalPlayer.UserId;
+        //Player.ID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
+        Player.ID = gameManager.Give_ID_Player();
     }
 
     private void Update()
@@ -77,7 +86,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
-            
+
         }
     }
 
@@ -87,7 +96,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private void OnTriggerStay(Collider collision)
     {
         string NowTag = collision.tag; // タグを取得
-        Debug.Log("OnTrigger起動");
+        //Debug.Log("OnTrigger起動");
         // 行動終了時、マスの効果発動
         if (ActionFlg == false)
         {
@@ -123,10 +132,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public void FinishDice()
     {
         deme = diceManager.DeclarationNum;
-        if (diceManager.DeclarationNum == 4)
+        if (diceManager.DeclarationNum == ATTACK)
         {
+            //EnemyAttack();
             photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
-            // photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
         }
         else
         {
@@ -136,14 +145,28 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     [PunRPC]
-    void EnemyAttack(PhotonMessageInfo info)
+    void EnemyAttack()
     {
-        if(info.Sender.ActorNumber != GameManager.WhoseTurn)
+        Debug.Log("EnemyAttack()起動");
+        int rnd;//乱数用.
+        while (true)
         {
-            Debug.Log(info.Sender.ActorNumber);
-            ChangeHP(-1);
+            rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
+            {
+                break;
+            }
         }
-
+        Debug.Log("ループを抜けました");
+        //if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)
+        //{
+        //    photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1);
+        //}
+        Debug.Log("rnd" + rnd);
+        if(PhotonNetwork.LocalPlayer.ActorNumber == rnd)
+        {
+            PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        }
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -152,13 +175,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             // 自身のアバターのHPを送信する
             stream.SendNext(Player.HP);
-            stream.SendNext(PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite);
         }
         else
         {
             // 他プレイヤーのアバターのHPを受信する
             Player.HP = (int)stream.ReceiveNext();
-            PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite= (Sprite)stream.ReceiveNext();
         }
     }
 
@@ -219,7 +240,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
             //Player.HP = mapManager.GetComponent<MapManager>().HpOneUp(Player.HP);  // MapManagerのHpOneUp関数処理を行う
             Debug.Log("HP：" + Player.HP);
-            photonView.RPC(nameof(ChangeHP), RpcTarget.All,1);
+            photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1);
             //ChangeHP(1);
         }
         else if (tag == "Attack") //攻撃マス
@@ -248,11 +269,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// <summary>
     /// HPが変化するときに呼び出す関数
     /// 変化量を引数にし、HPを変えた後UIにも反映する.
+    /// 第二引数には自分自身が呼び出したのかを判定.
     /// </summary>
     [PunRPC]
     public void ChangeHP(int addHP)
     {
-        if(Player.HP == 0)//HPが0になったら.
+        Debug.Log("ChangeHP起動");
+        if (Player.HP == 0)//HPが0になったら.
         {
             Player.HP = 0;
             Debug.Log("ゲームオーバー");
@@ -260,7 +283,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         else Player.HP += addHP;//0でないなら変化させる.
         // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-
     }
 
     public void PushBelieveButton()

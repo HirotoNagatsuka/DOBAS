@@ -29,6 +29,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("通信プレイ人数")]
     public int MaxPlayers;//プレイヤーの最大人数.
 
+    [Header("プレイヤーの初期HP")]
+    public int FirstHP;
+
     [Header("プレイヤーの持ち時間")]
     public float HaveTime;//各プレイヤーの持ち時間.
 
@@ -42,8 +45,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
     [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
 
-    public int[] PlayersHP = new int[4];
-
+    public int[] PlayersHP;
+    public static int MaxPlayersNum;//他スクリプトからアクセスする用.
     public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
 
     #endregion
@@ -54,6 +57,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
+    public int ID;
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -63,7 +67,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         DoubtFlg = false;
         timeflg = false;
         PlayersHP = new int[MaxPlayers];//Playerの人数分HP配列を用意.
-       // SetUp();
+        for(int i = 0; i < MaxPlayers; i++)
+        {
+            PlayersHP[i] = FirstHP;
+        }
+        // SetUp();
+        MaxPlayersNum = MaxPlayers;
     }
 
     // Update is called once per frame
@@ -93,11 +102,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             else if (timeflg) HaveTime -= Time.deltaTime;
             HaveTimeText.text = HaveTime.ToString("0");
 
-            // ゲームの状況管理
-            if (NowGameState == GameState.InGame)
-            {
-               // MainGame();
-            }
             if (NowGameState == GameState.EndGame)
             {
                 EndGame();
@@ -109,15 +113,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             StandByText.text = "あと" +
                                 (MaxPlayers - ReadyPeople)
                                 + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
-            //int playercnt = PhotonNetwork.CurrentRoom.PlayerCount;
-            //if (playercnt >= MaxPlayers)
-            //{
-            //    StartButton.SetActive(true);
-            //}
         }
     }
     #endregion
-
 
     #region ターン変更関連関数
     /// <summary>
@@ -158,11 +156,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             NowGameState = GameState.EndGame;
         }
     }
-    #endregion
-
     void EndGame()
     {
 
+    }
+    #endregion
+
+    public void ChangePlayersHP(int addHP,int subject)//subjectは対象という意味.
+    {
+        PlayersHP[subject - 1] += addHP;
     }
 
     /// <summary>
@@ -174,19 +176,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             stream.SendNext(HaveTime);// timeを送信する
             stream.SendNext(WhoseTurn);
+            stream.SendNext(PlayersHP);
         }
         else
         {
             HaveTime = (float)stream.ReceiveNext(); // timeを受信する
             WhoseTurn = (int)stream.ReceiveNext();
+            PlayersHP = (int[])stream.ReceiveNext();
         }
     }
 
-    [PunRPC]
-    private void StartTimer()
-    {
-        timeflg = true;
-    }
 
     #region 準備完了操作関連
 
@@ -230,6 +229,36 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
     #endregion
+    public bool[] UseID = new bool[4];
+    /// <summary>
+    /// プレイヤーにIDを与える関数
+    /// </summary>
+    public int Give_ID_Player()
+    {
+        int ID = 1;
+        for(int i = 0; i < UseID.Length; i++)
+        {
+            if (UseID[i] == false)
+            {
+                UseID[i] = true;
+                break;
+            }
+            else
+            {
+                ID++;
+            }
+        }
+
+        return ID;
+    }
+
+    #region 持ち時間減少関連
+
+    [PunRPC]
+    private void StartTimer()
+    {
+        timeflg = true;
+    }
 
     /// <summary>
     /// 持ち時間を減らす関数
@@ -277,6 +306,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             DoubtFlg = false;
         }
     }
+    #endregion
+
     #region 早坂ダウト判定
     //public void DoutDis(int Number)
     //{

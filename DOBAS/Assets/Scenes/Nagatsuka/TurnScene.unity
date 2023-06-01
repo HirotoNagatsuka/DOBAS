@@ -1003,6 +1003,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Name: CCC
+  ID: 0
   gameManager: {fileID: 919660204}
 --- !u!4 &342413199
 Transform:
@@ -3379,6 +3380,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   NowGameState: 0
   MaxPlayers: 2
+  FirstHP: 4
   HaveTime: 60
   CanvasUI: {fileID: 1030147747}
   StartButton: {fileID: 1818413046}
@@ -3388,7 +3390,8 @@ MonoBehaviour:
   HaveTimeText: {fileID: 1104027714}
   StandByGroup: {fileID: 1797367920}
   ShakeDiceButton: {fileID: 1056243491}
-  PlayersHP: 00000000000000000000000000000000
+  PlayersHP: 
+  ID: 0
 --- !u!4 &919660205
 Transform:
   m_ObjectHideFlags: 0

@@ -7,6 +7,7 @@ using Photon.Realtime;
 public class PhotonMultiPlay : MonoBehaviourPunCallbacks
 {
     public string Name;//プレイヤーの名前.
+    public int ID;
 
     [SerializeField] GameManager gameManager; // MapManager参照
     // Start is called before the first frame update
@@ -14,7 +15,6 @@ public class PhotonMultiPlay : MonoBehaviourPunCallbacks
     {
         // プレイヤー自身の名前を"Player"に設定する
         PhotonNetwork.NickName = Name;
-
         PhotonNetwork.ConnectUsingSettings();
     }
     public override void OnConnectedToMaster()

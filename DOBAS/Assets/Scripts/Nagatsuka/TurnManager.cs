@@ -24,7 +24,6 @@ public class TurnManager : MonoBehaviour, IPunObservable
         {
             Debug.Log(PhotonNetwork.CountOfPlayers);
         }
-        
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
