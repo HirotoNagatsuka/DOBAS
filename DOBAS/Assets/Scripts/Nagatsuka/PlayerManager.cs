@@ -24,6 +24,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     //UI表示に使用する定数値
     const int PLAYER_UI = 0;
     const int HP_UI = 0;
+    const int ATTACK_NUM_UI = 2;
 
     const float HEART_POS_X = -200;//初期値.
     const float HEART_POS_Y = 280f;//HP画像の表示位置.
@@ -85,7 +86,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             if (diceManager.FinishFlg) FinishDice();
             Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
         }
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        ChangePlayerUI();
     }
 
     /// <summary>
@@ -104,6 +105,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     #endregion
+
+    /// <summary>
+    /// プレイヤーの持っているUI(HPと攻撃力)を変更する関数.
+    /// </summary>
+    private void ChangePlayerUI()
+    {
+        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        PlayerUI.gameObject.transform.GetChild(ATTACK_NUM_UI).GetComponent<Text>().text = Player.Attack.ToString();//HPの表示.
+    }
 
     /// <summary>
     /// サイコロを振り終わったら呼び出す関数.

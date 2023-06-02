@@ -3539,7 +3539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
-  MaxPlayers: 2
+  MaxPlayers: 1
   FirstHP: 4
   HaveTime: 60
   InputNickName: {fileID: 1033305002}
@@ -7129,7 +7129,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1797367921
 Transform:
   m_ObjectHideFlags: 0
