@@ -175,6 +175,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             PlayersHP[subject - 1] += addHP;
         }
     }
+    [PunRPC]
+    void ChangeHP()
+    {
+
+    }
 
     /// <summary>
     /// PUN‚ğg‚Á‚Ä•Ï”‚ğ“¯Šú‚·‚é.
