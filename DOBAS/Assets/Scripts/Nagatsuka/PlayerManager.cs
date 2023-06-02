@@ -68,6 +68,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
+        //Player.ID = gameManager.GiveID();
         Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
@@ -83,9 +84,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
+            Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
+            PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
         }
-        Player.HP = gameManager.PlayersHP[Player.ID - 1];
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 
     /// <summary>
@@ -134,7 +135,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         while (true)
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
-            if (Player.ID != rnd)//自分自身でない場合ループを抜ける.
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
+            //if (Player.ID != rnd)//自分自身でない場合ループを抜ける.
             {
                 break;
             }
@@ -227,7 +229,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             yield return new WaitForSeconds(2);
 
             Debug.Log("HP：" + Player.HP);
-            photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
+            //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
+            ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
             //ChangeHP(1);
         }
         else if (tag == "Attack") //攻撃マス

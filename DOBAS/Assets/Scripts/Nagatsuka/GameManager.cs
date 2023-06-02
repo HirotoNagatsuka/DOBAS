@@ -59,6 +59,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     bool DoubtFlg;
     bool timeflg;
 
+    public int LocalNum;
+
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
     void Start()
@@ -88,6 +90,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                                 (MaxPlayers - ReadyPeople)
                                 + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
         }
+        LocalNum = PhotonNetwork.LocalPlayer.ActorNumber;
     }
     #endregion
 
@@ -167,7 +170,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public void ChangePlayersHP(int addHP,int subject)//subjectは対象という意味.
     {
-        PlayersHP[subject - 1] += addHP;
+        if(subject== PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            PlayersHP[subject - 1] += addHP;
+        }
     }
 
     /// <summary>
@@ -255,6 +261,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         return ID;
     }
 
+    public int GiveID()
+    {
+        return PhotonNetwork.LocalPlayer.ActorNumber;
+    }
     #region 持ち時間減少関連
 
     [PunRPC]
