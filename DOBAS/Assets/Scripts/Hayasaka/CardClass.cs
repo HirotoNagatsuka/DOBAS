@@ -49,7 +49,7 @@ public class CardClass : ScriptableObject
 		return Icon;
 	}
 
-	public string GetItemName()
+	public string GetCardName()
 	{
 		return CardName;
 	}

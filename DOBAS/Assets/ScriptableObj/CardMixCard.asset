@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bd07b000675d73044bda25447af8b006, type: 3}
   m_Name: CardMixCard
   m_EditorClassIdentifier: 
-  Id: 4
-  Koc: 0
-  Icon: {fileID: 0}
-  CardName: 
+  Id: 8
+  Koc: 2
+  Icon: {fileID: 2035382024, guid: cbaa078cfba840a4b877ece9cc14ad4b, type: 3}
+  CardName: "\u30AB\u30FC\u30C9\u30B7\u30E3\u30C3\u30D5\u30EB"
   Power: 0
   Move: 0

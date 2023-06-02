@@ -5,8 +5,9 @@ using UnityEngine;
 public class UseCard : MonoBehaviour
 {
     [SerializeField] CardManager Card_Manager;
+    [SerializeField] GameObject CardPanel;
     //[SerializeField] PlayerManager Player_Manager;
-    
+
     // Start is called before the first frame update
     void Start()
     {
@@ -21,6 +22,7 @@ public class UseCard : MonoBehaviour
     public void UseCardMove()
     {
         Debug.Log(Card_Manager.CardLists[0].GetMove());
+        CardPanel.SetActive(true);
         //Player_Manager.StartDelay(Card_Manager.CardLists[0].GetMove());
     }
 }
