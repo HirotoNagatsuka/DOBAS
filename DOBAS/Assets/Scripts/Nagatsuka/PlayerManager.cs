@@ -84,8 +84,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
-            //Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
-            
+            Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
         }
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
@@ -157,22 +156,22 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameManager.ChangePlayersHP(addHP, subject);
         Debug.Log("ChangeHP起動 対象" + subject);
-        if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
-        {
-            if (Player.HP == 0)//HPが0になったら.
-            {
-                gameManager.PlayersHP[Player.ID - 1] = 0;
-                Player.HP = 0;
-                Debug.Log("ゲームオーバー");
-            }
-            else
-            {
-                gameManager.PlayersHP[Player.ID - 1] += addHP;
-                Player.HP += addHP;
-                //Player.HP = gameManager.PlayersHP[Player.ID - 1];//0でないなら変化させる.
-                                                                 // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
-            }
-        }
+        //if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
+        //{
+        //    if (Player.HP == 0)//HPが0になったら.
+        //    {
+        //        gameManager.PlayersHP[Player.ID - 1] = 0;
+        //        Player.HP = 0;
+        //        Debug.Log("ゲームオーバー");
+        //    }
+        //    else
+        //    {
+        //        gameManager.PlayersHP[Player.ID - 1] += addHP;
+        //        Player.HP += addHP;
+        //        //Player.HP = gameManager.PlayersHP[Player.ID - 1];//0でないなら変化させる.
+        //                                                         // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        //    }
+        //}
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 

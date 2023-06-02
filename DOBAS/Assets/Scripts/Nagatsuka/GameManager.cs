@@ -172,13 +172,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if(subject== PhotonNetwork.LocalPlayer.ActorNumber)
         {
-            PlayersHP[subject - 1] += addHP;
+            photonView.RPC(nameof(ChangeHP), RpcTarget.All, addHP, subject);
         }
     }
     [PunRPC]
-    void ChangeHP()
+    void ChangeHP(int addHP,int subject)
     {
-
+        PlayersHP[subject - 1] += addHP;
     }
 
     /// <summary>
