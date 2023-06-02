@@ -51,13 +51,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #endregion
 
+    private bool[] UseID = new bool[4];//プレイヤーに割り当てるIDの使用状況.
     private int ReadyPeople;//準備完了人数.
     string TurnName;//誰のターンかの名前用.
 
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
-    //public int ID;
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -69,9 +69,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PlayersHP = new int[MaxPlayers];//Playerの人数分HP配列を用意.
         for(int i = 0; i < MaxPlayers; i++)
         {
-            PlayersHP[i] = FirstHP;
+            PlayersHP[i] = FirstHP;//HPの初期値を代入.
         }
-        // SetUp();
         MaxPlayersNum = MaxPlayers;
     }
 
@@ -80,32 +79,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (NowGameState == GameState.InGame)//ゲームモードがゲーム中なら.
         {
-            //Debug.Log(PhotonNetwork.LocalPlayer.ActorNumber);
-            if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)
-            {
-                ShakeDiceButton.SetActive(true);
-                WhoseTurnText.text = "あなたのターン";
-            }
-            else
-            {
-                ShakeDiceButton.SetActive(false);
-                WhoseTurnText.text = "";
-            }
-
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                photonView.RPC(nameof(StartTimer), RpcTarget.All);
-            }
-
-            if (DoubtFlg) ChangeDoubtTime();
-            //else ChangeHaveTime();
-            else if (timeflg) HaveTime -= Time.deltaTime;
-            HaveTimeText.text = HaveTime.ToString("0");
-
-            if (NowGameState == GameState.EndGame)
-            {
-                EndGame();
-            }
+            InGameRoop();
         }
         else if (NowGameState == GameState.SetGame)
         {
@@ -145,6 +119,34 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region ゲーム状況
+    private void InGameRoop()
+    {
+        if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)
+        {
+            ShakeDiceButton.SetActive(true);
+            WhoseTurnText.text = "あなたのターン";
+        }
+        else
+        {
+            ShakeDiceButton.SetActive(false);
+            WhoseTurnText.text = "";
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            photonView.RPC(nameof(StartTimer), RpcTarget.All);
+        }
+
+        if (DoubtFlg) ChangeDoubtTime();
+        //else ChangeHaveTime();
+        else if (timeflg) HaveTime -= Time.deltaTime;
+        HaveTimeText.text = HaveTime.ToString("0");
+
+        if (NowGameState == GameState.EndGame)
+        {
+            EndGame();
+        }
+    }
     public void StateGame(int Param)
     {
         if (Param == 1)
@@ -164,12 +166,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 
     public void ChangePlayersHP(int addHP,int subject)//subjectは対象という意味.
-    {
-        PlayersHP[subject - 1] += addHP;
-        //photonView.RPC(nameof(ChangePlayersHP), RpcTarget.All, addHP, subject);
-    }
-    [PunRPC]
-    void ChangeHP(int addHP, int subject)
     {
         PlayersHP[subject - 1] += addHP;
     }
@@ -192,7 +188,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             PlayersHP = (int[])stream.ReceiveNext();
         }
     }
-
 
     #region 準備完了操作関連
 
@@ -237,7 +232,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
-    bool[] UseID = new bool[4];
+
     /// <summary>
     /// プレイヤーにIDを与える関数
     /// </summary>
