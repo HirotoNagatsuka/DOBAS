@@ -9,6 +9,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region 定数宣言(Const)
     private const int FIRST_TURN = 1;//最初の人のターン.
+    const int INPUT_NAME = 2;//名前入力の子オブジェクトを参照用.
     #endregion
 
     #region public・SerializeField宣言
@@ -23,8 +24,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         InGame,     //ゲームプレイ状態.
         EndGame,    //ゲーム終了状態.
     }
-    [Header("ゲームモード")]
-    public GameState NowGameState;//現在のゲームモード.
+    [Header("ゲーム状態")]
+    public GameState NowGameState;//現在のゲーム状態.
 
     [Header("通信プレイ人数")]
     public int MaxPlayers;//プレイヤーの最大人数.
@@ -36,10 +37,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public float HaveTime;//各プレイヤーの持ち時間.
 
     [Header("public・SerializeField宣言")]
+    [Header("ゲーム開始前（準備完了）関連")]
+    [SerializeField] InputField InputNickName;  //名前を入力する用.
     [SerializeField] GameObject CanvasUI;       //ゲーム開始時にまとめてキャンバスを非表示にする.
     [SerializeField] GameObject StartButton;    //準備完了ボタン.
     [SerializeField] GameObject StandByCanvas;  //準備完了キャンバス.
+    [SerializeField] Text HelloPlayerText;      //待機中にプレイヤーを表示するボタン.
     [SerializeField] Text StandByText;          //待機人数を表示するボタン.
+
+
     [SerializeField] Text WhoseTurnText;        //誰のターンかのテキスト.
     [SerializeField] Text HaveTimeText;         //持ち時間テキスト.
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
@@ -48,7 +54,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int[] PlayersHP;
     public static int MaxPlayersNum;//他スクリプトからアクセスする用.
     public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
-
+    public int LocalNum;
     #endregion
 
     private bool[] UseID = new bool[4];//プレイヤーに割り当てるIDの使用状況.
@@ -58,8 +64,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
-
-    public int LocalNum;
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -79,7 +83,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        if (NowGameState == GameState.InGame)//ゲームモードがゲーム中なら.
+        if (NowGameState == GameState.InGame)//ゲーム状態がゲーム中なら.
         {
             InGameRoop();
         }
@@ -122,6 +126,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region ゲーム状況
+    /// <summary>
+    /// InGameの際にUpdateで呼び出し続ける関数
+    /// 自分のターンの処理・時間の制御をここで行う.
+    /// </summary>
     private void InGameRoop()
     {
         if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)
@@ -170,11 +178,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public void ChangePlayersHP(int addHP,int subject)//subjectは対象という意味.
     {
-        if(subject== PhotonNetwork.LocalPlayer.ActorNumber)
+        if(subject== PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
         {
             photonView.RPC(nameof(ChangeHP), RpcTarget.All, addHP, subject);
         }
     }
+    /// <summary>
+    /// 対象と引数を指定し、全員にHP状態を同期する.
+    /// </summary>
     [PunRPC]
     void ChangeHP(int addHP,int subject)
     {
@@ -217,7 +228,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void StartGame()
     {
         StandByCanvas.SetActive(false); //準備完了関連のキャンバスを非表示にする.
-        NowGameState = GameState.InGame;//ゲームモードをInGameにする.
+        NowGameState = GameState.InGame;//ゲーム状態をInGameにする.
         CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
         var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
         PhotonNetwork.Instantiate("Player", position, Quaternion.identity);//プレイヤーを生成する.
@@ -230,9 +241,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         photonView.RPC(nameof(AddReadyPeaple), RpcTarget.All);//準備完了人数を増やす.
         StartButton.SetActive(false);                         //ボタンを押したら非表示にする.
+
+        PhotonNetwork.NickName = InputNickName.transform.GetChild(INPUT_NAME).GetComponent<Text>().text;// プレイヤー自身の名前を入力された名前に設定する
+        //Debug.Log(InputNickName.transform.GetChild(2).GetComponent<Text>().text);
+
         if (ReadyPeople != MaxPlayers)                        //入室した人数が指定した数に満たない場合
         {
             StandByGroup.SetActive(true);                     //待機人数を表示するキャンバスを表示する.
+            HelloPlayerText.text = PhotonNetwork.NickName + "さんようこそ！";
             StandByText.text = "あと" + (MaxPlayers - ReadyPeople )
                                 + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
         }

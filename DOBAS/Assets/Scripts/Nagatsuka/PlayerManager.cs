@@ -23,13 +23,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     #region 定数宣言
     //UI表示に使用する定数値
     const int PLAYER_UI = 0;
-    const int NAME_UI = 0;
-    const int HP_UI = 1;
+    const int HP_UI = 0;
 
     const float HEART_POS_X = -200;//初期値.
     const float HEART_POS_Y = 280f;//HP画像の表示位置.
 
-    const int ATTACK = 4;//攻撃マスの数字.
+    const int ATTACK = 4;//攻撃出目の数字.
 
     //野尻の方で宣言した定数
     private const int SHUKAI = 26;//マスの数（Playerで宣言しているので後々変更）.
