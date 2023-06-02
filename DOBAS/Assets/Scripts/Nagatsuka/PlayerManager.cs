@@ -62,18 +62,18 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private void Start()
     {
-        PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager = GameObject.Find("MapManager").GetComponent<MapManager>();
         diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.MaxHP = 5;
+        Player.ID = gameManager.Give_ID_Player();
+        Player.HP = gameManager.PlayersHP[Player.ID - 1];
+        PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
+        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
         //Player.ID = PhotonNetwork.LocalPlayer.UserId;
         //Player.ID = PhotonNetwork.LocalPlayer.ActorNumber.ToString();
-        Player.ID = gameManager.Give_ID_Player();
     }
 
     private void Update()
@@ -86,7 +86,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             //// 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
-
+            Player.HP = gameManager.PlayersHP[Player.ID - 1];
         }
     }
 
@@ -134,8 +134,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         deme = diceManager.DeclarationNum;
         if (diceManager.DeclarationNum == ATTACK)
         {
-            //EnemyAttack();
-            photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
+           EnemyAttack();
+           //photonView.RPC(nameof(EnemyAttack), RpcTarget.All);
         }
         else
         {
@@ -152,7 +152,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         while (true)
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
-            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
+            //if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
+            if (Player.ID != rnd)//自分自身でない場合ループを抜ける.
             {
                 break;
             }
@@ -163,10 +164,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         //    photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1);
         //}
         Debug.Log("rnd" + rnd);
-        if(PhotonNetwork.LocalPlayer.ActorNumber == rnd)
-        {
-            PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-        }
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
+        //if(PhotonNetwork.LocalPlayer.ActorNumber == rnd)
+        //if (Player.ID == rnd)
+        //{
+        //    PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        //}
     }
 
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
@@ -238,9 +241,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("HP１回復！！");
             yield return new WaitForSeconds(2);
 
-            //Player.HP = mapManager.GetComponent<MapManager>().HpOneUp(Player.HP);  // MapManagerのHpOneUp関数処理を行う
             Debug.Log("HP：" + Player.HP);
-            photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1);
+            photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
             //ChangeHP(1);
         }
         else if (tag == "Attack") //攻撃マス
@@ -272,16 +274,30 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 第二引数には自分自身が呼び出したのかを判定.
     /// </summary>
     [PunRPC]
-    public void ChangeHP(int addHP)
+    public void ChangeHP(int addHP,int subject)
     {
-        Debug.Log("ChangeHP起動");
-        if (Player.HP == 0)//HPが0になったら.
-        {
-            Player.HP = 0;
-            Debug.Log("ゲームオーバー");
-        }
-        else Player.HP += addHP;//0でないなら変化させる.
-        // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        gameManager.ChangePlayersHP(addHP, subject);
+        Debug.Log("ChangeHP起動 対象"+subject);
+        //if (Player.ID == subject)
+        //{
+        //    if (Player.HP == 0)//HPが0になったら.
+        //    {
+        //        gameManager.PlayersHP[Player.ID - 1] = 0;
+        //        Player.HP = 0;
+        //        Debug.Log("ゲームオーバー");
+        //    }
+        //    else {
+        //        gameManager.PlayersHP[Player.ID - 1] += addHP;
+        //        Player.HP = gameManager.PlayersHP[Player.ID - 1];//0でないなら変化させる.
+        //                            // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
+        //    }
+        //}
+        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        //photonView.RPC(nameof(ChangeHPUI), RpcTarget.All);
+    }
+    [PunRPC]
+    public void ChangeHPUI()
+    {
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 

@@ -57,7 +57,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
-    public int ID;
+    //public int ID;
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -162,7 +162,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
+
     public void ChangePlayersHP(int addHP,int subject)//subjectは対象という意味.
+    {
+        PlayersHP[subject - 1] += addHP;
+        //photonView.RPC(nameof(ChangePlayersHP), RpcTarget.All, addHP, subject);
+    }
+    [PunRPC]
+    void ChangeHP(int addHP, int subject)
     {
         PlayersHP[subject - 1] += addHP;
     }
@@ -229,7 +236,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
     #endregion
-    public bool[] UseID = new bool[4];
+
+    bool[] UseID = new bool[4];
     /// <summary>
     /// プレイヤーにIDを与える関数
     /// </summary>

@@ -47,6 +47,8 @@ MonoBehaviour:
   - AddReadyPeaple
   - CreatePlayer
   - StartGame
+  - ChangeHPUI
+  - ChangePlayersHP
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
