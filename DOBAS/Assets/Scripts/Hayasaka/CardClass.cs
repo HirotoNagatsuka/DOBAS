@@ -7,6 +7,7 @@ using System;
 [CreateAssetMenu(fileName = "Cards", menuName = "CreateCard")]
 public class CardClass : ScriptableObject
 {
+	// カードの効果一覧
     public enum KindOfCard
     {
         Atack,
@@ -30,7 +31,6 @@ public class CardClass : ScriptableObject
 	//　アイテム攻撃力
 	[SerializeField]
 	private int Power;
-
 	//　移動数
 	[SerializeField]
 	private int Move;
@@ -43,12 +43,10 @@ public class CardClass : ScriptableObject
 	{
 		return Koc;
 	}
-
 	public Sprite GetIcon()
 	{
 		return Icon;
 	}
-
 	public string GetCardName()
 	{
 		return CardName;
