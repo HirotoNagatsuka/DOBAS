@@ -51,10 +51,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
     [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
 
+    public List<string> PlayersName = new List<string>();
     public int[] PlayersHP;
     public static int MaxPlayersNum;//他スクリプトからアクセスする用.
     public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
-    public int LocalNum;
+
+    [SerializeField] GameObject PlayersNameGroupPrefab;//右上に表示する名前を生成する用.
+    [SerializeField] Sprite[] Hearts = new Sprite[5];
     #endregion
 
     private bool[] UseID = new bool[4];//プレイヤーに割り当てるIDの使用状況.
@@ -64,6 +67,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     float DoubtTime;//ダウト宣言の持ち時間.
     bool DoubtFlg;
     bool timeflg;
+    public List<GameObject> PlayersNameGroup = new List<GameObject>();
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -73,7 +77,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         DoubtFlg = false;
         timeflg = false;
         PlayersHP = new int[MaxPlayers];//Playerの人数分HP配列を用意.
-        for(int i = 0; i < MaxPlayers; i++)
+        for (int i = 0; i < MaxPlayers; i++)
         {
             PlayersHP[i] = FirstHP;//HPの初期値を代入.
         }
@@ -83,18 +87,25 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        if (NowGameState == GameState.InGame)//ゲーム状態がゲーム中なら.
+        switch (NowGameState)//ゲームモードによって処理を分岐する.
         {
-            InGameRoop();
+            case GameState.InitGame:
+                break;
+            case GameState.SetGame:
+                StartButton.SetActive(true);
+                StandByText.text = "あと" + (MaxPlayers - ReadyPeople)
+                                    + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
+                break;
+            case GameState.InGame:
+                InGameRoop();
+                break;
+            case GameState.EndGame:
+                    EndGame();
+                break;
+            default:
+                Debug.Log("エラー:予期せぬゲームモード");
+                break;
         }
-        else if (NowGameState == GameState.SetGame)
-        {
-            StartButton.SetActive(true);
-            StandByText.text = "あと" +
-                                (MaxPlayers - ReadyPeople)
-                                + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
-        }
-        LocalNum = PhotonNetwork.LocalPlayer.ActorNumber;
     }
     #endregion
 
@@ -116,12 +127,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         if (WhoseTurn == MaxPlayers) WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
         else WhoseTurn++;                                   //次の人のターンにする.
-
-        //if(PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンになったら名前を送る.
-        //{
-        //    TurnName = PhotonNetwork.NickName;
-        //    WhoseTurnText.text = PhotonNetwork.NickName + "のターン";//誰のターンかテキストで表示する.
-        //}
     }
     #endregion
 
@@ -135,12 +140,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)
         {
             ShakeDiceButton.SetActive(true);
+            WhoseTurnText.color = Color.red;
             WhoseTurnText.text = "あなたのターン";
         }
         else
         {
             ShakeDiceButton.SetActive(false);
-            WhoseTurnText.text = "";
+            WhoseTurnText.color = Color.white;
+            WhoseTurnText.text = PlayersName[WhoseTurn-1]+ "のターン";
         }
 
         if (Input.GetKeyDown(KeyCode.P))
@@ -152,23 +159,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         //else ChangeHaveTime();
         else if (timeflg) HaveTime -= Time.deltaTime;
         HaveTimeText.text = HaveTime.ToString("0");
+    }
 
-        if (NowGameState == GameState.EndGame)
-        {
-            EndGame();
-        }
-    }
-    public void StateGame(int Param)
-    {
-        if (Param == 1)
-        {
-            NowGameState = GameState.InGame;
-        }
-        if (Param == 2)
-        {
-            NowGameState = GameState.EndGame;
-        }
-    }
     void EndGame()
     {
 
@@ -190,6 +182,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     void ChangeHP(int addHP,int subject)
     {
         PlayersHP[subject - 1] += addHP;
+        PlayersNameGroup[subject - 1].transform.GetChild(2).GetComponent<Image>().sprite = Hearts[PlayersHP[subject - 1]];
     }
 
     /// <summary>
@@ -232,6 +225,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
         var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
         PhotonNetwork.Instantiate("Player", position, Quaternion.identity);//プレイヤーを生成する.
+        int i=0;                                                             // ループを使用して、全てのプレイヤーに対して名前を表示する例
+        foreach (var player in PhotonNetwork.PlayerList)//プレイヤーの名前を取得.
+        {
+            PlayersName.Add(player.NickName);
+            var obj = Instantiate(PlayersNameGroupPrefab, new Vector3(0f,0f,0f), Quaternion.identity,CanvasUI.transform);
+            obj.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f -150f * i, 0f);
+            obj.transform.GetChild(1).GetComponent<Text>().text = player.NickName;
+            obj.transform.GetChild(2).GetComponent<Image>().sprite = Hearts[PlayersHP[i] - 1];
+            PlayersNameGroup.Add(obj);
+            i++;
+        }
     }
 
     /// <summary>

@@ -68,7 +68,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
-        //Player.ID = gameManager.GiveID();
         Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
@@ -164,23 +163,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public void ChangeHP(int addHP, int subject)
     {
         gameManager.ChangePlayersHP(addHP, subject);
-        Debug.Log("ChangeHP起動 対象" + subject);
-        //if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
-        //{
-        //    if (Player.HP == 0)//HPが0になったら.
-        //    {
-        //        gameManager.PlayersHP[Player.ID - 1] = 0;
-        //        Player.HP = 0;
-        //        Debug.Log("ゲームオーバー");
-        //    }
-        //    else
-        //    {
-        //        gameManager.PlayersHP[Player.ID - 1] += addHP;
-        //        Player.HP += addHP;
-        //        //Player.HP = gameManager.PlayersHP[Player.ID - 1];//0でないなら変化させる.
-        //                                                         // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Text>().text = Player.HP.ToString();//HPの表示.
-        //    }
-        //}
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 

@@ -3552,8 +3552,16 @@ MonoBehaviour:
   HaveTimeText: {fileID: 1104027714}
   StandByGroup: {fileID: 1797367920}
   ShakeDiceButton: {fileID: 1056243491}
+  PlayersName: []
   PlayersHP: 
-  LocalNum: 0
+  PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
+  Hearts:
+  - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
+  - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
+  - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
+  - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
+  - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
+  PlayersNameGroup: []
 --- !u!4 &919660205
 Transform:
   m_ObjectHideFlags: 0
@@ -5300,7 +5308,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 400, y: -50}
+  m_AnchoredPosition: {x: 80, y: -44}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1269480382
@@ -5339,7 +5347,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 0, b: 0, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
@@ -5348,12 +5356,12 @@ MonoBehaviour:
       m_Calls: []
   m_FontData:
     m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
-    m_FontSize: 60
+    m_FontSize: 80
     m_FontStyle: 0
     m_BestFit: 0
     m_MinSize: 0
     m_MaxSize: 100
-    m_Alignment: 4
+    m_Alignment: 3
     m_AlignByGeometry: 0
     m_RichText: 1
     m_HorizontalOverflow: 1
@@ -6343,7 +6351,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 1}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: -200, y: -200}
+  m_AnchoredPosition: {x: -1834, y: -291}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1508994389
@@ -6503,7 +6511,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1513246636}
   m_LocalRotation: {x: 0, y: -0.86602545, z: 0.49999994, w: 0}
-  m_LocalPosition: {x: 2, y: 20, z: 17}
+  m_LocalPosition: {x: 0.95, y: 21.06, z: 15.51}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
