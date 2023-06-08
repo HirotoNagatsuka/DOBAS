@@ -9,13 +9,12 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 328ed3a4eef67a649a635aaa72cd07e6, type: 3}
+  m_Script: {fileID: 11500000, guid: e9718f7a53ad6cc4f9d0c903dc47c313, type: 3}
   m_Name: PosMix
   m_EditorClassIdentifier: 
-  Id: 4
+  Id: 8
   Koc: 3
-  Icon: {fileID: 21300000, guid: f3badcbc8dbec024eb247abbb3ed4f35, type: 3}
-  CardName: "\u30DD\u30B8\u30B7\u30E7\u30F3\u30B7\u30E3\u30C3\u30D5\u30EB\u30AB\u30FC\u30C9"
-  Info: "\u30D7\u30EC\u30A4\u30E4\u30FC\u306E\u4F4D\u7F6E\u3092\u5165\u308C\u66FF\u3048\u308B"
+  Icon: {fileID: 0}
+  CardName: "\u5834\u6240\u79FB\u52D5"
   Power: 0
   Move: 0

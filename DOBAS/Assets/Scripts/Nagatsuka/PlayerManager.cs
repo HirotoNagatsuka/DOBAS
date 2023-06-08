@@ -14,7 +14,6 @@ class PlayerStatus
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
     public Sprite[] HeartSprites;//HP用画像の配列.
-    //public string ID;//デバック用.
     public int ID;//デバック用.
 }
 
@@ -38,7 +37,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #region 外部スクリプト参照用宣言
     GameManager gameManager;//GameManager参照用.
-    DiceManager diceManager;//DiceManager参照用.
     MapManager mapManager; //MapManager参照用.
     #endregion
 
@@ -47,6 +45,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField]
     PlayerStatus Player;//Playerのクラスをインスペクター上で見れるようにする.
     #endregion
+
+    public bool doubtFlg;//嘘をついているか判定.
+    public bool CoroutineFlg;//スマートではないので修正したい.
 
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
     private bool ActionFlg = true;   // サイコロを振ったかどうか
@@ -64,7 +65,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
-        diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
+        //gameManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
@@ -80,9 +81,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             Vector3 PlayerPos = transform.position;
             Vector3 TargetPos = mapManager.MasumeList[Sum].position;
 
-            //// 移動モーション
+            // 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
-            if (diceManager.FinishFlg) FinishDice();
+            if (gameManager.DiceFinishFlg && CoroutineFlg == false)
+            {
+                    CoroutineFlg = true;
+                    FinishDice();
+            }
             Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
         }
         ChangePlayerUI();
@@ -119,16 +124,46 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void FinishDice()
     {
-        int deme = diceManager.DeclarationNum;//出目を受け取る.
-        if (diceManager.DeclarationNum == ATTACK)
+        int deme = gameManager.DeclarationNum;//出目を受け取る.
+        //if (gameManager.Doubt)//5か6が出ていたら
+        //{
+        //    doubtFlg = true;
+        //}
+        gameManager.ReceiveDeme(deme);
+        StartCoroutine("WaitDoubt", deme);
+    }
+
+    /// <summary>
+    /// 他のプレイヤーのダウト宣言を待つコルーチン
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator WaitDoubt(int deme)
+    {
+        //int i = 0;
+        Debug.Log("出目" + deme);
+        Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
+        Debug.Log("キー入力待ち");
+        Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
+        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // クリック待ち処理
+        if (deme == ATTACK)
         {
-           EnemyAttack();
+            Debug.Log("EnemyAttack()起動用if文中");
+            EnemyAttack();
         }
         else
         {
             StartDelay(deme);
         }
-        diceManager.FinishFlg = false;
+        gameManager.DiceFinishFlg = false;
+        gameManager.DeclarationFlg = false;
+        ResetFlg();
+        gameManager.FinishTurn();
+        yield break;
+    }
+
+    void ResetFlg()
+    {
+        CoroutineFlg = doubtFlg = false;
     }
 
     /// <summary>
@@ -144,7 +179,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
             if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
-            //if (Player.ID != rnd)//自分自身でない場合ループを抜ける.
             {
                 break;
             }
@@ -275,12 +309,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public void PushBelieveButton()
     {
         Debug.Log("信じる!");
-        diceManager.DiceInit();
+        gameManager.DiceInit();
     }
     public void PushDoubtButton()
     {
         Debug.Log("ダウト!");
-        diceManager.DiceInit();
+        gameManager.DiceInit();
     }
     #endregion
 }

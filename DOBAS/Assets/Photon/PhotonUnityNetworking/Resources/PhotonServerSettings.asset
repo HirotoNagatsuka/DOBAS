@@ -49,6 +49,9 @@ MonoBehaviour:
   - StartGame
   - ChangeHPUI
   - ChangePlayersHP
+  - AddThroughNum
+  - TestPun
+  - ActiveEnemyResult
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
