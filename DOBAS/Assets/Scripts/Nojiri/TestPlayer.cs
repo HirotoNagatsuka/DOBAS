@@ -8,15 +8,22 @@ public class TestPlayer : MonoBehaviour
     public float moveSpeed = 5f; // プレイヤーの移動速度
     public float rotationSpeed = 180f;  // プレイヤーの回転速度
 
+    private GameObject[] animals;
+
     bool flg = true;
     bool attackFlg = false;
-    //Animator anim;
+    Animator anim;
     Vector3 PlayerPos;
+    Transform animal_parent;
 
     // Start is called before the first frame update
     void Start()
     {
-        //anim = gameObject.GetComponent<Animator>();
+        animal_parent = GameObject.Find("Animals").transform;
+
+        int count = animal_parent.childCount;
+        animals = new GameObject[count];
+        anim = gameObject.GetComponent<Animator>();
     }
 
     // Update is called once per frame
@@ -34,6 +41,7 @@ public class TestPlayer : MonoBehaviour
         // エフェクト生成
         // 回復
         GameObject healObj = Instantiate(effectObject[0], PlayerPos, Quaternion.identity);
+        anim.SetTrigger("Jump");
         yield return new WaitForSeconds(2f);
         Destroy(healObj);
 
@@ -48,11 +56,10 @@ public class TestPlayer : MonoBehaviour
         Destroy(cardObj);
 
         // 攻撃
-        //Instantiate(effectObject[3], PlayerPos, Quaternion.identity);
-        ////anim.SetTrigger("GetHit");
-        //yield return new WaitForSeconds(2f);
-
-
+        Instantiate(effectObject[3], PlayerPos, Quaternion.identity);
+        Instantiate(effectObject[4], PlayerPos, Quaternion.identity);
+        anim.SetTrigger("Death");
+        yield return new WaitForSeconds(2f);
 
         flg = true;
     }
