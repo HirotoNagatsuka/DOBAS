@@ -9,12 +9,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e9718f7a53ad6cc4f9d0c903dc47c313, type: 3}
-  m_Name: Move4Card
+  m_Script: {fileID: 11500000, guid: 328ed3a4eef67a649a635aaa72cd07e6, type: 3}
+  m_Name: MoveCard
   m_EditorClassIdentifier: 
-  Id: 5
+  Id: 2
   Koc: 1
-  Icon: {fileID: 0}
-  CardName: "4\u79FB\u52D5"
+  Icon: {fileID: 21300000, guid: abd2989a7a234d948aac852a81692770, type: 3}
+  CardName: "\u30E0\u30FC\u30D6\u30AB\u30FC\u30C9"
+  Info: "\u30DE\u30B9\u3092\u79FB\u52D5\u3067\u304D\u308B"
   Power: 0
-  Move: 4
+  Move: 3

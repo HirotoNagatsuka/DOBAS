@@ -21,7 +21,7 @@ public class UseCard : MonoBehaviour
     }
     public void UseCardMove()
     {
-        Debug.Log(Card_Manager.CardLists[0].GetMove());
+        Debug.Log(Card_Manager.CardLists[3].GetMove());
         CardPanel.SetActive(true);
         //Player_Manager.StartDelay(Card_Manager.CardLists[0].GetMove());
     }

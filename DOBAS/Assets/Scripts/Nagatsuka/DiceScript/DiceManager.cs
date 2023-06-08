@@ -8,7 +8,6 @@ public class DiceManager : MonoBehaviour
 {
     public GameObject DicePrefab;//サイコロのプレファブを入れる.
     private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
-    public int num;
     #region ランダムに回転させる用の変数宣言.
     private int rotateX;
     private int rotateY;
@@ -26,8 +25,6 @@ public class DiceManager : MonoBehaviour
     private int Number;
     public int DeclarationNum;//宣言番号.
     public bool Doubt;
-    [SerializeField] MapPlayer mapPlayer;
-    [SerializeField] PlayerManager playerManager;
     [SerializeField] GameManager gameManager;
 
     public bool FinishFlg;//Photonテスト用.
@@ -51,6 +48,7 @@ public class DiceManager : MonoBehaviour
     /// </summary>
     public void ShakeDice()
     {
+        DiceShakeButton.SetActive(false);
         DiceCamera.SetActive(true);
         Dice.SetActive(true);
         Dice.transform.position = CameraPos;
@@ -63,7 +61,6 @@ public class DiceManager : MonoBehaviour
         Dice.GetComponent<Rigidbody>().AddForce(-transform.right * 300);
         Dice.transform.Rotate(rotateX, rotateY, rotateZ);
         DiceFlg = true;
-        DiceShakeButton.SetActive(false);
     }
 
     /// <summary>

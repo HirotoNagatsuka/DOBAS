@@ -16,17 +16,6 @@ public class TurnManager : MonoBehaviour, IPunObservable
     {
         WhoseTurn = 0;
     }
-
-    // Update is called once per frame
-    void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.K))
-        {
-            Debug.Log(PhotonNetwork.CountOfPlayers);
-        }
-        
-    }
-
     void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
         if (stream.IsWriting)
