@@ -3904,7 +3904,7 @@ MonoBehaviour:
   DiceFinishFlg: 0
   DeclarationFlg: 0
   PlayersNameGroup: []
-  testTurn: 0
+  Players: []
   ThroughNum: 0
 --- !u!4 &919660205
 Transform:
