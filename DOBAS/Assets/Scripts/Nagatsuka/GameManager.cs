@@ -22,7 +22,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region private変数
-    private bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
+
     private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
     Vector3 diceCameraPos;//サイコロを振る初期位置.
     private bool DiceFlg;//さいころを振ったかのフラグ.
@@ -36,7 +36,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private bool[] UseID = new bool[4];//プレイヤーに割り当てるIDの使用状況.
     private int ReadyPeople;           //準備完了人数.
     private bool timeflg;//持ち時間を減らすためのフラグ.
-    private List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
+    public List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
     private List<GameObject> PlayersNameGroup = new List<GameObject>();//Playerの詳細情報を表示するオブジェクト.
     #endregion
 
@@ -98,6 +98,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int DeclarationNum;//宣言番号.
     public bool DiceFinishFlg;//Player側からサイコロを振り終わっているかの参照用.
     public bool DeclarationFlg;//宣言待ちフラグ(Playerから参照する).
+
+    public bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
     #endregion
 
     #region Unityイベント(Start・Update)
@@ -162,14 +164,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             ShakeDiceButton.SetActive(true);//サイコロを振るボタンを表示.
             WhoseTurnText.color = Color.red;//ターンテキストの色を赤に変更.
             WhoseTurnText.text = "あなたのターン";
-            WaitText.text = "";
+            //WaitText.text = "";
         }
         else//自分のターンでないなら.
         {
             ShakeDiceButton.SetActive(false);//サイコロを振るボタンを非表示.
             WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
             WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
-            WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
+            //WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
         }
 
         if (Input.GetKeyDown(KeyCode.P))//デバック用タイマー起動.
@@ -196,6 +198,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void FinishTurn()
     {
+        WaitText.text = "";
+        doubtFlg = false;
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
     }
 
@@ -310,7 +314,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void PushDoubtButton()
     {
-        photonView.RPC(nameof(AddThroughNum), RpcTarget.All);
+        int subject = PhotonNetwork.LocalPlayer.ActorNumber;
+        photonView.RPC(nameof(DeclarationDoubt), RpcTarget.All,subject);
     }
 
     /// <summary>
@@ -327,10 +332,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             DeclarationFlg = true;
             
             ThroughNum = 0;
-            WaitText.text = "";
+            //WaitText.text = "";
             DiceInit();
         }
     }
+
+    /// <summary>
+    /// ダウト宣言ボタンを押した際に呼び出す関数
+    /// 先着1人が起動でき、起動したら他の人のフラグをONにする
+    /// </summary>
+    [PunRPC]
+    void DeclarationDoubt(int subject)
+    {
+        Debug.Log("DeclarationDoubt起動");
+        Debug.Log("呼び出したPlayer" + PlayersName[subject-1]);
+        DiceInit();
+    }
+
 
     #region サイコロ関連関数
     /// <summary>
@@ -453,7 +471,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void DeclarationResult()
     {
         DiceFinishFlg = true;
-        for (int i = 0; i > 5; i++)//全てのリザルト画面を非表示にする.
+        for (int i = 0; i < 5; i++)//全てのリザルト画面を非表示にする.
         {
             ResultPanel[i].SetActive(false);
         }
@@ -485,8 +503,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void ReceiveDeme(int deme)
     {
-        photonView.RPC(nameof(ActiveEnemyResult), RpcTarget.Others, deme);//サイコロを振っていない人にパネルを表示する.
+        if(DeclarationNum == 5 || DeclarationNum == 6)
+        {
+            Debug.Log("ダウト目が出ている");
+        }
         WaitText.text = "他プレイヤーの宣言を待っています";
+        photonView.RPC(nameof(ActiveEnemyResult), RpcTarget.Others, deme);//サイコロを振っていない人にパネルを表示する.
     }
 
     /// <summary>

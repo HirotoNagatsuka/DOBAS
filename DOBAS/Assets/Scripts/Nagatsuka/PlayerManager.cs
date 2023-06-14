@@ -185,6 +185,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("æ“¾‚µ‚½rnd" + rnd);
         photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
     }
+    
 
     /// <summary>
     /// HP‚ª•Ï‰»‚·‚é‚Æ‚«‚ÉŒÄ‚Ño‚·ŠÖ”

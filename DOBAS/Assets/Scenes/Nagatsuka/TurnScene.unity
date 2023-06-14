@@ -3860,7 +3860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
-  MaxPlayers: 1
+  MaxPlayers: 2
   FirstHP: 4
   HaveTime: 60
   InputNickName: {fileID: 1033305002}
