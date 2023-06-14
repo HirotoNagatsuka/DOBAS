@@ -3860,7 +3860,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
-  MaxPlayers: 2
+  MaxPlayers: 1
   FirstHP: 4
   HaveTime: 60
   InputNickName: {fileID: 1033305002}
@@ -3872,8 +3872,8 @@ MonoBehaviour:
   WhoseTurnText: {fileID: 1269480384}
   HaveTimeText: {fileID: 1104027714}
   StandByGroup: {fileID: 1797367920}
-  ShakeDiceButton: {fileID: 1056243491}
   DicePrefab: {fileID: 3310249835269611495, guid: baf45781312b4994ebc07f9a2cebac12, type: 3}
+  ShakeDiceButton: {fileID: 1056243491}
   DiceCamera: {fileID: 1904109266}
   DiceNumText: {fileID: 1571761371}
   ResultPanel:
@@ -3885,7 +3885,6 @@ MonoBehaviour:
   ReasoningPanel: {fileID: 397416621}
   DiceShakeButton: {fileID: 1056243491}
   EnemyResult: {fileID: 397416621}
-  PlayersName: []
   PlayersHP: 
   WaitText: {fileID: 424346412}
   PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
@@ -3903,9 +3902,6 @@ MonoBehaviour:
   DeclarationNum: 0
   DiceFinishFlg: 0
   DeclarationFlg: 0
-  PlayersNameGroup: []
-  Players: []
-  ThroughNum: 0
 --- !u!4 &919660205
 Transform:
   m_ObjectHideFlags: 0

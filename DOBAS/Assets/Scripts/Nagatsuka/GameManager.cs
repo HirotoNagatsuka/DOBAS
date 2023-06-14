@@ -21,6 +21,25 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     const int SAIKORO_RESULT = 1;//サイコロの出目を他の人に通知するパネル用.
     #endregion
 
+    #region private変数
+    private bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
+    private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
+    Vector3 diceCameraPos;//サイコロを振る初期位置.
+    private bool DiceFlg;//さいころを振ったかのフラグ.
+    private int Number;       //サイコロの出目をリザルトパネルに表示する用の変数.
+    #region ランダムにさいころを回転させる用の変数宣言.
+    private int rotateX;
+    private int rotateY;
+    private int rotateZ;
+    #endregion
+    private int ThroughNum;//信じた(スルーした)人数.
+    private bool[] UseID = new bool[4];//プレイヤーに割り当てるIDの使用状況.
+    private int ReadyPeople;           //準備完了人数.
+    private bool timeflg;//持ち時間を減らすためのフラグ.
+    private List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
+    private List<GameObject> PlayersNameGroup = new List<GameObject>();//Playerの詳細情報を表示するオブジェクト.
+    #endregion
+
     #region public・SerializeField宣言
 
     /// <summary>
@@ -53,14 +72,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject StandByCanvas;  //準備完了キャンバス.
     [SerializeField] Text HelloPlayerText;      //待機中にプレイヤーを表示するボタン.
     [SerializeField] Text StandByText;          //待機人数を表示するボタン.
-
     [SerializeField] Text WhoseTurnText;        //誰のターンかのテキスト.
     [SerializeField] Text HaveTimeText;         //持ち時間テキスト.
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
-    [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
+
 
     [Header("さいころ関連")]
     [SerializeField] GameObject DicePrefab;//サイコロのプレファブを入れる.
+    [SerializeField] GameObject ShakeDiceButton;//さいころを振るボタン.
     [SerializeField] GameObject DiceCamera;
     [SerializeField] Text DiceNumText;
     [SerializeField] GameObject[] ResultPanel = new GameObject[5];//出目のパネル用.
@@ -68,48 +87,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject DiceShakeButton;//サイコロを振るボタン.
     public GameObject EnemyResult;//相手の出目を入れる.
 
-
-    public List<string> PlayersName = new List<string>();
-    public int[] PlayersHP;
+    [Header("外部アクセス用変数")]
+    public int[] PlayersHP;//Player側からHPの参照を行う用.
     public static int MaxPlayersNum;//他スクリプトからアクセスする用.
     public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
-    public Text WaitText;
+    public Text WaitText;   //他の人の行動待ちを表示するテキスト.
     [SerializeField] GameObject PlayersNameGroupPrefab;//右上に表示する名前を生成する用.
-    [SerializeField] Sprite[] HeartSprites = new Sprite[5];
-    [SerializeField] Sprite[] DiceSprites = new Sprite[4];
-
-    //[SerializeField] DiceManager diceManager;
-    #endregion
-
-    #region private変数
-    private bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
-    private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
-    Vector3 diceCameraPos;//サイコロを振る初期位置.
-    private bool DiceFlg;//さいころを振ったかのフラグ.
-    private int ThroughNum;//信じた(スルーした)人数.
-
-    #endregion
-
-    #region ランダムにさいころを回転させる用の変数宣言.
-    private int rotateX;
-    private int rotateY;
-    private int rotateZ;
-    #endregion
-
-
-    private int Number;
+    [SerializeField] Sprite[] HeartSprites = new Sprite[5];//HP用の画像.
+    [SerializeField] Sprite[] DiceSprites = new Sprite[4]; //サイコロの出目の画像.
     public int DeclarationNum;//宣言番号.
+    public bool DiceFinishFlg;//Player側からサイコロを振り終わっているかの参照用.
+    public bool DeclarationFlg;//宣言待ちフラグ(Playerから参照する).
+    #endregion
 
-    public bool DiceFinishFlg;
-
-    private bool[] UseID = new bool[4];//プレイヤーに割り当てるIDの使用状況.
-    private int ReadyPeople;//準備完了人数.
-
-    public bool DeclarationFlg;//宣言待ちフラグ.
-
-    bool timeflg;
-    public List<GameObject> PlayersNameGroup = new List<GameObject>();
-    public List<GameObject> Players = new List<GameObject>();
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
     void Start()
@@ -160,6 +150,45 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
+    #region ゲーム状況
+    /// <summary>
+    /// InGameの際にUpdateで呼び出し続ける関数
+    /// 自分のターンの処理・時間の制御をここで行う.
+    /// </summary>
+    private void InGameRoop()
+    {
+        if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンなら
+        {
+            ShakeDiceButton.SetActive(true);//サイコロを振るボタンを表示.
+            WhoseTurnText.color = Color.red;//ターンテキストの色を赤に変更.
+            WhoseTurnText.text = "あなたのターン";
+            WaitText.text = "";
+        }
+        else//自分のターンでないなら.
+        {
+            ShakeDiceButton.SetActive(false);//サイコロを振るボタンを非表示.
+            WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
+            WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
+            WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
+        }
+
+        if (Input.GetKeyDown(KeyCode.P))//デバック用タイマー起動.
+        {
+            photonView.RPC(nameof(StartTimer), RpcTarget.All);
+        }
+        if (timeflg)
+        {
+            HaveTime -= Time.deltaTime;
+        }
+        HaveTimeText.text = HaveTime.ToString("0");//時間の小数点をなくす.
+    }
+
+    void EndGame()
+    {
+
+    }
+    #endregion
+
     #region ターン変更関連関数
     /// <summary>
     /// さいころを振った後にRPCを呼び出し、ターンを変更する関数.
@@ -190,43 +219,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
-    #region ゲーム状況
-    /// <summary>
-    /// InGameの際にUpdateで呼び出し続ける関数
-    /// 自分のターンの処理・時間の制御をここで行う.
-    /// </summary>
-    private void InGameRoop()
-    {
-        if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンなら
-        {
-            ShakeDiceButton.SetActive(true);//サイコロを振るボタンを表示.
-            WhoseTurnText.color = Color.red;//ターンテキストの色を赤に変更.
-            WhoseTurnText.text = "あなたのターン";
-        }
-        else//自分のターンでないなら.
-        {
-            ShakeDiceButton.SetActive(false);//サイコロを振るボタンを非表示.
-            WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
-            WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
-        }
-
-        if (Input.GetKeyDown(KeyCode.P))//デバック用タイマー起動.
-        {
-            photonView.RPC(nameof(StartTimer), RpcTarget.All);
-        }
-        if (timeflg) 
-        {
-            HaveTime -= Time.deltaTime; 
-        }
-        HaveTimeText.text = HaveTime.ToString("0");//時間の小数点をなくす.
-    }
-
-    void EndGame()
-    {
-
-    }
-    #endregion
-
     #region HP変更関連
     /// <summary>
     /// 変更のあったプレイヤー一人が代表してHPの同期関数を呼び出す.
@@ -248,25 +240,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[subject - 1] -1];
     }
     #endregion
-
-    /// <summary>
-    /// PUNを使って変数を同期する.
-    /// </summary>
-    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            stream.SendNext(HaveTime);// timeを送信する
-            stream.SendNext(WhoseTurn);
-            stream.SendNext(PlayersHP);
-        }
-        else
-        {
-            HaveTime = (float)stream.ReceiveNext(); // timeを受信する
-            WhoseTurn = (int)stream.ReceiveNext();
-            PlayersHP = (int[])stream.ReceiveNext();
-        }
-    }
 
     #region 準備完了操作関連
 
@@ -326,36 +299,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     /// <summary>
-    /// 宣言された出目を受け取る関数.
-    /// </summary>
-    public void ReceiveDeme(int deme)
-    {
-        photonView.RPC(nameof(ActiveEnemyResult), RpcTarget.Others,deme);//サイコロを振っていない人にパネルを表示する.
-        WaitText.text = "他プレイヤーの宣言を待っています";
-    }
-
-    /// <summary>
-    /// サイコロの出目を他の人に通知するパネルを表示する関数.
-    /// </summary>
-    [PunRPC]
-    void ActiveEnemyResult(int deme)
-    {
-        EnemyResult.SetActive(true);
-        EnemyResult.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = DiceSprites[deme - 1];
-    }
-
-    /// <summary>
     /// 信じるボタンを押したときに呼び出す関数.
     /// </summary>
     public void PushBelieveButton()
     {
         photonView.RPC(nameof(AddThroughNum), RpcTarget.All);
     }
+    /// <summary>
+    /// ダウトボタンを押した時に呼び出す関数
+    /// </summary>
     public void PushDoubtButton()
     {
-        DeclarationFlg = true;
-        DiceInit();
-        FinishTurn();
+        photonView.RPC(nameof(AddThroughNum), RpcTarget.All);
     }
 
     /// <summary>
@@ -377,6 +332,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
     }
 
+    #region サイコロ関連関数
     /// <summary>
     /// サイコロを振る用の関数
     /// サイコロのプレファブが無ければ作成し、有れば表示・非表示を繰り返す.
@@ -497,13 +453,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void DeclarationResult()
     {
         DiceFinishFlg = true;
-        //後々修正.
-        ResultPanel[0].SetActive(false);
-        ResultPanel[1].SetActive(false);
-        ResultPanel[2].SetActive(false);
-        ResultPanel[3].SetActive(false);
-        ResultPanel[4].SetActive(false);
-
+        for (int i = 0; i > 5; i++)//全てのリザルト画面を非表示にする.
+        {
+            ResultPanel[i].SetActive(false);
+        }
         Debug.Log("出目：" + DeclarationNum);
         DiceNumText.text = " ";
         DiceCamera.SetActive(false);
@@ -513,7 +466,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     /// <summary>
     /// サイコロの初期化関数
-    /// サイコロを振り終わったあとに呼び出す.
+    /// サイコロを振り終わったあとに呼び出し、設定を全て初期化する.
     /// </summary>
     public void DiceInit()
     {
@@ -528,8 +481,27 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     /// <summary>
-    /// プレイヤーにIDを与える関数
+    /// 宣言された出目を受け取る関数.
     /// </summary>
+    public void ReceiveDeme(int deme)
+    {
+        photonView.RPC(nameof(ActiveEnemyResult), RpcTarget.Others, deme);//サイコロを振っていない人にパネルを表示する.
+        WaitText.text = "他プレイヤーの宣言を待っています";
+    }
+
+    /// <summary>
+    /// サイコロの出目を他の人に通知するパネルを表示する関数.
+    /// </summary>
+    [PunRPC]
+    void ActiveEnemyResult(int deme)
+    {
+        EnemyResult.SetActive(true);
+        EnemyResult.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = DiceSprites[deme - 1];
+    }
+
+    #endregion
+
+    #region プレイヤーにIDを与える関数
     public int Give_ID_Player()
     {
         int ID = 1;
@@ -548,6 +520,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         return ID;
     }
+
+    #endregion
 
     #region 持ち時間減少関連
 
@@ -578,4 +552,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }        
     }
     #endregion
+
+    /// <summary>
+    /// PUNを使って変数を同期する.
+    /// </summary>
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(HaveTime);// timeを送信する
+            stream.SendNext(WhoseTurn);
+            stream.SendNext(PlayersHP);
+        }
+        else
+        {
+            HaveTime = (float)stream.ReceiveNext(); // timeを受信する
+            WhoseTurn = (int)stream.ReceiveNext();
+            PlayersHP = (int[])stream.ReceiveNext();
+        }
+    }
 }

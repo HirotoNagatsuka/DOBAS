@@ -125,10 +125,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public void FinishDice()
     {
         int deme = gameManager.DeclarationNum;//出目を受け取る.
-        //if (gameManager.Doubt)//5か6が出ていたら
-        //{
-        //    doubtFlg = true;
-        //}
         gameManager.ReceiveDeme(deme);
         StartCoroutine("WaitDoubt", deme);
     }
@@ -139,7 +135,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// <returns></returns>
     IEnumerator WaitDoubt(int deme)
     {
-        //int i = 0;
         Debug.Log("出目" + deme);
         Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
         Debug.Log("キー入力待ち");
@@ -157,10 +152,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         gameManager.DiceFinishFlg = false;
         gameManager.DeclarationFlg = false;
         ResetFlg();
-        gameManager.FinishTurn();
+        gameManager.FinishTurn();//行動が終わったらターンを終わらせる.
         yield break;
     }
 
+    /// <summary>
+    /// フラグの初期化を行う関数
+    /// </summary>
     void ResetFlg()
     {
         CoroutineFlg = doubtFlg = false;
@@ -198,26 +196,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameManager.ChangePlayersHP(addHP, subject);
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-    }
-
-    /// <summary>
-    /// PUN2を使った変数同期.
-    /// ここで同期したい変数を全て送信する.
-    /// </summary>
-    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // 自身のアバターのHPを送信する
-            stream.SendNext(Player.HP);
-            stream.SendNext(Sum);
-        }
-        else
-        {
-            // 他プレイヤーのアバターのHPを受信する
-            Player.HP = (int)stream.ReceiveNext();
-            Sum = (int)stream.ReceiveNext();
-        }
     }
 
     #region 移動関連
@@ -305,16 +283,23 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
-    #region 長塚作成doubtプロトタイプ
-    public void PushBelieveButton()
+    /// <summary>
+    /// PUN2を使った変数同期.
+    /// ここで同期したい変数を全て送信する.
+    /// </summary>
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        Debug.Log("信じる!");
-        gameManager.DiceInit();
+        if (stream.IsWriting)
+        {
+            // 自身のアバターのHPを送信する
+            stream.SendNext(Player.HP);
+            stream.SendNext(Sum);
+        }
+        else
+        {
+            // 他プレイヤーのアバターのHPを受信する
+            Player.HP = (int)stream.ReceiveNext();
+            Sum = (int)stream.ReceiveNext();
+        }
     }
-    public void PushDoubtButton()
-    {
-        Debug.Log("ダウト!");
-        gameManager.DiceInit();
-    }
-    #endregion
 }
