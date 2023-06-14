@@ -76,7 +76,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
-        //Player.HP = gameManager.PlayersHP[Player.ID - 1];
+        Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
 
@@ -132,7 +132,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         int deme = diceManager.DeclarationNum;//出目を受け取る.
         if (diceManager.DeclarationNum == ATTACK)
         {
-           EnemyAttack(-1);// 引数追加(早坂)
+           EnemyAttack();// 引数追加(早坂)
         }
         else
         {
@@ -140,13 +140,34 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         diceManager.FinishFlg = false;
     }
+    /// <summary>
+    /// 他のプレイヤーを攻撃するための関数
+    /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
+    /// </summary>
+    [PunRPC]
+    void EnemyAttack()
+    {
+        Debug.Log("EnemyAttack()起動");
+        int rnd;//乱数用.
+        while (true)
+        {
+            rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
+            {
+                break;
+            }
+        }
+        Debug.Log("ループを抜けました");
+        Debug.Log("取得したrnd" + rnd);
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, rnd);
+    }
 
     /// <summary>
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
     /// </summary>
     [PunRPC]
-    void EnemyAttack(int powNum)//引数追加(早坂)
+    public void EnemyAttack(int powNum)//引数追加(早坂)
     {
         Debug.Log("EnemyAttack()起動");
         int rnd;//乱数用.
@@ -235,7 +256,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 yield return new WaitForSeconds(2);
 
                 Debug.Log("HP：" + Player.HP);
-                //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
                 ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
                 //ChangeHP(1);
             }

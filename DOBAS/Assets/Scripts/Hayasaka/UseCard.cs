@@ -32,7 +32,7 @@ public class UseCard : MonoBehaviourPunCallbacks
     {
         if (photonView.IsMine)
         {
-            gameManager.Players[0].GetComponent<PlayerManager>().StartDelay(Card_Manager.CardLists[0].GetPower(), true);
+            gameManager.Players[0].GetComponent<PlayerManager>().EnemyAttack(Card_Manager.CardLists[0].GetPower());
         }
     }
 }

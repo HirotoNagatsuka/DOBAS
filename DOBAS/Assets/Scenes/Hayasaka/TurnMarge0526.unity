@@ -3875,7 +3875,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
-  MaxPlayers: 1
+  MaxPlayers: 2
   FirstHP: 4
   HaveTime: 60
   InputNickName: {fileID: 1920048205}
@@ -3892,11 +3892,11 @@ MonoBehaviour:
   PlayersHP: 
   PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
   Hearts:
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
-  - {fileID: 0}
+  - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
+  - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
+  - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
+  - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
+  - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
   PlayersNameGroup: []
   Players: []
 --- !u!1 &928414172
@@ -6736,7 +6736,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1709050939}
         m_TargetAssemblyTypeName: UseCard, Assembly-CSharp
-        m_MethodName: UseCardMove
+        m_MethodName: UseCardAttck
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
