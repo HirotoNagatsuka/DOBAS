@@ -36,10 +36,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private const float MOVE_SPEED = 10.0f;      // マスを進む速度.
     #endregion
 
+    // 早坂
+    private int RandomNum;
+    private bool NowCardMove = false;
+
     #region 外部スクリプト参照用宣言
     GameManager gameManager;//GameManager参照用.
     DiceManager diceManager;//DiceManager参照用.
     MapManager mapManager; //MapManager参照用.
+
+    [SerializeField]
+    CardManager cardManager; // CardListManager参照用(早坂)
     #endregion
 
     #region public・SerializeField宣言
@@ -65,12 +72,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
         diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
+        
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
-        Player.HP = gameManager.PlayersHP[Player.ID - 1];
+        //Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+
+        Debug.Log(cardManager);
     }
 
     private void Update()
@@ -83,9 +93,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             // 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
             if (diceManager.FinishFlg) FinishDice();
-            Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
+            //Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
         }
-        ChangePlayerUI();
+        //ChangePlayerUI();
     }
 
     /// <summary>
@@ -122,11 +132,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         int deme = diceManager.DeclarationNum;//出目を受け取る.
         if (diceManager.DeclarationNum == ATTACK)
         {
-           EnemyAttack();
+           EnemyAttack(-1);// 引数追加(早坂)
         }
         else
         {
-            StartDelay(deme);
+            StartDelay(deme,false);// 第二引数追加(早坂)
         }
         diceManager.FinishFlg = false;
     }
@@ -136,7 +146,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
     /// </summary>
     [PunRPC]
-    void EnemyAttack()
+    void EnemyAttack(int powNum)//引数追加(早坂)
     {
         Debug.Log("EnemyAttack()起動");
         int rnd;//乱数用.
@@ -151,7 +161,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum,rnd);//攻撃値変更(早坂)
     }
 
     /// <summary>
@@ -194,65 +204,70 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     IEnumerator Activation(string tag)
     {
         ActionFlg = true;
+        if (!NowCardMove) // カード移動時にマスの効果を受けない(早坂)
+        {
+            // タグごとに分類
+            if (tag == "Start") // スタートマス
+            {
+                Debug.Log("周回ボーナスゲット！");
+                yield return new WaitForSeconds(2); // 2秒待つ
+            }
+            else if (tag == "Card") // カードマス
+            {
+                Debug.Log("カード１枚ゲット！");
+                yield return new WaitForSeconds(2);
 
-        // タグごとに分類
-        if (tag == "Start") // スタートマス
-        {
-            Debug.Log("周回ボーナスゲット！");
-            yield return new WaitForSeconds(2); // 2秒待つ
-        }
-        else if (tag == "Card") // カードマス
-        {
-            Debug.Log("カード１枚ゲット！");
-            yield return new WaitForSeconds(2);
+                Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
 
-            Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
-        }
-        else if (tag == "Move") // 移動マス
-        {
-            Debug.Log("3マス進む！");
-            yield return new WaitForSeconds(2);
+                SendCardList(); // 早坂
+            }
+            else if (tag == "Move") // 移動マス
+            {
+                Debug.Log("3マス進む！");
+                yield return new WaitForSeconds(2);
 
-            MoveMasu = mapManager.GetComponent<MapManager>().Move(MoveMasu, tag);  // MapManagerのMove関数処理を行う
-            StartCoroutine("DelayMove", MoveMasu);                            // １マスづつ進む
-        }
-        else if (tag == "Hp") // HPマス
-        {
-            Debug.Log("HP１回復！！");
-            yield return new WaitForSeconds(2);
+                MoveMasu = mapManager.GetComponent<MapManager>().Move(MoveMasu, tag);  // MapManagerのMove関数処理を行う
+                StartCoroutine("DelayMove", MoveMasu);                            // １マスづつ進む
+            }
+            else if (tag == "Hp") // HPマス
+            {
+                Debug.Log("HP１回復！！");
+                yield return new WaitForSeconds(2);
 
-            Debug.Log("HP：" + Player.HP);
-            //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
-            ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
-            //ChangeHP(1);
-        }
-        else if (tag == "Attack") //攻撃マス
-        {
-            Debug.Log("他のプレイヤーを攻撃！");
-            yield return new WaitForSeconds(2);
+                Debug.Log("HP：" + Player.HP);
+                //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
+                ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
+                //ChangeHP(1);
+            }
+            else if (tag == "Attack") //攻撃マス
+            {
+                Debug.Log("他のプレイヤーを攻撃！");
+                yield return new WaitForSeconds(2);
 
-            mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
-        }
-        else // ノーマルマス
-        {
-            Debug.Log("普通のマス");
-            yield return new WaitForSeconds(2);
+                mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+            }
+            else // ノーマルマス
+            {
+                Debug.Log("普通のマス");
+                yield return new WaitForSeconds(2);
+            }
         }
     }
     /// <summary>
     /// 数値の出目を受け取ったら呼び出す関数
     /// 引数に出目を受け取り移動用コルーチンを起動する.
     /// </summary>
-    public void StartDelay(int num)
+    public void StartDelay(int num,bool cardMove) // 第二引数追加(早坂)
     {
         Debug.Log("StartDeley起動");
+        NowCardMove = cardMove;
         // コルーチンの開始
         StartCoroutine("DelayMove", num);
     }
     /// <summary>
     /// 引数で受け取った分マスを移動指せるコルーチン.
     /// </summary>
-    IEnumerator DelayMove(int num)
+    IEnumerator DelayMove(int num) //第二引数追加(早坂)
     {
         // １マスづつ進ませる
         for (int i = 0; i < num; i++)
@@ -281,6 +296,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         Debug.Log("ダウト!");
         diceManager.DiceInit();
+    }
+    #endregion
+
+    #region 早坂追加
+    public void SendCardList()
+    {
+        RandomNum = UnityEngine.Random.Range(0, cardManager.GetCardLists().Count);
     }
     #endregion
 }

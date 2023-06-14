@@ -73,6 +73,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     bool timeflg;
     public List<GameObject> PlayersNameGroup = new List<GameObject>();
 
+    public List<GameObject> Players = new List<GameObject>(); // プレイヤー参照用(早坂)
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
     void Start()
@@ -218,6 +219,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         ReadyPeople++;
     }
+
     /// <summary>
     /// 基底人数に達したらプレイヤーを生成する関数.
     /// </summary>
@@ -228,7 +230,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         NowGameState = GameState.InGame;//ゲーム状態をInGameにする.
         CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
         var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-        PhotonNetwork.Instantiate("Player", position, Quaternion.identity);//プレイヤーを生成する.
+        // 早坂
+        GameObject p = PhotonNetwork.Instantiate("Player", position, Quaternion.identity);//プレイヤーを生成する.
+        Players.Add(p);
+
         int i=0;                                                             // ループを使用して、全てのプレイヤーに対して名前を表示する例
         foreach (var player in PhotonNetwork.PlayerList)//プレイヤーの名前を取得.
         {

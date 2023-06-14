@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Id: 8
   Koc: 3
-  Icon: {fileID: 0}
+  Icon: {fileID: 1957611104, guid: b31d9b9fc0e0b8a4c9bd1dd89761ec8b, type: 3}
   CardName: "\u5834\u6240\u79FB\u52D5"
   Power: 0
   Move: 0

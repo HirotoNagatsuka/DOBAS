@@ -208,6 +208,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cardManager: {fileID: 11400000, guid: 59addbcc2f77fe544b37828b02d56cd7, type: 2}
   Player:
     Name: TNC
     MaxHP: 0
