@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class DiceStage : MonoBehaviour
 {
 
-    [SerializeField] DiceManager diceManager;
+    [SerializeField] GameManager gameManager;
     private int number;
 
     void Start()
@@ -47,6 +47,6 @@ public class DiceStage : MonoBehaviour
     /// </summary>
     public void ReturnNumber()
     {
-        diceManager.GetComponent<DiceManager>().ConfirmNumber(number);
+        gameManager.GetComponent<GameManager>().ConfirmNumber(number);
     }
 }

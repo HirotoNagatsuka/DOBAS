@@ -230,13 +230,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 283983396}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dbac253bbff98e49b2ae05fe8c7a295, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c4d7d810f7a84645961424090ccc206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
   GameEnd: 0
-  TestOrder: 4
+  DoutFlg: 0
+  DoutDec: 0
+  MyDec: 0
+  Saikoro: 0
+  TestOrder: 3
+  Count: 5
   GmObj: {fileID: 1196845328}
 --- !u!1 &406585021
 GameObject:
@@ -429,13 +434,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 412051496}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dbac253bbff98e49b2ae05fe8c7a295, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c4d7d810f7a84645961424090ccc206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
   GameEnd: 0
-  TestOrder: 2
+  DoutFlg: 0
+  DoutDec: 0
+  MyDec: 0
+  Saikoro: 0
+  TestOrder: 4
+  Count: 5
   GmObj: {fileID: 1196845328}
 --- !u!1 &592772620
 GameObject:
@@ -638,13 +648,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 656784234}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dbac253bbff98e49b2ae05fe8c7a295, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c4d7d810f7a84645961424090ccc206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
   GameEnd: 0
-  TestOrder: 1
+  DoutFlg: 0
+  DoutDec: 0
+  MyDec: 0
+  Saikoro: 0
+  TestOrder: 2
+  Count: 5
   GmObj: {fileID: 1196845328}
 --- !u!1 &1196845328
 GameObject:
@@ -672,14 +687,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1196845328}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d48cefe08a5dd174bb915993aca0ea80, type: 3}
+  m_Script: {fileID: 11500000, guid: 6019e4bb8469c2945ae865303671c930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  NowGameState: 1
+  NowGameState: 0
   Hp: 0
   AtPower: 0
   HaveCard: 0
   LocaInfo: 0
+  Votes: 0
+  Index: 0
   EndPt: 0
 --- !u!4 &1196845330
 Transform:
@@ -803,11 +820,16 @@ MonoBehaviour:
   m_GameObject: {fileID: 1406093431}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1dbac253bbff98e49b2ae05fe8c7a295, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c4d7d810f7a84645961424090ccc206, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Tarn: 0
   TarnEnd: 0
   GameEnd: 0
-  TestOrder: 3
+  DoutFlg: 0
+  DoutDec: 0
+  MyDec: 0
+  Saikoro: 0
+  TestOrder: 1
+  Count: 5
   GmObj: {fileID: 1196845328}

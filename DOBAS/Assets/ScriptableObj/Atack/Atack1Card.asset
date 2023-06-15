@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e9718f7a53ad6cc4f9d0c903dc47c313, type: 3}
-  m_Name: PosMix
+  m_Name: Atack1Card
   m_EditorClassIdentifier: 
-  Id: 8
-  Koc: 3
-  Icon: {fileID: 1957611104, guid: b31d9b9fc0e0b8a4c9bd1dd89761ec8b, type: 3}
-  CardName: "\u5834\u6240\u79FB\u52D5"
-  Power: 0
+  Id: 1
+  Koc: 0
+  Icon: {fileID: 0}
+  CardName: "1\u30C0\u30E1\u30FC\u30B8"
+  Power: 1
   Move: 0
