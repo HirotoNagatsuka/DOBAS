@@ -75,7 +75,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] Text WhoseTurnText;        //誰のターンかのテキスト.
     [SerializeField] Text HaveTimeText;         //持ち時間テキスト.
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
-
+    [SerializeField] GameObject CardButton;
 
     [Header("さいころ関連")]
     [SerializeField] GameObject DicePrefab;//サイコロのプレファブを入れる.
@@ -93,6 +93,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
     public Text WaitText;   //他の人の行動待ちを表示するテキスト.
     [SerializeField] GameObject PlayersNameGroupPrefab;//右上に表示する名前を生成する用.
+    public List<GameObject> Players = new List<GameObject>(); // プレイヤー参照用(早坂)
     [SerializeField] Sprite[] HeartSprites = new Sprite[5];//HP用の画像.
     [SerializeField] Sprite[] DiceSprites = new Sprite[4]; //サイコロの出目の画像.
     public int DeclarationNum;//宣言番号.
@@ -100,6 +101,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public bool DeclarationFlg;//宣言待ちフラグ(Playerから参照する).
 
     public bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
+
     #endregion
 
     #region Unityイベント(Start・Update)
@@ -162,6 +164,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンなら
         {
             ShakeDiceButton.SetActive(true);//サイコロを振るボタンを表示.
+            CardButton.SetActive(true);
             WhoseTurnText.color = Color.red;//ターンテキストの色を赤に変更.
             WhoseTurnText.text = "あなたのターン";
             //WaitText.text = "";
@@ -169,6 +172,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else//自分のターンでないなら.
         {
             ShakeDiceButton.SetActive(false);//サイコロを振るボタンを非表示.
+            CardButton.SetActive(false);
             WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
             WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
             //WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
@@ -265,7 +269,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         StandByCanvas.SetActive(false); //準備完了関連のキャンバスを非表示にする.
         NowGameState = GameState.InGame;//ゲーム状態をInGameにする.
         CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
-        PhotonNetwork.Instantiate("Player", new Vector3(0f, 0f, 0f), Quaternion.identity);//プレイヤーを生成する.
+        //PhotonNetwork.Instantiate("Player", new Vector3(0f, 0f, 0f), Quaternion.identity);//プレイヤーを生成する.
+        // 早坂
+        GameObject p = PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
+        Players.Add(p);
+        
         int i=0;                        //詳細情報のY座標を変更するためにローカルな変数iを用意.
         foreach (var player in PhotonNetwork.PlayerList)//プレイヤーの名前を取得.
         {
@@ -492,6 +500,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         DiceNumText.text = " ";
         DeclarationNum = 0;
         ReasoningPanel.SetActive(false);
+        Debug.Log("DiceInit起動");
         DiceCamera.SetActive(false);
         Dice.SetActive(false);
         DiceFlg = false;

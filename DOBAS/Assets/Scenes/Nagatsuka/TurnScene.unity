@@ -3859,6 +3859,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 509c0062665a3034cb64440cf4adefc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayersName: []
   NowGameState: 0
   MaxPlayers: 2
   FirstHP: 4
@@ -3888,6 +3889,7 @@ MonoBehaviour:
   PlayersHP: 
   WaitText: {fileID: 424346412}
   PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
+  Players: []
   HeartSprites:
   - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
   - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
@@ -3902,6 +3904,7 @@ MonoBehaviour:
   DeclarationNum: 0
   DiceFinishFlg: 0
   DeclarationFlg: 0
+  doubtFlg: 0
 --- !u!4 &919660205
 Transform:
   m_ObjectHideFlags: 0
