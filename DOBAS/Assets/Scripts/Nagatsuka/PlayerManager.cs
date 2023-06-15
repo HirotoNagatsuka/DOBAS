@@ -14,7 +14,6 @@ class PlayerStatus
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
     public Sprite[] HeartSprites;//HP用画像の配列.
-    //public string ID;//デバック用.
     public int ID;//デバック用.
 }
 
@@ -36,24 +35,25 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private const float MOVE_SPEED = 10.0f;      // マスを進む速度.
     #endregion
 
-    // 早坂
-    private int RandomNum;
-    private bool NowCardMove = false;
-
     #region 外部スクリプト参照用宣言
     GameManager gameManager;//GameManager参照用.
-    DiceManager diceManager;//DiceManager参照用.
     MapManager mapManager; //MapManager参照用.
-
     [SerializeField]
     CardManager cardManager; // CardListManager参照用(早坂)
     #endregion
+
+    // 早坂
+    private int RandomNum;
+    public bool NowCardMove = false;
 
     #region public・SerializeField宣言
     [Header("[SerializeField]宣言")]
     [SerializeField]
     PlayerStatus Player;//Playerのクラスをインスペクター上で見れるようにする.
     #endregion
+
+    public bool doubtFlg;//嘘をついているか判定.
+    public bool CoroutineFlg;//スマートではないので修正したい.
 
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
     private bool ActionFlg = true;   // サイコロを振ったかどうか
@@ -71,16 +71,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
-        diceManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
-        
+        //gameManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
         Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-
-        Debug.Log(cardManager);
     }
 
     private void Update()
@@ -92,10 +89,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
             // 移動モーション
             transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
-            if (diceManager.FinishFlg) FinishDice();
-            //Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
+            if (gameManager.DiceFinishFlg && CoroutineFlg == false)
+            {
+                    CoroutineFlg = true;
+                    FinishDice();
+            }
+            Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
         }
-        //ChangePlayerUI();
+        ChangePlayerUI();
     }
 
     /// <summary>
@@ -129,17 +130,46 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void FinishDice()
     {
-        int deme = diceManager.DeclarationNum;//出目を受け取る.
-        if (diceManager.DeclarationNum == ATTACK)
+        int deme = gameManager.DeclarationNum;//出目を受け取る.
+        gameManager.ReceiveDeme(deme);
+        StartCoroutine("WaitDoubt", deme);
+    }
+
+    /// <summary>
+    /// 他のプレイヤーのダウト宣言を待つコルーチン
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator WaitDoubt(int deme)
+    {
+        Debug.Log("出目" + deme);
+        Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
+        Debug.Log("キー入力待ち");
+        Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
+        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // クリック待ち処理
+        if (deme == ATTACK)
         {
-           EnemyAttack();// 引数追加(早坂)
+            Debug.Log("EnemyAttack()起動用if文中");
+            EnemyAttack();
         }
         else
         {
-            StartDelay(deme,false);// 第二引数追加(早坂)
+            StartDelay(deme,false);
         }
-        diceManager.FinishFlg = false;
+        gameManager.DiceFinishFlg = false;
+        gameManager.DeclarationFlg = false;
+        ResetFlg();
+        gameManager.FinishTurn();//行動が終わったらターンを終わらせる.
+        yield break;
     }
+
+    /// <summary>
+    /// フラグの初期化を行う関数
+    /// </summary>
+    void ResetFlg()
+    {
+        CoroutineFlg = doubtFlg = false;
+    }
+
     /// <summary>
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
@@ -159,9 +189,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, rnd);
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
     }
-
     /// <summary>
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
@@ -182,8 +211,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum,rnd);//攻撃値変更(早坂)
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum, rnd);//攻撃値変更(早坂)
     }
+
 
     /// <summary>
     /// HPが変化するときに呼び出す関数
@@ -195,26 +225,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameManager.ChangePlayersHP(addHP, subject);
         PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-    }
-
-    /// <summary>
-    /// PUN2を使った変数同期.
-    /// ここで同期したい変数を全て送信する.
-    /// </summary>
-    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
-    {
-        if (stream.IsWriting)
-        {
-            // 自身のアバターのHPを送信する
-            stream.SendNext(Player.HP);
-            stream.SendNext(Sum);
-        }
-        else
-        {
-            // 他プレイヤーのアバターのHPを受信する
-            Player.HP = (int)stream.ReceiveNext();
-            Sum = (int)stream.ReceiveNext();
-        }
     }
 
     #region 移動関連
@@ -240,7 +250,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
 
-                SendCardList(); // 早坂
+                SendCardList(); // 早坂(未完)
             }
             else if (tag == "Move") // 移動マス
             {
@@ -256,7 +266,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 yield return new WaitForSeconds(2);
 
                 Debug.Log("HP：" + Player.HP);
-                photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1,Player.ID);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
                 ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
                 //ChangeHP(1);
             }
@@ -278,17 +288,27 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 数値の出目を受け取ったら呼び出す関数
     /// 引数に出目を受け取り移動用コルーチンを起動する.
     /// </summary>
-    public void StartDelay(int num,bool cardMove) // 第二引数追加(早坂)
+    public void StartDelay(int num)
     {
         Debug.Log("StartDeley起動");
-        NowCardMove = cardMove;
+        // コルーチンの開始
+        StartCoroutine("DelayMove", num);
+    }
+    /// <summary>
+    /// 数値の出目を受け取ったら呼び出す関数
+    /// 引数に出目を受け取り移動用コルーチンを起動する.
+    /// </summary>
+    public void StartDelay(int num, bool cardMove) // 第二引数追加(早坂)
+    {
+        Debug.Log("StartDeley(OverLoad)起動");
+        NowCardMove = cardMove; //(早坂)
         // コルーチンの開始
         StartCoroutine("DelayMove", num);
     }
     /// <summary>
     /// 引数で受け取った分マスを移動指せるコルーチン.
     /// </summary>
-    IEnumerator DelayMove(int num) //第二引数追加(早坂)
+    IEnumerator DelayMove(int num)
     {
         // １マスづつ進ませる
         for (int i = 0; i < num; i++)
@@ -307,19 +327,27 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
     #endregion
 
-    #region 長塚作成doubtプロトタイプ
-    public void PushBelieveButton()
+    /// <summary>
+    /// PUN2を使った変数同期.
+    /// ここで同期したい変数を全て送信する.
+    /// </summary>
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
     {
-        Debug.Log("信じる!");
-        diceManager.DiceInit();
-    }
-    public void PushDoubtButton()
-    {
-        Debug.Log("ダウト!");
-        diceManager.DiceInit();
-    }
-    #endregion
+        if (stream.IsWriting)
+        {
+            // 自身のアバターのHPを送信する
+            stream.SendNext(Player.HP);
+            stream.SendNext(Sum);
+        }
+        else
+        {
+            // 他プレイヤーのアバターのHPを受信する
+            Player.HP = (int)stream.ReceiveNext();
+            Sum = (int)stream.ReceiveNext();
+        }
 
+
+    }
     #region 早坂追加
     public void SendCardList()
     {

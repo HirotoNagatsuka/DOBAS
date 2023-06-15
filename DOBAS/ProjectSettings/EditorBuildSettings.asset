@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Nagatsuka/TurnScene.unity
-    guid: d8180a451927a494faafb87938d4bef4
+    path: Assets/Scenes/Hayasaka/TurnMarge0615.unity
+    guid: 4a690d75a1651ce4fbdfe8e648e01033
   m_configObjects: {}

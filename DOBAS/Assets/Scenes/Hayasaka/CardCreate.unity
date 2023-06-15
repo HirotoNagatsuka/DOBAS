@@ -288,8 +288,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushOneButton
         m_Mode: 1
         m_Arguments:
@@ -501,8 +501,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushTwoButton
         m_Mode: 1
         m_Arguments:
@@ -828,8 +828,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushThreeButton
         m_Mode: 1
         m_Arguments:
@@ -878,69 +878,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 255890501}
   m_CullTransparentMesh: 1
---- !u!1 &263250656
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 263250658}
-  - component: {fileID: 263250657}
-  m_Layer: 0
-  m_Name: DiceManager
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &263250657
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263250656}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f8872e784b458d499978f33366a4fda, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  DicePrefab: {fileID: 3310249835269611495, guid: baf45781312b4994ebc07f9a2cebac12, type: 3}
-  DiceCamera: {fileID: 1906628883}
-  DiceNumText: {fileID: 141854912}
-  ResultPanel:
-  - {fileID: 688149862}
-  - {fileID: 325040816}
-  - {fileID: 698859664}
-  - {fileID: 1436453360}
-  - {fileID: 1795448903}
-  ReasoningPanel: {fileID: 0}
-  kodomo: {fileID: 263250658}
-  DiceShakeButton: {fileID: 0}
-  DeclarationNum: 0
-  Doubt: 0
-  gameManager: {fileID: 0}
-  FinishFlg: 0
---- !u!4 &263250658
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 263250656}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 196.2, y: 0, z: -28.6}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children:
-  - {fileID: 1906628885}
-  - {fileID: 532707938}
-  - {fileID: 1211392011}
-  m_Father: {fileID: 0}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &277011547
 GameObject:
   m_ObjectHideFlags: 0
@@ -1651,8 +1588,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushAttackButton
         m_Mode: 1
         m_Arguments:
@@ -2012,8 +1949,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushThreeButton
         m_Mode: 1
         m_Arguments:
@@ -2191,7 +2128,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 141854914}
-  m_Father: {fileID: 263250658}
+  m_Father: {fileID: 919660205}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -2424,8 +2361,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushBelieveButton
         m_Mode: 1
         m_Arguments:
@@ -2713,6 +2650,86 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 688149862}
   m_CullTransparentMesh: 1
+--- !u!1 &693584534
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 693584535}
+  - component: {fileID: 693584537}
+  - component: {fileID: 693584536}
+  m_Layer: 5
+  m_Name: WaitText
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &693584535
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693584534}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0, y: 0, z: 0}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030147748}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &693584536
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693584534}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f7201a12d95ffc409449d95f23cf332, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 0.19607843, g: 0.19607843, b: 0.19607843, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_FontData:
+    m_Font: {fileID: 10102, guid: 0000000000000000e000000000000000, type: 0}
+    m_FontSize: 80
+    m_FontStyle: 0
+    m_BestFit: 0
+    m_MinSize: 8
+    m_MaxSize: 80
+    m_Alignment: 4
+    m_AlignByGeometry: 0
+    m_RichText: 1
+    m_HorizontalOverflow: 1
+    m_VerticalOverflow: 1
+    m_LineSpacing: 1
+  m_Text: 
+--- !u!222 &693584537
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 693584534}
+  m_CullTransparentMesh: 1
 --- !u!1 &698859664
 GameObject:
   m_ObjectHideFlags: 0
@@ -2875,8 +2892,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushTwoButton
         m_Mode: 1
         m_Arguments:
@@ -3329,7 +3346,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 10
+  m_RootOrder: 9
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &882092221
 GameObject:
@@ -3591,7 +3608,7 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1030147748}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
@@ -3835,7 +3852,10 @@ Transform:
   m_LocalPosition: {x: 0.78, y: 1.91, z: -5.47}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
+  m_Children:
+  - {fileID: 1906628885}
+  - {fileID: 532707938}
+  - {fileID: 1211392011}
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -3874,8 +3894,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 509c0062665a3034cb64440cf4adefc4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  PlayersName: []
   NowGameState: 0
-  MaxPlayers: 2
+  MaxPlayers: 1
   FirstHP: 4
   HaveTime: 60
   InputNickName: {fileID: 1920048205}
@@ -3886,19 +3907,40 @@ MonoBehaviour:
   StandByText: {fileID: 384848842}
   WhoseTurnText: {fileID: 890639575}
   HaveTimeText: {fileID: 1104027714}
-  StandByGroup: {fileID: 1203752852}
+  StandByGroup: {fileID: 1188823605}
+  CardButton: {fileID: 1481636142}
+  DicePrefab: {fileID: 3310249835269611495, guid: baf45781312b4994ebc07f9a2cebac12, type: 3}
   ShakeDiceButton: {fileID: 1056243491}
-  PlayersName: []
+  DiceCamera: {fileID: 1906628883}
+  DiceNumText: {fileID: 141854912}
+  ResultPanel:
+  - {fileID: 688149862}
+  - {fileID: 325040816}
+  - {fileID: 698859664}
+  - {fileID: 1436453360}
+  - {fileID: 1795448903}
+  ReasoningPanel: {fileID: 397416621}
+  DiceShakeButton: {fileID: 1056243491}
+  EnemyResult: {fileID: 397416621}
   PlayersHP: 
+  WaitText: {fileID: 693584536}
   PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
-  Hearts:
+  Players: []
+  HeartSprites:
   - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
   - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
   - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
   - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
   - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
-  PlayersNameGroup: []
-  Players: []
+  DiceSprites:
+  - {fileID: 1639781991, guid: 59155c2fafd4b29429c0dabe544e5895, type: 3}
+  - {fileID: -92155083, guid: 59155c2fafd4b29429c0dabe544e5895, type: 3}
+  - {fileID: -1947917226, guid: 59155c2fafd4b29429c0dabe544e5895, type: 3}
+  - {fileID: -422175394, guid: 59155c2fafd4b29429c0dabe544e5895, type: 3}
+  DeclarationNum: 0
+  DiceFinishFlg: 0
+  DeclarationFlg: 0
+  doubtFlg: 0
 --- !u!1 &928414172
 GameObject:
   m_ObjectHideFlags: 0
@@ -4223,7 +4265,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 5
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &977273905
 GameObject:
@@ -4665,7 +4707,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1030147748
 RectTransform:
   m_ObjectHideFlags: 0
@@ -4682,10 +4724,12 @@ RectTransform:
   - {fileID: 1498040032}
   - {fileID: 397416622}
   - {fileID: 1481636143}
-  - {fileID: 1449946276}
   - {fileID: 890639572}
+  - {fileID: 693584535}
+  - {fileID: 1353236168}
+  - {fileID: 1363895012}
   m_Father: {fileID: 0}
-  m_RootOrder: 7
+  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -4816,8 +4860,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushShakeDiceButton
         m_Mode: 1
         m_Arguments:
@@ -5012,7 +5056,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
+  m_RootOrder: 5
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1138027825
 GameObject:
@@ -5303,7 +5347,7 @@ RectTransform:
   - {fileID: 904179699}
   - {fileID: 1188823606}
   m_Father: {fileID: 0}
-  m_RootOrder: 11
+  m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -5426,7 +5470,7 @@ RectTransform:
   - {fileID: 698859665}
   - {fileID: 1436453361}
   - {fileID: 1795448906}
-  m_Father: {fileID: 263250658}
+  m_Father: {fileID: 919660205}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -5550,7 +5594,7 @@ Transform:
   - {fileID: 367450714}
   - {fileID: 1356665745}
   m_Father: {fileID: 0}
-  m_RootOrder: 9
+  m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1251096699
 GameObject:
@@ -5960,8 +6004,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushAttackButton
         m_Mode: 1
         m_Arguments:
@@ -6009,6 +6053,82 @@ CanvasRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1333396706}
+  m_CullTransparentMesh: 1
+--- !u!1 &1353236167
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1353236168}
+  - component: {fileID: 1353236170}
+  - component: {fileID: 1353236169}
+  m_Layer: 5
+  m_Name: CardListPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1353236168
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353236167}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 0.86154, y: 0.8668, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030147748}
+  m_RootOrder: 6
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1353236169
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353236167}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.9529412}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1353236170
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1353236167}
   m_CullTransparentMesh: 1
 --- !u!1 &1356665744
 GameObject:
@@ -6124,6 +6244,127 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1356665744}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1363895011
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1363895012}
+  - component: {fileID: 1363895015}
+  - component: {fileID: 1363895014}
+  - component: {fileID: 1363895013}
+  m_Layer: 5
+  m_Name: Card
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1363895012
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363895011}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 2, y: 12, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1030147748}
+  m_RootOrder: 7
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -622, y: 245}
+  m_SizeDelta: {x: 160, y: 30}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1363895013
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363895011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1363895014}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &1363895014
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363895011}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_RaycastTarget: 1
+  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
+  m_Maskable: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+  m_Sprite: {fileID: 10905, guid: 0000000000000000f000000000000000, type: 0}
+  m_Type: 1
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+  m_PixelsPerUnitMultiplier: 1
+--- !u!222 &1363895015
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1363895011}
+  m_CullTransparentMesh: 1
 --- !u!1 &1386637109
 GameObject:
   m_ObjectHideFlags: 0
@@ -6460,82 +6701,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1444762539}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1 &1449946273
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1449946276}
-  - component: {fileID: 1449946275}
-  - component: {fileID: 1449946274}
-  m_Layer: 5
-  m_Name: GetCardList(new)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 0
---- !u!114 &1449946274
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1449946273}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fe87c0e1cc204ed48ad3b37840f39efc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_RaycastTarget: 1
-  m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
-  m_Maskable: 1
-  m_OnCullStateChanged:
-    m_PersistentCalls:
-      m_Calls: []
-  m_Sprite: {fileID: 10907, guid: 0000000000000000f000000000000000, type: 0}
-  m_Type: 1
-  m_PreserveAspect: 0
-  m_FillCenter: 1
-  m_FillMethod: 4
-  m_FillAmount: 1
-  m_FillClockwise: 1
-  m_FillOrigin: 0
-  m_UseSpriteMesh: 0
-  m_PixelsPerUnitMultiplier: 1
---- !u!222 &1449946275
-CanvasRenderer:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1449946273}
-  m_CullTransparentMesh: 1
---- !u!224 &1449946276
-RectTransform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1449946273}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.88814, y: 0.7167803, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 1030147748}
-  m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &1480858862
 GameObject:
   m_ObjectHideFlags: 0
@@ -6663,7 +6828,7 @@ GameObject:
   - component: {fileID: 1481636145}
   - component: {fileID: 1481636144}
   m_Layer: 5
-  m_Name: CardButton(new)
+  m_Name: CardButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6736,7 +6901,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1709050939}
         m_TargetAssemblyTypeName: UseCard, Assembly-CSharp
-        m_MethodName: UseCardAttck
+        m_MethodName: DrawCardList
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
@@ -7444,8 +7609,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 263250657}
-        m_TargetAssemblyTypeName: DiceManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushOneButton
         m_Mode: 1
         m_Arguments:
@@ -7734,7 +7899,7 @@ GameObject:
   - component: {fileID: 1709050939}
   - component: {fileID: 1709050940}
   m_Layer: 0
-  m_Name: UseCardManager(new)
+  m_Name: UseCardManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -7753,7 +7918,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 8
+  m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1709050939
 MonoBehaviour:
@@ -7768,8 +7933,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Card_Manager: {fileID: 11400000, guid: 59addbcc2f77fe544b37828b02d56cd7, type: 2}
-  CardPanel: {fileID: 1449946273}
-  gameManager: {fileID: 0}
+  CardPanel: {fileID: 1353236167}
 --- !u!114 &1709050940
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7957,7 +8121,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8926883836ca56947a55ae8a749d869a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  diceManager: {fileID: 263250657}
+  gameManager: {fileID: 919660207}
 --- !u!64 &1731906522
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -8416,8 +8580,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: PlayerManager, Assembly-CSharp
+      - m_Target: {fileID: 919660207}
+        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
         m_MethodName: PushDoubtButton
         m_Mode: 1
         m_Arguments:
@@ -8648,12 +8812,12 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1906628883}
   m_LocalRotation: {x: 0.7071068, y: -0, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -0.41000366, y: 8.68, z: -3.0100002}
+  m_LocalPosition: {x: 195.01, y: 6.7700005, z: -26.140001}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1731906520}
-  m_Father: {fileID: 263250658}
+  m_Father: {fileID: 919660205}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 90, y: 0, z: 0}
 --- !u!1 &1916392221

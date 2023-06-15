@@ -178,17 +178,6 @@ public class DiceManager : MonoBehaviour
     private void DeclarationResult()
     {
         FinishFlg = true;
-        //playerManager.StartDelay(DeclarationNum);
-        // mapPlayer.StartDelay(DeclarationNum);
-        /*
-        if (Doubt)
-        {
-            ResultPanel[4].SetActive(false);
-        }
-        else
-        {
-            ResultPanel[DeclarationNum - 1].SetActive(false);
-        }*/
         //å„ÅXèCê≥.
         ResultPanel[0].SetActive(false);
         ResultPanel[1].SetActive(false);
@@ -196,18 +185,17 @@ public class DiceManager : MonoBehaviour
         ResultPanel[3].SetActive(false);
         ResultPanel[4].SetActive(false);
 
-
         Debug.Log("èoñ⁄ÅF" + DeclarationNum);
         DiceNumText.text = " ";
         DiceCamera.SetActive(false);
         Dice.SetActive(false);
         DiceFlg = false;
-        Invoke("DiceInit", 2.0f);
-        //DiceInit();
+        //Invoke("DiceInit", 1.0f);
     }
 
     public void DiceInit()
     {
+        FinishFlg = false;
         DiceNumText.text = " ";
         DeclarationNum = 0;
         ReasoningPanel.SetActive(false);
@@ -215,7 +203,7 @@ public class DiceManager : MonoBehaviour
         Dice.SetActive(false);
         DiceFlg = false;
         DiceShakeButton.SetActive(true);
-        gameManager.FinishDice();
+        //gameManager.FinishTurn();
     }
 
     /// <summary>

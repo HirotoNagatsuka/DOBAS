@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5000573049203631748}
   - component: {fileID: 2068225425260951110}
   m_Layer: 0
-  m_Name: Dice_d6_Plastic Glossy Pure write
+  m_Name: NewDice_d6_Plastic Glossy Pure write
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -62,7 +62,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: e8b5b628a7df3304ea784f49f8d5f3d9, type: 2}
+  - {fileID: 2100000, guid: 3165e8c75964bed4eaac319f7177d213, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
