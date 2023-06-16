@@ -47,7 +47,7 @@ public class AnimalsManager : MonoBehaviour
             transform.Rotate(Vector3.up, rotation);
         }
 
-        EffectGenerate();
+        if(!NowSelect) EffectGenerate();
     }
 
     #region エフェクト生成
@@ -164,7 +164,7 @@ public class AnimalsManager : MonoBehaviour
     IEnumerator EffectPreview()
     {
         // 回復
-        GameObject healObj = Instantiate(effectObject[0], PlayerPos, Quaternion.identity);
+        GameObject healObj = Instantiate(effectObject[0], PlayerPos, Quaternion.identity); // HpUp
         ChildAnimator.SetTrigger("Jump"); // Jumpアニメーション再生
         yield return new WaitForSeconds(2f);
         Destroy(healObj);
@@ -180,10 +180,12 @@ public class AnimalsManager : MonoBehaviour
         Destroy(cardObj);
 
         // 被攻撃時
-        Instantiate(effectObject[3], PlayerPos, Quaternion.identity);
-        Instantiate(effectObject[4], PlayerPos, Quaternion.identity);
+        Instantiate(effectObject[3], PlayerPos, Quaternion.identity); // GetHit
+        Instantiate(effectObject[4], PlayerPos, Quaternion.identity); // HpBreak
+        yield return new WaitForSeconds(0.5f);
         ChildAnimator.SetTrigger("Death"); // Deathアニメーション再生
-        yield return new WaitForSeconds(2f);
+        yield return new WaitForSeconds(5f);
+        transform.GetChild(ChildNum).gameObject.SetActive(false); // プレイヤーを非アクティブ(死亡)
 
         EffectPrep = true;
     }

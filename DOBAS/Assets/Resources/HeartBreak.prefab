@@ -18518,7 +18518,7 @@ GameObject:
   - component: {fileID: 6855314210357232285}
   - component: {fileID: 114566830303460284}
   m_Layer: 0
-  m_Name: HpBreak
+  m_Name: HeartBreak
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
