@@ -13,7 +13,7 @@ class PlayerStatus
     public int MaxHP;   //HPの最大値;
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
-    public Sprite[] HeartSprites;//HP用画像の配列.
+   // public Sprite[] HeartSprites;//HP用画像の配列.
     public int ID;//デバック用.
 }
 
@@ -77,7 +77,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Player.ID = gameManager.Give_ID_Player();
         Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+       // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 
     private void Update()
@@ -96,7 +96,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
         }
-        ChangePlayerUI();
     }
 
     /// <summary>
@@ -121,7 +120,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     private void ChangePlayerUI()
     {
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
         PlayerUI.gameObject.transform.GetChild(ATTACK_NUM_UI).GetComponent<Text>().text = Player.Attack.ToString();//HPの表示.
     }
 
@@ -145,15 +144,18 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
         Debug.Log("キー入力待ち");
         Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
-        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // クリック待ち処理
-        if (deme == ATTACK)
+        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待ち処理
+        if (!gameManager.FailureDoubt)//嘘をついていた時に指摘されていたら動かさない
         {
-            Debug.Log("EnemyAttack()起動用if文中");
-            EnemyAttack();
-        }
-        else
-        {
-            StartDelay(deme,false);
+            if (deme == ATTACK)
+            {
+                Debug.Log("EnemyAttack()起動用if文中");
+                EnemyAttack();
+            }
+            else
+            {
+                StartDelay(deme, false);
+            }
         }
         gameManager.DiceFinishFlg = false;
         gameManager.DeclarationFlg = false;
@@ -224,7 +226,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public void ChangeHP(int addHP, int subject)
     {
         gameManager.ChangePlayersHP(addHP, subject);
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 
     #region 移動関連
@@ -250,7 +252,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
 
-                SendCardList(); // 早坂(未完)
+               // SendCardList(); // 早坂(未完)
             }
             else if (tag == "Move") // 移動マス
             {
