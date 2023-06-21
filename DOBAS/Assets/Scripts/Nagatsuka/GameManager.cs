@@ -38,7 +38,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private int ReadyPeople;           //準備完了人数.
     private bool timeflg;//持ち時間を減らすためのフラグ.
     private bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
-    public List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
+
     private List<GameObject> PlayersNameGroup = new List<GameObject>();//Playerの詳細情報を表示するオブジェクト.
     #endregion
 
@@ -95,6 +95,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public Text WaitText;   //他の人の行動待ちを表示するテキスト.
     [SerializeField] GameObject PlayersNameGroupPrefab;//右上に表示する名前を生成する用.
     public List<GameObject> Players = new List<GameObject>(); // プレイヤー参照用
+    public List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
+    public bool FinMessage = false;//メッセージの表示が終了したらマスの効果を発動する為のフラグ.
+    public bool PlayerFinTurn = false;//プレイヤーがターンを終了しているかの判定.
 
     public int DeclarationNum;//宣言番号.
     public bool DiceFinishFlg;//Player側からサイコロを振り終わっているかの参照用.
@@ -103,6 +106,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("ダウト関連")]
     [SerializeField]GameObject DoubtPanel;
 
+    [Header("メッセージ関連")]
+    [SerializeField] GameObject MessageWindow;//メッセージを表示するパネル（子供にメッセージ用テキスト）.
+    [SerializeField] GameObject MessageLogWindow;//メッセージのログを表示するパネル.
 
     [Header("画像データ")]
     [SerializeField] Sprite[] HeartSprites = new Sprite[6];//HP用の画像(0番目に死亡用のどくろを入れる).
@@ -224,7 +230,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void FinishTurn()
     {
         WaitText.text = "";
-        doubtFlg = diceBtnFlg = FailureDoubt = false;
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
     }
 
@@ -247,7 +252,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             NowGameState = GameState.EndGame;
         }
-        Debug.Log("ChangeTurn()起動");
         if (WhoseTurn == MaxPlayers)
         {
             WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
@@ -256,7 +260,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             WhoseTurn++;           //次の人のターンにする.
         }
-        DeclarationFlg = false;    //全員の宣言待ち状態をfalseにする.
+        StartCoroutine(TurnMessageWindowCoroutine());
     }
     #endregion
 
@@ -596,24 +600,54 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #endregion
 
-    #region プレイヤーにIDを与える関数
-    public int Give_ID_Player()
-    {
-        int ID = 1;
-        for (int i = 0; i < UseID.Length; i++)
-        {
-            if (UseID[i] == false)
-            {
-                UseID[i] = true;
-                break;
-            }
-            else
-            {
-                ID++;
-            }
-        }
+    #region メッセージ表示関連
 
-        return ID;
+    /// <summary>
+    /// Playerからメッセージの文字列を受け取って表示する関数.
+    /// </summary>
+    public void ShowMessage(string message,int num)
+    {
+        FinMessage = false;
+        photonView.RPC(nameof(ShowMessageAll), RpcTarget.All, message,num);
+    }
+
+    [PunRPC]
+    private void ShowMessageAll(string message,int num)
+    {
+        MessageWindow.SetActive(true);
+        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[num - 1] + "さんが\n" + message;
+        StartCoroutine(WaitMessageWindowCoroutine());
+    }
+
+    /// <summary>
+    /// ターン開始時にメッセージ通知を出すコルーチン.
+    /// </summary>
+    private IEnumerator TurnMessageWindowCoroutine()
+    {
+        MessageWindow.SetActive(true);
+        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんのターンです";
+        // 3秒間待つ
+        yield return new WaitForSeconds(2);
+        MessageWindow.SetActive(false);
+        FinMessage = true;
+        doubtFlg = diceBtnFlg = FailureDoubt = PlayerFinTurn = false;
+        DeclarationFlg = false;    //全員の宣言待ち状態をfalseにする.
+        yield break;
+    }
+    /// <summary>
+    /// 3秒経過でメッセージウィンドウを閉じるコルーチン.
+    /// </summary>
+    private IEnumerator WaitMessageWindowCoroutine()
+    {
+        // 3秒間待つ
+        yield return new WaitForSeconds(3);
+        MessageWindow.SetActive(false);
+        FinMessage = true;
+        if (PlayerFinTurn)//プレイヤーがターンを終了していたら.
+        {
+            FinishTurn();
+        }
+        yield break;
     }
 
     #endregion
@@ -646,6 +680,28 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("ターン強制終了");
         }        
     }
+    #endregion
+
+    #region プレイヤーにIDを与える関数
+    public int Give_ID_Player()
+    {
+        int ID = 1;
+        for (int i = 0; i < UseID.Length; i++)
+        {
+            if (UseID[i] == false)
+            {
+                UseID[i] = true;
+                break;
+            }
+            else
+            {
+                ID++;
+            }
+        }
+
+        return ID;
+    }
+
     #endregion
 
     #region Photon関連(override・変数送信)

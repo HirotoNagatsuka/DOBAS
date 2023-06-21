@@ -57,7 +57,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
     private bool ActionFlg = true;   // サイコロを振ったかどうか
-
+    bool FinishFlg = false;
     GameObject PlayerUI;             //子供のキャンバスを取得するための変数宣言.
 
     public int Sum = 0;              // 出目の合計
@@ -108,6 +108,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         // 行動終了時、マスの効果発動
         if (ActionFlg == false)
         {
+            ShowText(NowTag);
+            //GetComponent<Message>().ShowText(NowTag); //止まっているマス効果をテキストに表示(追記)
             mapManager.GetComponent<MapManager>().ColliderReference(collision);  // MapManagerのColliderReference関数処理を行う
             StartCoroutine("Activation", NowTag);  // Activationコルーチンを実行
         }
@@ -115,10 +117,44 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #endregion
 
-    /// <summary>
-    /// プレイヤーの持っているUI(HPと攻撃力)を変更する関数.
-    /// </summary>
-    private void ChangePlayerUI()
+    #region メッセージ送信関連
+    public void ShowText(string tag)
+    {
+        string message = "";
+        bool noneflg = false;
+        switch (tag)
+        {
+            case "Start":
+                message = "周回ボーナスゲット！　攻撃力＋１";
+                break;
+            case "Card":
+                message = "カードを１枚ゲット！";
+                break;
+            case "Move":
+                message = "3マス進む！";
+                break;
+            case "Hp":
+                message = "HPが１回復！";
+                break;
+            case "Attack":
+                message = "他のプレイヤーを攻撃！";
+                break;
+            default:
+                //message = "効果なし";
+                noneflg = true;
+                break;
+        }
+        if (!noneflg)
+        {
+            gameManager.ShowMessage(message, PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+    }
+        #endregion
+
+        /// <summary>
+        /// プレイヤーの持っているUI(HPと攻撃力)を変更する関数.
+        /// </summary>
+        private void ChangePlayerUI()
     {
         //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
         PlayerUI.gameObject.transform.GetChild(ATTACK_NUM_UI).GetComponent<Text>().text = Player.Attack.ToString();//HPの表示.
@@ -144,7 +180,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
         Debug.Log("キー入力待ち");
         Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
-        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待ち処理
+        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待機処理
         if (!gameManager.FailureDoubt)//嘘をついていた時に指摘されていたら動かさない
         {
             if (deme == ATTACK)
@@ -157,9 +193,24 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 StartDelay(deme, false);
             }
         }
+        else
+        {
+            StartCoroutine(WaitFinishTurnCoroutine());
+        }
         gameManager.DiceFinishFlg = false;
         gameManager.DeclarationFlg = false;
         ResetFlg();
+        yield return new WaitUntil(() => FinishFlg == true); // 待機処理
+        gameManager.FinishTurn();
+        yield break;
+    }
+    /// <summary>
+    /// 3秒経過でターン終了を送信するコルーチン.
+    /// </summary>
+    private IEnumerator WaitFinishTurnCoroutine()
+    {
+        // 3秒間待つ
+        yield return new WaitForSeconds(3);
         gameManager.FinishTurn();//行動が終わったらターンを終わらせる.
         yield break;
     }
@@ -191,8 +242,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
+        gameManager.ShowMessage(gameManager.PlayersName[rnd - 1]+"に攻撃！", PhotonNetwork.LocalPlayer.ActorNumber);
+
         photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
+        FinishFlg = true;
     }
+    #region EnemyAttackオーバーロード
     /// <summary>
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
@@ -213,9 +268,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum, rnd);//攻撃値変更(早坂)
+        FinishFlg = true;
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum, rnd);
     }
-
+    #endregion
 
     /// <summary>
     /// HPが変化するときに呼び出す関数
@@ -225,8 +281,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void ChangeHP(int addHP, int subject)
     {
-        gameManager.ChangePlayersHP(addHP, subject);
-        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+        {
+            gameManager.ChangePlayersHP(addHP, subject);
+        }
     }
 
     #region 移動関連
@@ -239,6 +297,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         ActionFlg = true;
         if (!NowCardMove) // カード移動時にマスの効果を受けない(早坂)
         {
+            yield return new WaitUntil(() => gameManager.FinMessage == true); // 待機処理
             // タグごとに分類
             if (tag == "Start") // スタートマス
             {
@@ -269,7 +328,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 Debug.Log("HP：" + Player.HP);
                 photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
-                ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
+                //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
                 //ChangeHP(1);
             }
             else if (tag == "Attack") //攻撃マス
@@ -284,6 +343,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Debug.Log("普通のマス");
                 yield return new WaitForSeconds(2);
             }
+            FinishFlg = true;
         }
     }
     /// <summary>
