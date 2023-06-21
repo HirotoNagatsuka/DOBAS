@@ -5,6 +5,13 @@ TagManager:
   serializedVersion: 2
   tags:
   - Stage
+  - Move
+  - Card
+  - Hp
+  - Attack
+  - Start
+  - ListPanel
+  - DetailPanel
   layers:
   - Default
   - TransparentFX
