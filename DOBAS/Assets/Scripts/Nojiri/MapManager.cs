@@ -60,24 +60,23 @@ public class MapManager : MonoBehaviour
 
         return hp;
     }
-    #endregion
 
-    #region UŒ‚(‰¼)
-    public void Attack()
+    public int HpOneDown(int hp)
     {
+        hp--;
 
+        return hp;
     }
     #endregion
 
-    //‚±‚Á‚¿‚ğg‚¤—\’è
-    //#region UŒ‚
-    //public int Attack(int hp)
-    //{
-    //    hp--;
+    #region UŒ‚
+    public int Attack(int hp)
+    {
+        hp--;
 
-    //    return hp;
-    //}
-    //#endregion
+        return hp;
+    }
+    #endregion
 
     //#region ƒ}ƒX‚²‚Æ‚ÌÀ•WƒŠƒXƒg‚ğæ“¾
     //public Vector3 GetMasumePos(int masume)

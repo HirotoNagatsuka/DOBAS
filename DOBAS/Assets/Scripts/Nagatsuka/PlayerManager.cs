@@ -241,7 +241,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("他のプレイヤーを攻撃！");
             yield return new WaitForSeconds(2);
 
-            mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+            mapManager.GetComponent<MapManager>().Attack(Player.HP);  // MapManagerのAttack関数処理を行う
         }
         else // ノーマルマス
         {

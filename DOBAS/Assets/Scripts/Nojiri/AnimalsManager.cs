@@ -6,32 +6,21 @@ public class AnimalsManager : MonoBehaviour
 {
     public GameObject[] effectObject;   // エフェクトのプレハブ配列
     public GameObject Camera;           // カメラ取得
-    public float moveSpeed = 5f;        // プレイヤーの移動速度
-    public float rotationSpeed = 100f;  // プレイヤーの回転速度
+    public float moveSpeed = 5f;        // プレイヤー移動速度
+    public float rotationSpeed = 100f;  // プレイヤー回転速度
 
     [SerializeField] GameObject ChildObject; // 子オブジェクト取得
-    [SerializeField] int ChildNum = 0;        // 生成している子オブジェクト番号
-    bool NowSelect = true;   // キャラクターセレクトON
-    bool EffectPrep = true;  // エフェクト生成可能か
+    [SerializeField] int ChildNum = 0;       // 生成している子オブジェクト番号
+    private bool NowSelect = true;   // キャラクターセレクトON/OFF
+    private bool EffectPrep = true;  // エフェクト生成可能か
 
-    Animator ChildAnimator; // 子オブジェクトの
-    Vector3 PlayerPos;      // プレイヤー位置
+    Animator ChildAnimator; // 子オブジェクトAnimator
+    Vector3 PlayerPos;      // プレイヤー位置情報
 
     //Start is called before the first frame update
     void Start()
     {
-        CharaSelect();
-
-        //// アクティブなアバターを取得済みのとき
-        //if (avatarSet != null)
-        //{
-        //    // 取得したアバターをセット
-        //    animator.avatar = avatarSet;
-        //}
-        //else
-        //{
-        //    Debug.LogError("アクティブな子オブジェクトにAnimatorのAvatarが見つかりません");
-        //}
+        CharaSelect(); // キャラ生成
     }
 
     // Update is called once per frame
@@ -40,55 +29,13 @@ public class AnimalsManager : MonoBehaviour
         // プレイヤーの位置情報を取得
         PlayerPos = transform.position;
 
-        // キャラセレクト時、回転させる
+        // キャラセレクト時に、キャラを回転させる
         if (NowSelect)
         {
             float rotation = rotationSpeed * Time.deltaTime;
             transform.Rotate(Vector3.up, rotation);
         }
-
-        if(!NowSelect) EffectGenerate();
     }
-
-    #region エフェクト生成
-    void EffectGenerate()
-    {
-        // エフェクトを生成してよいか
-        if (EffectPrep)
-        {
-            // Spaceが押されたらランダムで攻撃
-            if (Input.GetKey(KeyCode.Space))
-            {
-                EffectPrep = false;
-                StartCoroutine("EffectPreview");
-            }
-        }
-    }
-    #endregion
-
-    #region アバター切り替え
-    //private Avatar FindAvatarInChildren(Transform parent)
-    //{
-    //    Avatar childAvatar = null;
-
-    //    // 子オブジェクトの数ループ
-    //    for(int i = 0; i < parent.childCount; i++)
-    //    {
-    //        Transform child = parent.GetChild(i);  // 子を全て取得
-    //        childAvatar = child.GetComponent<Animator>()?.avatar; // Animatorが?(null)でないときavatarを取得
-    //        Debug.Log(childAvatar);
-
-    //        // avatarを取得しているとき
-    //        if (childAvatar != null)
-    //        {
-    //            break;
-    //        }
-    //    }
-
-    //    // avatarが見つからないときnullを返す
-    //    return null;
-    //}
-    #endregion
 
     #region キャラ生成
     void CharaSelect()
@@ -105,7 +52,7 @@ public class AnimalsManager : MonoBehaviour
     }
     #endregion
 
-    #region キャラクター変更
+    #region キャラクター変更(ボタン処理)
     // 次のキャラへボタン押下
     public void NextButtonPush()
     {
@@ -160,34 +107,116 @@ public class AnimalsManager : MonoBehaviour
     }
     #endregion
 
-    #region エフェクト調整用
-    IEnumerator EffectPreview()
+    #region 外から呼び出される関数用
+    // カード取得時
+    public void CardGetting()
     {
-        // 回復
-        GameObject healObj = Instantiate(effectObject[0], PlayerPos, Quaternion.identity); // HpUp
-        ChildAnimator.SetTrigger("Jump"); // Jumpアニメーション再生
-        yield return new WaitForSeconds(2f);
-        Destroy(healObj);
+        StartCoroutine("EffectPreview", "CardGet");
+    }
 
-        // 体力減少
-        GameObject downObj = Instantiate(effectObject[1], PlayerPos, Quaternion.identity);
-        yield return new WaitForSeconds(2f);
-        Destroy(downObj);
+    // 移動するかどうか　true：移動開始　false：移動終了
+    public void Moving(bool move)
+    {
+        if (move)
+        {
+            ChildAnimator.SetBool("Walk", true); // Walkアニメ再生
+        }
+        else
+        {
+            ChildAnimator.SetBool("Walk", false); // Walkアニメ再生終了
+        }
+    }
 
-        // カード
-        GameObject cardObj = Instantiate(effectObject[2], PlayerPos, Quaternion.identity);
-        yield return new WaitForSeconds(2f);
-        Destroy(cardObj);
+    // 攻撃時
+    public void Attacking()
+    {
+        ChildAnimator.SetTrigger("Attack"); // Attackアニメ再生
+    }
 
-        // 被攻撃時
-        Instantiate(effectObject[3], PlayerPos, Quaternion.identity); // GetHit
-        Instantiate(effectObject[4], PlayerPos, Quaternion.identity); // HpBreak
-        yield return new WaitForSeconds(0.5f);
-        ChildAnimator.SetTrigger("Death"); // Deathアニメーション再生
-        yield return new WaitForSeconds(5f);
-        transform.GetChild(ChildNum).gameObject.SetActive(false); // プレイヤーを非アクティブ(死亡)
+    // 体力変化時　true：体力増加　false：体力減少
+    public void HpChange(bool hpChange)
+    {
+        if (hpChange)
+        {
+            StartCoroutine("EffectPreview", "HpUp");
+        }
+        else
+        {
+            StartCoroutine("EffectPreview", "HpDown");
+        }
+    }
 
-        EffectPrep = true;
+    // ダメージを受けたとき生きているかどうか　true：生存　false：死亡
+    public void Damage(bool alive)
+    {
+        if (alive)
+        {
+            StartCoroutine("EffectPreview", "Hit");
+        }
+        else
+        {
+            StartCoroutine("EffectPreview", "Death");
+        }
+    }
+    #endregion
+
+    #region エフェクト生成
+    IEnumerator EffectPreview(string AnimName)
+    {
+        switch (AnimName)
+        {
+            case "CardGet": // カード取得時
+                GameObject cardObj = Instantiate(effectObject[2], PlayerPos, Quaternion.identity);
+                ChildAnimator.SetTrigger("Jump"); // Jumpアニメ再生
+                yield return new WaitForSeconds(2f);
+                Destroy(cardObj);
+                break;
+
+            case "HpUp": // 体力増加
+                GameObject healObj = Instantiate(effectObject[0], PlayerPos, Quaternion.identity); // HpUp
+                ChildAnimator.SetTrigger("Jump"); // Jumpアニメ再生
+                yield return new WaitForSeconds(2f);
+                Destroy(healObj);
+                break;
+
+            //case "Move":
+            //    break;
+
+            //case "MoveEnd":
+            //    break;
+
+            //case "Attack":
+            //    break;
+
+            case "HpDown": // 体力減少
+                GameObject downObj = Instantiate(effectObject[1], PlayerPos, Quaternion.identity); // HpDown
+                yield return new WaitForSeconds(2f);
+                Destroy(downObj);
+                break;
+
+            case "Attack": // 攻撃
+                ChildAnimator.SetTrigger("Attack"); // Attackアニメ再生
+                break;
+
+            case "Hit": // 通常ダメージ
+                Instantiate(effectObject[3], PlayerPos, Quaternion.identity); // GetHit
+                ChildAnimator.SetTrigger(AnimName); // Hitアニメ再生
+                break;
+
+            case "Death": // 体力０になるとき
+                Instantiate(effectObject[3], PlayerPos, Quaternion.identity); // GetHit
+                Instantiate(effectObject[4], PlayerPos, Quaternion.identity); // HpBreak
+
+                yield return new WaitForSeconds(0.5f);
+                ChildAnimator.SetTrigger(AnimName); // Deathアニメ再生
+                yield return new WaitForSeconds(5f);
+                transform.GetChild(ChildNum).gameObject.SetActive(false); // 5秒後プレイヤーを非アクティブ(死亡)
+                break;
+
+            default:
+                Debug.LogError("AnimNameエラー");
+                break;
+        }
     }
     #endregion
 }

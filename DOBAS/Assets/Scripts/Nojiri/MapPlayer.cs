@@ -93,7 +93,7 @@ public class MapPlayer : MonoBehaviour
             Debug.Log("他のプレイヤーを攻撃！");
             yield return new WaitForSeconds(2);
 
-            /*Hp = */mapManager.GetComponent<MapManager>().Attack(/*Hp*/);  // MapManagerのAttack関数処理を行う
+            Hp = mapManager.GetComponent<MapManager>().Attack(Hp);  // MapManagerのAttack関数処理を行う
         }
         else // ノーマルマス
         {

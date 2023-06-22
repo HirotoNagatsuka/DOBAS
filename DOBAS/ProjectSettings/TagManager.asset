@@ -5,6 +5,14 @@ TagManager:
   serializedVersion: 2
   tags:
   - Stage
+  - FxTemporaire
+  - player
+  - Move
+  - Card
+  - Hp
+  - Start
+  - Attack
+  - HpDown
   layers:
   - Default
   - TransparentFX
