@@ -22,8 +22,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region private変数
-
     private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
+    Vector3 diceCameradefPos;//サイコロカメラの初期値.
     Vector3 diceCameraPos;//サイコロを振る初期位置.
     private bool DiceFlg;//さいころを振ったかのフラグ.
     private int Number;       //サイコロの出目をリザルトパネルに表示する用の変数.
@@ -40,6 +40,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
 
     private List<GameObject> PlayersNameGroup = new List<GameObject>();//Playerの詳細情報を表示するオブジェクト.
+
+    #region おまかせName配列
+    private static readonly string[] OMAKASE_NAMES= new string[] { "Snake", "Kraken", "Sakana", 
+        "おすすめです","オススメです","要チェック！","短パン小僧","ガキ大将","囲い募集中"};
+    #endregion
     #endregion
 
     #region public・SerializeField宣言
@@ -88,6 +93,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject DiceShakeButton;//サイコロを振るボタン.
     //public GameObject EnemyResult;//相手の出目を入れる.
 
+    [Header("ゲーム終了関連")]
+    [SerializeField] GameObject GameEndPanel;
+
     [Header("外部アクセス用変数")]
     public int[] PlayersHP;//Player側からHPの参照を行う用.
     public static int MaxPlayersNum;//他スクリプトからアクセスする用.
@@ -103,12 +111,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public bool DiceFinishFlg;//Player側からサイコロを振り終わっているかの参照用.
     public bool DeclarationFlg;//宣言待ちフラグ(Playerから参照する).
     public bool FailureDoubt;//ダウト失敗フラグ.
+    public string[] PlayersRank;
+    public int Rankcnt;//順位が決まった人数をカウント.
     [Header("ダウト関連")]
     [SerializeField]GameObject DoubtPanel;
 
     [Header("メッセージ関連")]
     [SerializeField] GameObject MessageWindow;//メッセージを表示するパネル（子供にメッセージ用テキスト）.
     [SerializeField] GameObject MessageLogWindow;//メッセージのログを表示するパネル.
+    [Header("チャット関連")]
+    [SerializeField] InputField InputChat;
+    [SerializeField] Text ChatLog;
+    [SerializeField] Text ChatLog2;
 
     [Header("画像データ")]
     [SerializeField] Sprite[] HeartSprites = new Sprite[6];//HP用の画像(0番目に死亡用のどくろを入れる).
@@ -144,6 +158,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         DiceCamera.SetActive(false);
         DiceFlg = false;      //サイコロを振っていない状態にする.
         DiceFinishFlg = false;//サイコロを振り終わっていない状態にする.
+        Rankcnt = MaxPlayers;
+        PlayersRank = new string[MaxPlayers];
+        diceCameradefPos = DiceCamera.transform.position;
     }
 
     // Update is called once per frame
@@ -202,7 +219,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
             WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
-            //WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
+            WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
         }
 
         if (Input.GetKeyDown(KeyCode.P))//デバック用タイマー起動.
@@ -218,6 +235,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     void EndGame()
     {
+        GameEndPanel.SetActive(true);
+        GameEndPanel.transform.GetChild(1).GetComponent<Text>().text =
+           "1位：" + PlayersRank[0] + "\n2位：" + PlayersRank[1];
+        // "1位：" + PlayersRank[0] + "\n2位：" + PlayersRank[1] + "\n3位：" + PlayersRank[2];
         Debug.Log("ゲーム終了");
     }
     #endregion
@@ -250,6 +271,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         if (cnt == MaxPlayers - 1)//残り1人になった場合ゲーム終了.
         {
+            for(int i = 0; i < MaxPlayers; i++)
+            {
+                if (PlayersHP[i] > 0)
+                {
+                    PlayersRank[0] = PlayersName[i];
+                }
+            }
             NowGameState = GameState.EndGame;
         }
         if (WhoseTurn == MaxPlayers)
@@ -281,8 +309,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void ChangeHP(int addHP,int subject)
     {
-        PlayersHP[subject - 1] += addHP;
+        if(PlayersHP[subject - 1] == 5)
+        {
+            Debug.Log("HP上限");
+        }
+        else
+        {
+            PlayersHP[subject - 1] += addHP;
+        }
         PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[subject - 1]];
+        if(PlayersHP[subject - 1] == 0)
+        {
+            PlayersRank[Rankcnt - 1] = PlayersName[subject - 1];
+            Rankcnt++;
+        }
     }
     #endregion
 
@@ -343,6 +383,32 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             photonView.RPC(nameof(StartGame), RpcTarget.All);
         }
     }
+
+    /// <summary>
+    /// 名前をランダムに決めるボタンを押した際に呼び出す関数.
+    /// </summary>
+    public void PushOmakaseNameButton()
+    {
+        int rnd = Random.Range(0, OMAKASE_NAMES.Length);
+        InputNickName.text = OMAKASE_NAMES[rnd];
+    }
+    #endregion
+
+    #region チャット機能関連
+    public void PushSendChatButton()
+    {
+        string chat=InputChat.text;
+        int master= PhotonNetwork.LocalPlayer.ActorNumber;//送信者の番号(全員がActorNumberを呼ばないために代入).
+        InputChat.text = "";//送信したら消す.
+        photonView.RPC(nameof(PushChat), RpcTarget.All,master,chat);
+    }
+    [PunRPC]
+    void PushChat(int master,string chat)
+    {
+        ChatLog2.text = ChatLog.text;
+        ChatLog.text = PlayersName[master - 1] + ":" + chat;
+    }
+
     #endregion
 
     #region 信じるボタン・ダウトボタン関連
@@ -466,6 +532,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void ConfirmNumber(int num)
     {
+        //サイコロの上にカメラを持ってくる処理.
+        Vector3 position = Dice.transform.position;
+        position.y += 5;
+
+        DiceCamera.transform.position = position;
+
         if (num == ATTACK)            //攻撃目が出た場合Attackと表示する.
         {
             DiceNumText.text = "Attack";
@@ -572,6 +644,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("DiceInit起動");
         DiceCamera.SetActive(false);
         Dice.SetActive(false);
+        DiceCamera.transform.position = diceCameradefPos;
         DiceFlg = false;
     }
 

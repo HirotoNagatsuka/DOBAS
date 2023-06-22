@@ -55,6 +55,7 @@ MonoBehaviour:
   - DeclarationDoubt
   - RpcSendText
   - ShowMessageAll
+  - PushChat
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

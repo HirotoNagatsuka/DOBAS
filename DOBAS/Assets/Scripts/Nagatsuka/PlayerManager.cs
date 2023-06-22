@@ -331,6 +331,16 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
                 //ChangeHP(1);
             }
+            else if (tag == "HpDown") // HPマス
+            {
+                //Debug.Log("HP１回復！！");
+                yield return new WaitForSeconds(2);
+
+                //Debug.Log("HP：" + Player.HP);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, Player.ID);
+                //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
+                //ChangeHP(1);
+            }
             else if (tag == "Attack") //攻撃マス
             {
                 Debug.Log("他のプレイヤーを攻撃！");
