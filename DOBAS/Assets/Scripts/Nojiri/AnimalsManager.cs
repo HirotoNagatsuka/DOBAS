@@ -10,16 +10,18 @@ public class AnimalsManager : MonoBehaviour
     public float rotationSpeed = 100f;  // プレイヤー回転速度
 
     [SerializeField] GameObject ChildObject; // 子オブジェクト取得
-    [SerializeField] int ChildNum = 0;       // 生成している子オブジェクト番号
+    public int ChildNum = 0;       // 生成している子オブジェクト番号
     private bool NowSelect = true;   // キャラクターセレクトON/OFF
     private bool EffectPrep = true;  // エフェクト生成可能か
 
     Animator ChildAnimator; // 子オブジェクトAnimator
     Vector3 PlayerPos;      // プレイヤー位置情報
 
+    GameManager gameManager;
     //Start is called before the first frame update
     void Start()
     {
+        gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         CharaSelect(); // キャラ生成
     }
 
@@ -28,12 +30,14 @@ public class AnimalsManager : MonoBehaviour
     {
         // プレイヤーの位置情報を取得
         PlayerPos = transform.position;
-
-        // キャラセレクト時に、キャラを回転させる
-        if (NowSelect)
+        if(gameManager.NowGameState== GameManager.GameState.SetGame)
         {
-            float rotation = rotationSpeed * Time.deltaTime;
-            transform.Rotate(Vector3.up, rotation);
+            // キャラセレクト時に、キャラを回転させる
+            if (NowSelect)
+            {
+                float rotation = rotationSpeed * Time.deltaTime;
+                transform.Rotate(Vector3.up, rotation);
+            }
         }
     }
 
@@ -45,10 +49,18 @@ public class AnimalsManager : MonoBehaviour
         {
             transform.GetChild(i).gameObject.SetActive(false);
         }
-
-        // 最初の一つをアクティブ
-        transform.GetChild(ChildNum).gameObject.SetActive(true);
-
+        if (gameManager.NowGameState != GameManager.GameState.InGame)
+        {
+            // 最初の一つをアクティブ
+            transform.GetChild(ChildNum).gameObject.SetActive(true);
+        }
+        else
+        {
+            // 選択したものをアクティブ
+            transform.GetChild(gameManager.AnimalChildNum).gameObject.SetActive(true);
+            ChildObject = transform.GetChild(gameManager.AnimalChildNum).gameObject;
+            ChildAnimator = ChildObject.GetComponent<Animator>();
+        }
     }
     #endregion
 
@@ -130,6 +142,7 @@ public class AnimalsManager : MonoBehaviour
     // 攻撃時
     public void Attacking()
     {
+        if (ChildAnimator == null) Debug.Log("あるよ");
         ChildAnimator.SetTrigger("Attack"); // Attackアニメ再生
     }
 

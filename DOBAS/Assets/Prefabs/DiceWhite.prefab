@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 5280995738858359872}
   - component: {fileID: 2859900912840071812}
   m_Layer: 0
-  m_Name: Attack
+  m_Name: Doubt2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -43,7 +43,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &1715897544582469020
 GameObject:
@@ -250,7 +250,7 @@ GameObject:
   - component: {fileID: 2910465580676764312}
   - component: {fileID: 1002341639051065215}
   m_Layer: 0
-  m_Name: 3
+  m_Name: Attack
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -282,7 +282,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2465650478131945087
 GameObject:
@@ -327,7 +327,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &3310249835269611495
 GameObject:
@@ -463,8 +463,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 13b26c68b16691142add11e834f5e9fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  number: 0
-  Stage: {fileID: 0}
 --- !u!1 &6683859098251108613
 GameObject:
   m_ObjectHideFlags: 0
@@ -508,7 +506,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &6832009476193596010
 GameObject:
@@ -553,7 +551,7 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7383406694334176572
 GameObject:
@@ -598,5 +596,5 @@ SphereCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.6
   m_Center: {x: 0, y: 0, z: 0}

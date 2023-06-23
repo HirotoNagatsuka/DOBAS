@@ -12,13 +12,20 @@ public class Dice : MonoBehaviour
     private int number;//出目を入れる.
     private GameObject Stage;//ステージに当たった出目を判定するための変数宣言.
     private bool flg;
+    private bool Hitflg;//サイコロを回転させるときに一度ステージに当たったら回転を止める.
 
-
-    #region Start関数
+    #region Start・Update関数
     void Start()
     {
         rbody = GetComponent<Rigidbody>();
         Stage = GameObject.Find("DiceStage");//ステージを取得する.
+    }
+    private void Update()
+    {
+        if (!Hitflg)
+        {
+            transform.Rotate(-3f, 0, 3f);
+        }
     }
     #endregion
 
@@ -26,10 +33,12 @@ public class Dice : MonoBehaviour
     {
         if (collider.gameObject.tag == "Stage")//当たっているものがステージか判定.
         {
+            Hitflg = true;
             if (rbody.velocity.magnitude == 0 && flg==false)//マグニチュードが0の場合（垂直判定）.
             {
                 Stage.GetComponent<DiceStage>().ReturnNumber();//ステージで行っている出目判定を返す.
                 flg = true;
+
             }
         }
     }
@@ -39,5 +48,6 @@ public class Dice : MonoBehaviour
     private void OnEnable()
     {
         flg = false;
+        Hitflg = false;
     }
 }

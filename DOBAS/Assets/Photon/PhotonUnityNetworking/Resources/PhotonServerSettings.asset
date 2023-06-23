@@ -42,7 +42,20 @@ MonoBehaviour:
   - StartTimer
   - RpcSendMessage
   - EnemyAttack
+  - ChangeHP
+  - ChangeTurn
+  - AddReadyPeaple
+  - CreatePlayer
+  - StartGame
+  - ChangeHPUI
+  - ChangePlayersHP
+  - AddThroughNum
+  - TestPun
+  - ActiveEnemyResult
+  - DeclarationDoubt
   - RpcSendText
+  - ShowMessageAll
+  - PushChat
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

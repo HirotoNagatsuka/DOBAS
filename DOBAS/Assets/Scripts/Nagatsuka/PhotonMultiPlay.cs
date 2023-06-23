@@ -7,24 +7,33 @@ using Photon.Realtime;
 public class PhotonMultiPlay : MonoBehaviourPunCallbacks
 {
     public string Name;//プレイヤーの名前.
+    public int ID;
 
-    [SerializeField] GameObject MapManager; // MapManager参照
+    [SerializeField] GameManager gameManager; // MapManager参照
     // Start is called before the first frame update
     void Start()
     {
         // プレイヤー自身の名前を"Player"に設定する
-        PhotonNetwork.NickName = Name;
-
+        PhotonNetwork.NickName = "Player";
         PhotonNetwork.ConnectUsingSettings();
     }
+    #region Photon関連のoverride関数
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions(), TypedLobby.Default);
     }
 
+    // <summary>
+    // リモートプレイヤーが入室した際にコールされる
+    // </summary>
+    public void OnPhotonPlayerConnected()
+    {
+        Debug.Log("入室");
+
+    }
     public override void OnJoinedRoom()
     {
-        var position = new Vector3(Random.Range(-3f, 3f), Random.Range(-3f, 3f));
-        PhotonNetwork.Instantiate("Player", position, Quaternion.identity);
+        gameManager.NowGameState = GameManager.GameState.SetGame;
     }
+    #endregion
 }

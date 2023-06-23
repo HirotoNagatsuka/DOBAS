@@ -40,7 +40,6 @@ public class MapManager : MonoBehaviour
     }
     #endregion
 
-
     #region ƒ}ƒX‚ÌˆÚ“®
     public int Move(int move, string tag)
     {

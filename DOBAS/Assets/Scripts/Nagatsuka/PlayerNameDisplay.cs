@@ -5,15 +5,17 @@ using UnityEngine;
 // MonoBehaviourPunCallbacksを継承して、photonViewプロパティを使えるようにする
 public class PlayerNameDisplay : MonoBehaviourPunCallbacks
 {
+    private GameObject Oya;
+    TextMesh nameLabel;
     private void Start()
     {
-        var nameLabel = GetComponent<TextMesh>();
+        Oya = transform.parent.gameObject;
+        nameLabel= GetComponent<TextMesh>();
         // プレイヤー名とプレイヤーIDを表示する
         nameLabel.text = $"{photonView.Owner.NickName}({photonView.OwnerActorNr})";
     }
     private void Update()
     {
-        var nameLabel = GetComponent<TextMesh>();
         nameLabel.text = $"{photonView.Owner.NickName}({photonView.OwnerActorNr})";
     }
 }
