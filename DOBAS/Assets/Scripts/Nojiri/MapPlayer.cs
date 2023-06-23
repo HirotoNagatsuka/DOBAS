@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class MapPlayer : MonoBehaviour
 {
-    public static MapPlayer ins;            // 参照用
+    // insとAwake()を消した
     public int Sum = 0;                     // 出目の合計
 
     [SerializeField] GameObject mapManager; // MapManager参照
@@ -15,16 +15,6 @@ public class MapPlayer : MonoBehaviour
 
     public int Card = 0;
     public int Hp = 4;
-
-    // 後で改良予定
-    // MapManagerからの参照用
-    public void Awake()
-    {
-        if (ins == null)
-        {
-            ins = this;
-        }
-    }
 
     // Start is called before the first frame update
     void Start()
@@ -61,7 +51,7 @@ public class MapPlayer : MonoBehaviour
             yield return new WaitForSeconds(0.5f); // 0.5秒待つ
         }
         ActionFlg = false; // プレイヤーの行動終了(マス効果発動前)
-       // MoveMasu = 0;
+        // MoveMasu = 0;
     }
 
     // 取得したタグごとに効果を発動
@@ -103,7 +93,7 @@ public class MapPlayer : MonoBehaviour
             Debug.Log("他のプレイヤーを攻撃！");
             yield return new WaitForSeconds(2);
 
-            mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+            Hp = mapManager.GetComponent<MapManager>().Attack(Hp);  // MapManagerのAttack関数処理を行う
         }
         else // ノーマルマス
         {

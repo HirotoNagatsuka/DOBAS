@@ -16,8 +16,8 @@ public class Message : MonoBehaviourPunCallbacks
     void Start()
     {
         // Textオブジェクトの取得
-        MsgText = GameObject.Find("Message").GetComponent<Text>();
-        TextLog = GameObject.Find("MessageLog").GetComponent<Text>();
+        MsgText = GameObject.Find("TextMessage").GetComponent<Text>();
+        TextLog = GameObject.Find("TextMessageLog").GetComponent<Text>();
         playerManager = gameObject.GetComponent<PlayerManager>();
     }
 
@@ -53,61 +53,37 @@ public class Message : MonoBehaviourPunCallbacks
     #region マス効果の表示
     public void ShowText(string tag)
     {
-        string message;
+        string text = MsgText.text;
+
+        if(MsgText.text != null)
+        {
+            TextLog.text = text;
+        }
+
         switch (tag)
         {
             case "Start":
-                message = "周回ボーナスゲット！　攻撃力＋１";
+                MsgText.text = "周回ボーナスゲット！　攻撃力＋１";
                 break;
             case "Card":
-                message = "カードを１枚ゲット！";
+                MsgText.text = "カードを１枚ゲット！";
                 break;
             case "Move":
-                message = "3マス進む！";
+                MsgText.text = "3マス進む！";
                 break;
             case "Hp":
-                message = "HPが１回復！";
+                MsgText.text = "HPが１回復！";
                 break;
             case "Attack":
-                message = "他のプレイヤーを攻撃！";
+                MsgText.text = "他のプレイヤーを攻撃！";
                 break;
             default:
-                message = "効果なし";
+                MsgText.text = "効果なし";
                 break;
         }
 
-
-        //string text = MsgText.text;
-
-        //if(MsgText.text != null)
-        //{
-        //    TextLog.text = text;
-        //}
-
-        //switch (tag)
-        //{
-        //    case "Start":
-        //        MsgText.text = "周回ボーナスゲット！　攻撃力＋１";
-        //        break;
-        //    case "Card":
-        //        MsgText.text = "カードを１枚ゲット！";
-        //        break;
-        //    case "Move":
-        //        MsgText.text = "3マス進む！";
-        //        break;
-        //    case "Hp":
-        //        MsgText.text = "HPが１回復！";
-        //        break;
-        //    case "Attack":
-        //        MsgText.text = "他のプレイヤーを攻撃！";
-        //        break;
-        //    default:
-        //        MsgText.text = "効果なし";
-        //        break;
-        //}
-
-        //// 取得したテキストを全員に表示
-        //photonView.RPC(nameof(RpcSendText), RpcTarget.All, text);
+        // 取得したテキストを全員に表示
+        photonView.RPC(nameof(RpcSendText), RpcTarget.All, text);
     }
     #endregion
 

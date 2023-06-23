@@ -42,9 +42,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private List<GameObject> PlayersNameGroup = new List<GameObject>();//Playerの詳細情報を表示するオブジェクト.
 
     #region おまかせName配列
-    private static readonly string[] OMAKASE_NAMES= new string[] { "Snake", "Kraken", "Sakana", 
-        "おすすめです","オススメです","要チェック！","短パン小僧","ガキ大将","囲い募集中"};
+    private static readonly string[] OMAKASE_NAMES= new string[] { "すねえく", "くらあけん", "さかな", 
+        "おすすめです","オススメです","おっと要チェック！","海賊王"};
     #endregion
+
     #endregion
 
     #region public・SerializeField宣言
@@ -77,7 +78,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject StartButton;    //準備完了ボタン.
     [SerializeField] GameObject StandByCanvas;  //準備完了キャンバス.
     [SerializeField] Text HelloPlayerText;      //待機中にプレイヤーを表示するボタン.
-    [SerializeField] Text StandByText;          //待機人数を表示するボタン.
+    [SerializeField] Text StandByText;          //待機人数を表示するテキスト.
+    [SerializeField] GameObject MainCamera;
+    [SerializeField] AnimalsManager SelectAnimals;
+    [SerializeField] GameObject ChangeButtons;  //キャラクター変更用ボタン.
+
     [SerializeField] Text WhoseTurnText;        //誰のターンかのテキスト.
     [SerializeField] Text HaveTimeText;         //持ち時間テキスト.
     [SerializeField] GameObject StandByGroup;   //準備完了のグループ.
@@ -106,7 +111,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
     public bool FinMessage = false;//メッセージの表示が終了したらマスの効果を発動する為のフラグ.
     public bool PlayerFinTurn = false;//プレイヤーがターンを終了しているかの判定.
-
+    public int AnimalChildNum;//選んだキャラクターを保存するための宣言.
     public int DeclarationNum;//宣言番号.
     public bool DiceFinishFlg;//Player側からサイコロを振り終わっているかの参照用.
     public bool DeclarationFlg;//宣言待ちフラグ(Playerから参照する).
@@ -120,6 +125,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject MessageWindow;//メッセージを表示するパネル（子供にメッセージ用テキスト）.
     [SerializeField] GameObject MessageLogWindow;//メッセージのログを表示するパネル.
     [Header("チャット関連")]
+
     [SerializeField] InputField InputChat;
     [SerializeField] Text ChatLog;
     [SerializeField] Text ChatLog2;
@@ -289,6 +295,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             WhoseTurn++;           //次の人のターンにする.
         }
         StartCoroutine(TurnMessageWindowCoroutine());
+        photonView.RPC(nameof(StartTimer), RpcTarget.All);
     }
     #endregion
 
@@ -345,8 +352,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         StandByCanvas.SetActive(false); //準備完了関連のキャンバスを非表示にする.
         NowGameState = GameState.InGame;//ゲーム状態をInGameにする.
+        MainCamera.SetActive(true);
         CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
-        GameObject p = PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
+        //GameObject p = PhotonNetwork.Instantiate("Player", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
+        GameObject p = PhotonNetwork.Instantiate("Animals", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
         Players.Add(p);
         
         int i=0;                        //詳細情報のY座標を変更するためにローカルな変数iを用意.
@@ -370,6 +379,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         photonView.RPC(nameof(AddReadyPeaple), RpcTarget.All);//準備完了人数を増やす.
         StartButton.SetActive(false);                         //ボタンを押したら非表示にする.
+        AnimalChildNum = SelectAnimals.ChildNum;
         PhotonNetwork.NickName = InputNickName.transform.GetChild(INPUT_NAME).GetComponent<Text>().text;// プレイヤー自身の名前を入力された名前に設定する
         if (ReadyPeople != MaxPlayers)                        //入室した人数が指定した数に満たない場合
         {
