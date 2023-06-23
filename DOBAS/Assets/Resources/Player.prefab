@@ -215,12 +215,6 @@ MonoBehaviour:
     MaxHP: 0
     HP: 3
     Attack: 1
-    HeartSprites:
-    - {fileID: 21300000, guid: b6e8886336f8c8442bd66735df946f7f, type: 3}
-    - {fileID: 21300000, guid: 9a1a0efd3e8c4634bbbcf875ef2b667c, type: 3}
-    - {fileID: 21300000, guid: e7b162f3c0078104784554d5543a1f83, type: 3}
-    - {fileID: 21300000, guid: 62c240e9928b5344fb80f8eca301da16, type: 3}
-    - {fileID: 21300000, guid: 2eeb8a2efd8902044b6d86ff47f6000c, type: 3}
     ID: 0
   doubtFlg: 0
   CoroutineFlg: 0
@@ -357,7 +351,7 @@ TextMesh:
   m_CharacterSize: 1
   m_LineSpacing: 1
   m_Anchor: 0
-  m_Alignment: 0
+  m_Alignment: 1
   m_TabSize: 4
   m_FontSize: 150
   m_FontStyle: 0
@@ -424,7 +418,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &2880743979669279130
 RectTransform:
   m_ObjectHideFlags: 0

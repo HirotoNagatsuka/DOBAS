@@ -16,15 +16,15 @@ public class DiceStage : MonoBehaviour
 
     void OnTriggerStay(Collider collider)
     {
-        if (collider.gameObject.name == "Attack")
+        if (collider.gameObject.name == "Doubt2")
             {
                 number = 6;
             }
-            else if (collider.gameObject.name == "Doubt")
+            else if (collider.gameObject.name == "Doubt1")
             {
                 number = 5;
             }
-            else if (collider.gameObject.name == "3")
+            else if (collider.gameObject.name == "Attack")
             {
                 number = 4;
             }

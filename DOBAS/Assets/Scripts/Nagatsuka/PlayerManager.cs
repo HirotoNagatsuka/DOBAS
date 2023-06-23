@@ -13,7 +13,7 @@ class PlayerStatus
     public int MaxHP;   //HPの最大値;
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
-    public Sprite[] HeartSprites;//HP用画像の配列.
+   // public Sprite[] HeartSprites;//HP用画像の配列.
     public int ID;//デバック用.
 }
 
@@ -57,13 +57,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
     private bool ActionFlg = true;   // サイコロを振ったかどうか
-
+    bool FinishFlg = false;
     GameObject PlayerUI;             //子供のキャンバスを取得するための変数宣言.
 
     public int Sum = 0;              // 出目の合計
     private bool DiceTrigger = true; // サイコロを振ったかどうか
 
     public int Card = 0;//多分使わない(カード枚数だけの表示).
+    AnimalsManager animalsManager;
 
     #region Unityイベント(Start・Update・OnTrigger)
 
@@ -77,7 +78,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Player.ID = gameManager.Give_ID_Player();
         Player.HP = gameManager.PlayersHP[Player.ID - 1];
         PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+       // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
     }
 
     private void Update()
@@ -95,8 +96,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                     FinishDice();
             }
             Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                this.GetComponent<AnimalsManager>().Attacking();
+            }
+            
         }
-        ChangePlayerUI();
     }
 
     /// <summary>
@@ -109,6 +114,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         // 行動終了時、マスの効果発動
         if (ActionFlg == false)
         {
+            ShowText(NowTag);
+            //GetComponent<Message>().ShowText(NowTag); //止まっているマス効果をテキストに表示(追記)
             mapManager.GetComponent<MapManager>().ColliderReference(collision);  // MapManagerのColliderReference関数処理を行う
             StartCoroutine("Activation", NowTag);  // Activationコルーチンを実行
         }
@@ -116,12 +123,46 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     #endregion
 
-    /// <summary>
-    /// プレイヤーの持っているUI(HPと攻撃力)を変更する関数.
-    /// </summary>
-    private void ChangePlayerUI()
+    #region メッセージ送信関連
+    public void ShowText(string tag)
     {
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        string message = "";
+        bool noneflg = false;
+        switch (tag)
+        {
+            case "Start":
+                message = "周回ボーナスゲット！　攻撃力＋１";
+                break;
+            case "Card":
+                message = "カードを１枚ゲット！";
+                break;
+            case "Move":
+                message = "3マス進む！";
+                break;
+            case "Hp":
+                message = "HPが１回復！";
+                break;
+            case "Attack":
+                message = "他のプレイヤーを攻撃！";
+                break;
+            default:
+                //message = "効果なし";
+                noneflg = true;
+                break;
+        }
+        if (!noneflg)
+        {
+            gameManager.ShowMessage(message, PhotonNetwork.LocalPlayer.ActorNumber);
+        }
+    }
+        #endregion
+
+        /// <summary>
+        /// プレイヤーの持っているUI(HPと攻撃力)を変更する関数.
+        /// </summary>
+        private void ChangePlayerUI()
+    {
+        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
         PlayerUI.gameObject.transform.GetChild(ATTACK_NUM_UI).GetComponent<Text>().text = Player.Attack.ToString();//HPの表示.
     }
 
@@ -145,19 +186,37 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
         Debug.Log("キー入力待ち");
         Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
-        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // クリック待ち処理
-        if (deme == ATTACK)
+        yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待機処理
+        if (!gameManager.FailureDoubt)//嘘をついていた時に指摘されていたら動かさない
         {
-            Debug.Log("EnemyAttack()起動用if文中");
-            EnemyAttack();
+            if (deme == ATTACK)
+            {
+                Debug.Log("EnemyAttack()起動用if文中");
+                EnemyAttack();
+            }
+            else
+            {
+                StartDelay(deme, false);
+            }
         }
         else
         {
-            StartDelay(deme,false);
+            StartCoroutine(WaitFinishTurnCoroutine());
         }
         gameManager.DiceFinishFlg = false;
         gameManager.DeclarationFlg = false;
         ResetFlg();
+        yield return new WaitUntil(() => FinishFlg == true); // 待機処理
+        gameManager.FinishTurn();
+        yield break;
+    }
+    /// <summary>
+    /// 3秒経過でターン終了を送信するコルーチン.
+    /// </summary>
+    private IEnumerator WaitFinishTurnCoroutine()
+    {
+        // 3秒間待つ
+        yield return new WaitForSeconds(3);
         gameManager.FinishTurn();//行動が終わったらターンを終わらせる.
         yield break;
     }
@@ -189,8 +248,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
+        gameManager.ShowMessage(gameManager.PlayersName[rnd - 1]+"に攻撃！", PhotonNetwork.LocalPlayer.ActorNumber);
+        this.GetComponent<AnimalsManager>().Attacking();
         photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
+        FinishFlg = true;
     }
+    #region EnemyAttackオーバーロード
     /// <summary>
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
@@ -211,9 +274,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum, rnd);//攻撃値変更(早坂)
+        FinishFlg = true;
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum, rnd);
     }
-
+    #endregion
 
     /// <summary>
     /// HPが変化するときに呼び出す関数
@@ -223,8 +287,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     public void ChangeHP(int addHP, int subject)
     {
-        gameManager.ChangePlayersHP(addHP, subject);
-        PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+        {
+            gameManager.ChangePlayersHP(addHP, subject);
+        }
     }
 
     #region 移動関連
@@ -237,6 +303,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         ActionFlg = true;
         if (!NowCardMove) // カード移動時にマスの効果を受けない(早坂)
         {
+            yield return new WaitUntil(() => gameManager.FinMessage == true); // 待機処理
             // タグごとに分類
             if (tag == "Start") // スタートマス
             {
@@ -250,7 +317,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
 
-                SendCardList(); // 早坂(未完)
+               // SendCardList(); // 早坂(未完)
             }
             else if (tag == "Move") // 移動マス
             {
@@ -267,7 +334,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 Debug.Log("HP：" + Player.HP);
                 photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
-                ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
+                //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
+                //ChangeHP(1);
+            }
+            else if (tag == "HpDown") // HPマス
+            {
+                //Debug.Log("HP１回復！！");
+                yield return new WaitForSeconds(2);
+
+                //Debug.Log("HP：" + Player.HP);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, Player.ID);
+                //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
                 //ChangeHP(1);
             }
             else if (tag == "Attack") //攻撃マス
@@ -275,13 +352,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Debug.Log("他のプレイヤーを攻撃！");
                 yield return new WaitForSeconds(2);
 
-                mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+                //mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+                EnemyAttack();
             }
             else // ノーマルマス
             {
                 Debug.Log("普通のマス");
                 yield return new WaitForSeconds(2);
             }
+            FinishFlg = true;
         }
     }
     /// <summary>
