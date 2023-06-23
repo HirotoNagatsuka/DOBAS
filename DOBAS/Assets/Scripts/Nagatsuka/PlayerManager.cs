@@ -64,6 +64,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private bool DiceTrigger = true; // サイコロを振ったかどうか
 
     public int Card = 0;//多分使わない(カード枚数だけの表示).
+    AnimalsManager animalsManager;
 
     #region Unityイベント(Start・Update・OnTrigger)
 
@@ -95,6 +96,11 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                     FinishDice();
             }
             Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
+            if (Input.GetKeyDown(KeyCode.A))
+            {
+                this.GetComponent<AnimalsManager>().Attacking();
+            }
+            
         }
     }
 
@@ -243,7 +249,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
         gameManager.ShowMessage(gameManager.PlayersName[rnd - 1]+"に攻撃！", PhotonNetwork.LocalPlayer.ActorNumber);
-
+        this.GetComponent<AnimalsManager>().Attacking();
         photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
         FinishFlg = true;
     }
@@ -346,7 +352,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Debug.Log("他のプレイヤーを攻撃！");
                 yield return new WaitForSeconds(2);
 
-                mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+                //mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
+                EnemyAttack();
             }
             else // ノーマルマス
             {

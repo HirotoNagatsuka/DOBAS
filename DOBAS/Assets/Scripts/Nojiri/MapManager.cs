@@ -6,8 +6,8 @@ public class MapManager : MonoBehaviour
 {
     public List<Transform> MasumeList;        // マスの配列
 
-    //[SerializeField] GameObject MapPlayer;    // MapManager参照
-    [SerializeField] private int NowMasume;   // 現在踏んでいるマスの値
+    [SerializeField] int NowMasume;   // 現在踏んでいるマスの値
+    [SerializeField] string Tag;      // タグ参照用
 
     // Start is called before the first frame update
     void Start()
@@ -21,14 +21,12 @@ public class MapManager : MonoBehaviour
 
     }
 
-    #region プレイヤーに衝突しているオブジェクトのタグを取得
+    #region プレイヤー側で衝突しているオブジェクトのタグを取得
     public void ColliderReference(Collider plyCollision)
     {
-        string Now = plyCollision.tag; // タグを取得
+        string Tag = plyCollision.tag; // タグを取得
 
-        Debug.Log("NowTag：" + Now);
-
-        //NowMasume = MapPlayer.ins.Sum; // 消す予定
+        Debug.Log("NowTag：" + Tag);
     }
     #endregion
 
@@ -36,13 +34,11 @@ public class MapManager : MonoBehaviour
     public int CardOneUp(int card)
     {
         card++;
-        Debug.Log("カードマス：" + NowMasume + "マス目");
         Debug.Log("カード：" + card + "枚");
 
         return card;
     }
     #endregion
-
 
     #region マスの移動
     public int Move(int move, string tag)
@@ -50,7 +46,6 @@ public class MapManager : MonoBehaviour
         if (tag == "Move")
         {
             move = 3;
-            Debug.Log("3マス移動：" + NowMasume + "マス目");
         }
 
         return move;
@@ -62,25 +57,25 @@ public class MapManager : MonoBehaviour
     {
         hp++;
 
-        Debug.Log("HP増マス：" + NowMasume + "マス目");
+        return hp;
+    }
+
+    public int HpOneDown(int hp)
+    {
+        hp--;
 
         return hp;
     }
     #endregion
 
     #region 攻撃
-    public void Attack()
+    public int Attack(int hp)
     {
-        Debug.Log("攻撃：" + NowMasume + "マス目");
+        hp--;
+
+        return hp;
     }
     #endregion
-
-    //#region HP情報を取得
-    //public int GetHp()
-    //{
-    //    return Hp;
-    //}
-    //#endregion
 
     //#region マスごとの座標リストを取得
     //public Vector3 GetMasumePos(int masume)

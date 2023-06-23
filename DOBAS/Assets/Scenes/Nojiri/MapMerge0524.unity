@@ -234,16 +234,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1174b45bafdad46a6fca8f6fde90af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tarn: 0
-  TarnEnd: 0
-  GameEnd: 0
-  DoutFlg: 0
-  DoutDec: 0
-  MyDec: 0
-  Saikoro: 0
-  TestOrder: 0
-  Count: 5
-  gameManager: {fileID: 0}
 --- !u!65 &35987947
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -772,16 +762,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1174b45bafdad46a6fca8f6fde90af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tarn: 0
-  TarnEnd: 0
-  GameEnd: 0
-  DoutFlg: 0
-  DoutDec: 0
-  MyDec: 0
-  Saikoro: 0
-  TestOrder: 0
-  Count: 5
-  gameManager: {fileID: 0}
 --- !u!65 &248834129
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -3948,16 +3928,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1174b45bafdad46a6fca8f6fde90af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tarn: 0
-  TarnEnd: 0
-  GameEnd: 0
-  DoutFlg: 0
-  DoutDec: 0
-  MyDec: 0
-  Saikoro: 0
-  TestOrder: 0
-  Count: 5
-  gameManager: {fileID: 0}
 --- !u!65 &1008069010
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4068,16 +4038,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c1174b45bafdad46a6fca8f6fde90af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Tarn: 0
-  TarnEnd: 0
-  GameEnd: 0
-  DoutFlg: 0
-  DoutDec: 0
-  MyDec: 0
-  Saikoro: 0
-  TestOrder: 0
-  Count: 5
-  gameManager: {fileID: 0}
 --- !u!65 &1022785695
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -5106,7 +5066,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8926883836ca56947a55ae8a749d869a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gameManager: {fileID: 0}
+  diceManager: {fileID: 90861573}
 --- !u!64 &1244287970
 MeshCollider:
   m_ObjectHideFlags: 0
@@ -6808,7 +6768,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -600, y: -160}
+  m_AnchoredPosition: {x: -600, y: -430}
   m_SizeDelta: {x: 600, y: 200}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1696167331
@@ -7789,6 +7749,7 @@ MonoBehaviour:
   - {fileID: 1353393165}
   - {fileID: 1176973731}
   NowMasume: 0
+  Tag: 
 --- !u!4 &1889339052
 Transform:
   m_ObjectHideFlags: 0
@@ -8881,7 +8842,7 @@ SpriteRenderer:
   m_Size: {x: 35.079998, y: 24.802656}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
 --- !u!4 &2133693743
