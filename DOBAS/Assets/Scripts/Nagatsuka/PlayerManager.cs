@@ -10,24 +10,14 @@ using Photon.Realtime;
 class PlayerStatus
 {
     public string Name; //名前を格納.
-    public int MaxHP;   //HPの最大値;
     public int HP;      //HPを格納.
     public int Attack;  //攻撃力を格納.
-   // public Sprite[] HeartSprites;//HP用画像の配列.
     public int ID;//デバック用.
 }
 
 public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     #region 定数宣言
-    //UI表示に使用する定数値
-    const int PLAYER_UI = 0;
-    const int HP_UI = 0;
-    const int ATTACK_NUM_UI = 2;
-
-    const float HEART_POS_X = -200;//初期値.
-    const float HEART_POS_Y = 280f;//HP画像の表示位置.
-
     const int ATTACK = 4;//攻撃出目の数字.
 
     //野尻の方で宣言した定数
@@ -58,43 +48,71 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
     private bool ActionFlg = true;   // サイコロを振ったかどうか
     bool FinishFlg = false;
-    GameObject PlayerUI;             //子供のキャンバスを取得するための変数宣言.
 
     public int Sum = 0;              // 出目の合計
-    private bool DiceTrigger = true; // サイコロを振ったかどうか
-
-    public int Card = 0;//多分使わない(カード枚数だけの表示).
+    public int MyRank;
+    public Vector3 NowPos;
+    public GameObject ResultCamera;
+    public AnimalsManager animalsManager;
 
     #region Unityイベント(Start・Update・OnTrigger)
 
     private void Start()
     {
+        animalsManager = this.GetComponent<AnimalsManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
-        //gameManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
+        //ResultCamera = GameObject.Find("ResultCamera");
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
-        Player.HP = gameManager.PlayersHP[Player.ID - 1];
-        PlayerUI = gameObject.transform.GetChild(PLAYER_UI).gameObject;//子供のキャンバスを取得.
-       // PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
+        MyRank = 0;
     }
 
     private void Update()
     {
+        NowPos = this.transform.position;
         if (photonView.IsMine)
         {
-            Vector3 PlayerPos = transform.position;
-            Vector3 TargetPos = mapManager.MasumeList[Sum].position;
-
-            // 移動モーション
-            transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
-            if (gameManager.DiceFinishFlg && CoroutineFlg == false)
+            if (gameManager.NowGameState == GameManager.GameState.InGame)
             {
+                Vector3 PlayerPos = transform.position;
+                Vector3 TargetPos = mapManager.MasumeList[Sum].position;
+
+                // 移動モーション
+                transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
+                if (gameManager.DiceFinishFlg && CoroutineFlg == false)
+                {
                     CoroutineFlg = true;
                     FinishDice();
+                }
             }
-            Player.HP = gameManager.PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1];
+            else if (gameManager.NowGameState == GameManager.GameState.EndGame)
+            {
+                Vector3 position =  Vector3.zero;
+                Debug.Log("PlayerEndGame起動");
+                switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber-1]) {
+                    case 0:
+                        Debug.Log("MyRank0");
+                        position = new Vector3(11.29004f, 0.3792114f, 9.680443f);
+                        transform.position = position;
+                        break;
+                    case 1:
+                        Debug.Log("MyRank1");
+                        position = new Vector3(12.96002f, 0.3792114f, 9.680443f);
+                        transform.position = position;
+                        break;
+                    case 2:
+                        position = new Vector3(14.78003f, 0.3792114f, 9.680443f);
+                        transform.position = position;
+                        break;
+                }
+                // カメラに向かせる
+                ResultCamera = GameObject.Find("ResultCamera");
+                Vector3 TargetRot = ResultCamera.transform.position - transform.position;
+                transform.rotation = Quaternion.LookRotation(TargetRot);
+                animalsManager.Jump();
+            }
         }
     }
 
@@ -104,12 +122,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     private void OnTriggerStay(Collider collision)
     {
         string NowTag = collision.tag; // タグを取得
-        //Debug.Log("OnTrigger起動");
         // 行動終了時、マスの効果発動
         if (ActionFlg == false)
         {
             ShowText(NowTag);
-            //GetComponent<Message>().ShowText(NowTag); //止まっているマス効果をテキストに表示(追記)
             mapManager.GetComponent<MapManager>().ColliderReference(collision);  // MapManagerのColliderReference関数処理を行う
             StartCoroutine("Activation", NowTag);  // Activationコルーチンを実行
         }
@@ -149,16 +165,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             gameManager.ShowMessage(message, PhotonNetwork.LocalPlayer.ActorNumber);
         }
     }
-        #endregion
-
-        /// <summary>
-        /// プレイヤーの持っているUI(HPと攻撃力)を変更する関数.
-        /// </summary>
-        private void ChangePlayerUI()
-    {
-        //PlayerUI.gameObject.transform.GetChild(HP_UI).GetComponent<Image>().sprite = Player.HeartSprites[Player.HP - 1];//HPの表示.
-        PlayerUI.gameObject.transform.GetChild(ATTACK_NUM_UI).GetComponent<Text>().text = Player.Attack.ToString();//HPの表示.
-    }
+    #endregion
 
     /// <summary>
     /// サイコロを振り終わったら呼び出す関数.
@@ -183,6 +190,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待機処理
         if (!gameManager.FailureDoubt)//嘘をついていた時に指摘されていたら動かさない
         {
+            Debug.Log("Deme" + deme);
             if (deme == ATTACK)
             {
                 Debug.Log("EnemyAttack()起動用if文中");
@@ -196,12 +204,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             StartCoroutine(WaitFinishTurnCoroutine());
+            yield break;
         }
         gameManager.DiceFinishFlg = false;
         gameManager.DeclarationFlg = false;
         ResetFlg();
         yield return new WaitUntil(() => FinishFlg == true); // 待機処理
-        gameManager.FinishTurn();
+        if (GameManager.WhoseTurn == PhotonNetwork.LocalPlayer.ActorNumber)
+        {
+            Debug.Log("Player側でのgameManager.FinishTurn()起動");
+            gameManager.FinishTurn();
+        }
         yield break;
     }
     /// <summary>
@@ -227,7 +240,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
     /// </summary>
-    [PunRPC]
     void EnemyAttack()
     {
         Debug.Log("EnemyAttack()起動");
@@ -244,7 +256,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("取得したrnd" + rnd);
         gameManager.ShowMessage(gameManager.PlayersName[rnd - 1]+"に攻撃！", PhotonNetwork.LocalPlayer.ActorNumber);
 
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
+        //photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
+        gameManager.EnemyAttack(-1, rnd);
         FinishFlg = true;
     }
     #region EnemyAttackオーバーロード
@@ -278,13 +291,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 変化量を引数にし、HPを変えた後UIにも反映する.
     /// 第二引数には自分自身が呼び出したのかを判定.
     /// </summary>
-    [PunRPC]
-    public void ChangeHP(int addHP, int subject)
+    //[PunRPC]
+    //public void ChangeHP(int addHP, int subject)
+    //{
+    //    if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+    //    {
+    //        gameManager.ChangePlayersHP(addHP, subject);
+    //    }
+    //}
+    void ChangeHP(int addHP, int subject)
     {
-        if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
-        {
             gameManager.ChangePlayersHP(addHP, subject);
-        }
     }
 
     #region 移動関連
@@ -301,16 +318,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             // タグごとに分類
             if (tag == "Start") // スタートマス
             {
-                Debug.Log("周回ボーナスゲット！");
+                //Debug.Log("周回ボーナスゲット！");
                 yield return new WaitForSeconds(2); // 2秒待つ
             }
             else if (tag == "Card") // カードマス
             {
                 Debug.Log("カード１枚ゲット！");
                 yield return new WaitForSeconds(2);
-
-                Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
-
                // SendCardList(); // 早坂(未完)
             }
             else if (tag == "Move") // 移動マス
@@ -327,26 +341,23 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 yield return new WaitForSeconds(2);
 
                 Debug.Log("HP：" + Player.HP);
-                photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
+                //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
                 //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
-                //ChangeHP(1);
+                gameManager.ChangePlayersHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
             }
             else if (tag == "HpDown") // HPマス
             {
                 //Debug.Log("HP１回復！！");
                 yield return new WaitForSeconds(2);
-
-                //Debug.Log("HP：" + Player.HP);
-                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, Player.ID);
-                //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
-                //ChangeHP(1);
+                //photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, Player.ID);
+                //ChangeHP(-1, PhotonNetwork.LocalPlayer.ActorNumber);
+                gameManager.ChangePlayersHP(-1, PhotonNetwork.LocalPlayer.ActorNumber);
             }
             else if (tag == "Attack") //攻撃マス
             {
                 Debug.Log("他のプレイヤーを攻撃！");
                 yield return new WaitForSeconds(2);
                 EnemyAttack();
-                //mapManager.GetComponent<MapManager>().Attack();  // MapManagerのAttack関数処理を行う
             }
             else // ノーマルマス
             {
@@ -367,15 +378,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         StartCoroutine("DelayMove", num);
     }
     /// <summary>
-    /// 数値の出目を受け取ったら呼び出す関数
+    /// 数値の出目を受け取ったら呼び出す関数(オーバーロード)
     /// 引数に出目を受け取り移動用コルーチンを起動する.
     /// </summary>
     public void StartDelay(int num, bool cardMove) // 第二引数追加(早坂)
     {
         Debug.Log("StartDeley(OverLoad)起動");
         NowCardMove = cardMove; //(早坂)
-        // コルーチンの開始
-        StartCoroutine("DelayMove", num);
+        StartCoroutine("DelayMove", num);        // コルーチンの開始
     }
     /// <summary>
     /// 引数で受け取った分マスを移動指せるコルーチン.

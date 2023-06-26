@@ -20,7 +20,7 @@ public class DiceStage : MonoBehaviour
             {
                 number = 6;
             }
-            else if (collider.gameObject.name == "Doubt1")
+            else if (collider.gameObject.name == "Doubt")
             {
                 number = 5;
             }

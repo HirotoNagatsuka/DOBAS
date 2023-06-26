@@ -212,14 +212,16 @@ MonoBehaviour:
   NowCardMove: 0
   Player:
     Name: TNC
-    MaxHP: 0
     HP: 3
     Attack: 1
     ID: 0
   doubtFlg: 0
   CoroutineFlg: 0
   Sum: 0
-  Card: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
 --- !u!114 &8095048837821938304
 MonoBehaviour:
   m_ObjectHideFlags: 0
