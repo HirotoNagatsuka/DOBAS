@@ -140,8 +140,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] Sprite[] DiceSprites = new Sprite[4]; //サイコロの出目の画像.
     #endregion
 
-
-
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
     void Start()
@@ -248,10 +246,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     void EndGame()
     {
+        CanvasUI.SetActive(false);
         GameEndPanel.SetActive(true);
         GameEndPanel.transform.GetChild(1).GetComponent<Text>().text = "1位：" + PlayersRank[0];
         GameEndPanel.transform.GetChild(2).GetComponent<Text>().text = "2位：" + PlayersRank[1];
-        //GameEndPanel.transform.GetChild(3).GetComponent<Text>().text = "3位：" + PlayersRank[2];
+        GameEndPanel.transform.GetChild(3).GetComponent<Text>().text = "3位：" + PlayersRank[2];
         Debug.Log("ゲーム終了");
     }
     #endregion

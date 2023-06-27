@@ -53,6 +53,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public int MyRank;
     public Vector3 NowPos;
     public GameObject ResultCamera;
+    Animator animator; // Animator
+    Vector3 PlayerPos;      // プレイヤー位置情報
+    public GameObject[] effectObject;   // エフェクトのプレハブ配列
     public AnimalsManager animalsManager;
 
     #region Unityイベント(Start・Update・OnTrigger)
@@ -62,6 +65,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         animalsManager = this.GetComponent<AnimalsManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
+        animator = GetComponent<Animator>();
         //ResultCamera = GameObject.Find("ResultCamera");
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
@@ -111,7 +115,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 ResultCamera = GameObject.Find("ResultCamera");
                 Vector3 TargetRot = ResultCamera.transform.position - transform.position;
                 transform.rotation = Quaternion.LookRotation(TargetRot);
-                animalsManager.Jump();
+                Jump();
             }
         }
     }
@@ -130,6 +134,129 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             StartCoroutine("Activation", NowTag);  // Activationコルーチンを実行
         }
     }
+
+    #endregion
+
+    #region アニメーション関連
+
+    #region 外から呼び出される関数用
+    // カード取得時
+    public void CardGetting()
+    {
+        StartCoroutine("EffectPreview", "CardGet");
+    }
+
+    // 移動するかどうか　true：移動開始　false：移動終了
+    public void Moving(bool move)
+    {
+        if (move)
+        {
+            animator.SetBool("Walk", true); // Walkアニメ再生
+        }
+        else
+        {
+            animator.SetBool("Walk", false); // Walkアニメ再生終了
+        }
+    }
+
+    // 攻撃時
+    public void Attacking()
+    {
+        if (animator == null) Debug.Log("あるよ");
+        animator.SetTrigger("Attack"); // Attackアニメ再生
+    }
+
+    // 体力変化時　true：体力増加　false：体力減少
+    public void HpChange(bool hpChange)
+    {
+        if (hpChange)
+        {
+            StartCoroutine("EffectPreview", "HpUp");
+        }
+        else
+        {
+            StartCoroutine("EffectPreview", "HpDown");
+        }
+    }
+
+    // ダメージを受けたとき生きているかどうか　true：生存　false：死亡
+    public void Damage(bool alive)
+    {
+        if (alive)
+        {
+            StartCoroutine("EffectPreview", "Hit");
+        }
+        else
+        {
+            StartCoroutine("EffectPreview", "Death");
+        }
+    }
+
+    public void Jump()
+    {
+        animator.SetTrigger("Jump");
+    }
+    #endregion
+
+    #region エフェクト生成
+    IEnumerator EffectPreview(string AnimName)
+    {
+        switch (AnimName)
+        {
+            case "CardGet": // カード取得時
+                GameObject cardObj = Instantiate(effectObject[2], PlayerPos, Quaternion.identity);
+                animator.SetTrigger("Jump"); // Jumpアニメ再生
+                yield return new WaitForSeconds(2f);
+                Destroy(cardObj);
+                break;
+
+            case "HpUp": // 体力増加
+                GameObject healObj = Instantiate(effectObject[0], PlayerPos, Quaternion.identity); // HpUp
+                animator.SetTrigger("Jump"); // Jumpアニメ再生
+                yield return new WaitForSeconds(2f);
+                Destroy(healObj);
+                break;
+
+            //case "Move":
+            //    break;
+
+            //case "MoveEnd":
+            //    break;
+
+            //case "Attack":
+            //    break;
+
+            case "HpDown": // 体力減少
+                GameObject downObj = Instantiate(effectObject[1], PlayerPos, Quaternion.identity); // HpDown
+                yield return new WaitForSeconds(2f);
+                Destroy(downObj);
+                break;
+
+            case "Attack": // 攻撃
+                animator.SetTrigger("Attack"); // Attackアニメ再生
+                break;
+
+            case "Hit": // 通常ダメージ
+                Instantiate(effectObject[3], PlayerPos, Quaternion.identity); // GetHit
+                animator.SetTrigger(AnimName); // Hitアニメ再生
+                break;
+
+            case "Death": // 体力０になるとき
+                Instantiate(effectObject[3], PlayerPos, Quaternion.identity); // GetHit
+                Instantiate(effectObject[4], PlayerPos, Quaternion.identity); // HpBreak
+
+                yield return new WaitForSeconds(0.5f);
+                animator.SetTrigger(AnimName); // Deathアニメ再生
+                yield return new WaitForSeconds(5f);
+                //transform.GetChild(ChildNum).gameObject.SetActive(false); // 5秒後プレイヤーを非アクティブ(死亡)
+                break;
+
+            default:
+                Debug.LogError("AnimNameエラー");
+                break;
+        }
+    }
+    #endregion
 
     #endregion
 
