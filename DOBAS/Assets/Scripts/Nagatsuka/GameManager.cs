@@ -102,6 +102,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     public bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
 
+    // 早坂優斗(0622)
+    [SerializeField] GameObject UseBt;
     #endregion
 
     #region Unityイベント(Start・Update)
@@ -205,6 +207,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         WaitText.text = "";
         doubtFlg = false;
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
+
+        // 早坂優斗(0622)
+        UseBt.SetActive(false);
     }
 
     /// <summary>

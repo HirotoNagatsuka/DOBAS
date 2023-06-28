@@ -20,7 +20,7 @@ public class DetailCardManager : MonoBehaviour
     void Start()
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
-        CCM = GameObject.Find("CardListPanel").GetComponent<CardCreateManager>();
+        CCM = GameObject.Find("ParentPanel").GetComponent<CardCreateManager>();
         Debug.Log(KindParam);
     }
 
@@ -43,7 +43,7 @@ public class DetailCardManager : MonoBehaviour
                 break;
             case 1:
                 Debug.Log("攻撃");
-                //gameManager.Players[0].GetComponent<PlayerManager>().EnemyAttack(AttckParam);
+                gameManager.Players[0].GetComponent<PlayerManager>().EnemyAttack(AttckParam);
                 break;
             case 2:
                 Debug.Log("移動");
@@ -52,11 +52,11 @@ public class DetailCardManager : MonoBehaviour
             default:
                 break;
         }
+        CardInfoDestroy();
         this.gameObject.SetActive(false);
-        Invoke("CardInfoDestroy", 0.1f);
     }
     // カード詳細画面の画像などの割り当て
-    public void GetCardInfo(Sprite img,string tx,int kind,int id)
+    public void GetCardInfo(Sprite img, string tx,int kind,int id)
     {
         CardImg.GetComponent<Image>().sprite = img;
         CardText.GetComponent<Text>().text = tx;
@@ -76,11 +76,13 @@ public class DetailCardManager : MonoBehaviour
     // 使ったカードの情報を削除
     void CardInfoDestroy()
     {
-        CCM.GetComponent<CardCreateManager>().UseCardDestroy(IdParam);
+        CCM.UseCardDestroy(IdParam);
 
         CardImg.GetComponent<Image>().sprite = null;
         CardText.GetComponent<Text>().text = null;
         KindParam = 0;
         IdParam = 0;
+        AttckParam = 0;
+        MoveParam = 0;
     }
 }

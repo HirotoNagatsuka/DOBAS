@@ -38,14 +38,14 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     #region 外部スクリプト参照用宣言
     GameManager gameManager;//GameManager参照用.
     MapManager mapManager; //MapManager参照用.
-    [SerializeField]
-    CardManager cardManager; // CardListManager参照用(早坂)
+   
     #endregion
 
     // 早坂
     private int RandomNum;
     public bool NowCardMove = false;
-
+    // 早坂(0622)
+    CardCreateManager CCM;
     #region public・SerializeField宣言
     [Header("[SerializeField]宣言")]
     [SerializeField]
@@ -71,6 +71,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
+        // 早坂(0622)
+        CCM = GameObject.Find("ParentPanel").GetComponent<CardCreateManager>();
+        if (photonView.IsMine)
+        {
+                SendCardList();
+        }
+
         //gameManager = GameObject.Find("DiceManager").GetComponent<DiceManager>();
         //最初のマスに配置.
         transform.position = mapManager.MasumeList[0].position;//初期値0.
@@ -250,7 +257,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
                 Card = mapManager.GetComponent<MapManager>().CardOneUp(Card);  // MapManagerのCardOneUp関数処理を行う
 
-                SendCardList(); // 早坂(未完)
+                SendCardList(); // 早坂
             }
             else if (tag == "Move") // 移動マス
             {
@@ -351,7 +358,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     #region 早坂追加
     public void SendCardList()
     {
-        RandomNum = UnityEngine.Random.Range(0, cardManager.GetCardLists().Count);
+        RandomNum = UnityEngine.Random.Range(0,CCM.Card_Manager.GetCardLists().Count);
+        CCM.GetCardID_AddInfo(RandomNum);
     }
     #endregion
 }

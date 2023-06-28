@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Hayasaka/TurnMarge0615.unity
-    guid: 4a690d75a1651ce4fbdfe8e648e01033
+    path: Assets/Scenes/Hayasaka/CardCreate.unity
+    guid: ee9c57e0c95af194fae495b82bfdea43
   m_configObjects: {}

@@ -147,6 +147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Id: 0
+  Kind: 0
   Icon: {fileID: 0}
   CardName: 
   Power: 0

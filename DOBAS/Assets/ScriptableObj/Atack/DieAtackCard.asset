@@ -16,5 +16,5 @@ MonoBehaviour:
   Koc: 1
   Icon: {fileID: 379863255, guid: b74d129a7ea4c6543ba31422ef1159f8, type: 3}
   CardName: "\u30E9\u30F3\u30C0\u30E0\u306A\u30D7\u30EC\u30A4\u30E4\u30FC\u304C\u5373\u6B7B"
-  Power: 100
+  Power: -100
   Move: 0
