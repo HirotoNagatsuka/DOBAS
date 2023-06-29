@@ -115,7 +115,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 ResultCamera = GameObject.Find("ResultCamera");
                 Vector3 TargetRot = ResultCamera.transform.position - transform.position;
                 transform.rotation = Quaternion.LookRotation(TargetRot);
-                Jump();
+                //Jump();
+                switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1])
+                {
+                    case 0:
+                        Jump();
+                        break;
+                    default:
+                        Death();
+                        break;
+                }
+
             }
         }
     }
@@ -195,6 +205,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     public void Jump()
     {
         animator.SetTrigger("Jump");
+    }
+    public void Death()
+    {
+        animator.SetTrigger("Death"); // Deathアニメ再生
     }
     #endregion
 
@@ -310,10 +324,10 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// <returns></returns>
     IEnumerator WaitDoubt(int deme)
     {
-        Debug.Log("出目" + deme);
-        Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
-        Debug.Log("キー入力待ち");
-        Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
+        //Debug.Log("出目" + deme);
+        //Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
+        //Debug.Log("キー入力待ち");
+        //Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
         yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待機処理
         if (!gameManager.FailureDoubt)//嘘をついていた時に指摘されていたら動かさない
         {
@@ -345,12 +359,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         yield break;
     }
     /// <summary>
-    /// 3秒経過でターン終了を送信するコルーチン.
+    /// 2秒経過でターン終了を送信するコルーチン.
     /// </summary>
     private IEnumerator WaitFinishTurnCoroutine()
     {
         // 3秒間待つ
-        yield return new WaitForSeconds(3);
+        yield return new WaitForSeconds(2);
         gameManager.FinishTurn();//行動が終わったらターンを終わらせる.
         yield break;
     }
@@ -374,16 +388,15 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         while (true)
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
-            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd && gameManager.PlayersHP[rnd-1] != 0)//自分自身でない場合ループを抜ける.
             {
-                break;
+                        break;                
             }
         }
-        Debug.Log("ループを抜けました");
-        Debug.Log("取得したrnd" + rnd);
+        //Debug.Log("ループを抜けました");
+        //Debug.Log("取得したrnd" + rnd);
         gameManager.ShowMessage(gameManager.PlayersName[rnd - 1]+"に攻撃！", PhotonNetwork.LocalPlayer.ActorNumber);
 
-        //photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1,rnd);
         gameManager.EnemyAttack(-1, rnd);
         FinishFlg = true;
     }
@@ -418,14 +431,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 変化量を引数にし、HPを変えた後UIにも反映する.
     /// 第二引数には自分自身が呼び出したのかを判定.
     /// </summary>
-    //[PunRPC]
-    //public void ChangeHP(int addHP, int subject)
-    //{
-    //    if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
-    //    {
-    //        gameManager.ChangePlayersHP(addHP, subject);
-    //    }
-    //}
     void ChangeHP(int addHP, int subject)
     {
             gameManager.ChangePlayersHP(addHP, subject);

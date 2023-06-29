@@ -176,6 +176,12 @@ MonoBehaviour:
   MyRank: 0
   NowPos: {x: 0, y: 0, z: 0}
   ResultCamera: {fileID: 0}
+  effectObject:
+  - {fileID: 9017484664307500583, guid: 023815f1481a5ba41a3ab6bfde022ac7, type: 3}
+  - {fileID: 6126188424833946103, guid: 356039a62e918fd4c89e5bd36cb75f8e, type: 3}
+  - {fileID: 7053385775836331393, guid: e26671043e6dfb74790f7592259abfc5, type: 3}
+  - {fileID: 5880797563127281583, guid: cb879725731cf4c499fa1bbea6a6eadd, type: 3}
+  - {fileID: 6855314210357232287, guid: eb288fa9eba31334c9b4655e30b3a71d, type: 3}
   animalsManager: {fileID: 0}
 --- !u!65 &1184403911252128842
 BoxCollider:
