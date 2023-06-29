@@ -6,6 +6,6 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/Scenes/Nagatsuka/DoubtScene.unity
+    path: Assets/Scenes/Nagatsuka/MainScene.unity
     guid: 96f0416e5781cb34c9766ee69ef875c0
   m_configObjects: {}

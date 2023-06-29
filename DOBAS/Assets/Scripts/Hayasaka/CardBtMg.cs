@@ -1,19 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using Photon.Pun;
 
-public class UseCard : MonoBehaviourPunCallbacks
+public class CardBtMg : MonoBehaviour
 {
-    [SerializeField] GameObject CardPanel;
-    
     // Start is called before the first frame update
     void Start()
     {
         
     }
-    public void DrawCardList()
+
+    // Update is called once per frame
+    void Update()
     {
-        CardPanel.SetActive(true);
+        
     }
 }

@@ -21,7 +21,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     const int SAIKORO_RESULT = 1;//サイコロの出目を他の人に通知するパネル用.
     #endregion
 
-    public List<Player> playerList = new List<Player>();
+    
 
     #region private変数
     private GameObject Dice;//サイコロ用の表示・非表示を繰り返す用.
@@ -42,7 +42,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private bool doubtFlg;//さいころが5か6の場合、フラグを切り換える.
 
     private List<GameObject> PlayersNameGroup = new List<GameObject>();//Playerの詳細情報を表示するオブジェクト.
-
+    private GameObject PlayerInfo;
 
 
     #region おまかせName配列
@@ -117,7 +117,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public List<GameObject> Players = new List<GameObject>(); // プレイヤー参照用
     public List<string> PlayersName = new List<string>();//Playerの名前を入れるリスト.
     public bool FinMessage = false;//メッセージの表示が終了したらマスの効果を発動する為のフラグ.
-    public int[] AnimalChildNums;
+    //public int[] AnimalChildNums;
     public int AnimalChildNum;//選んだキャラクターを保存するための宣言.
     public int DeclarationNum;//宣言番号.
     public bool DiceFinishFlg;//Player側からサイコロを振り終わっているかの参照用.
@@ -126,6 +126,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public string[] PlayersRank = new string[4];
     public int[] PlayersRankNum;
     public int Rankcnt;//順位が決まった人数をカウント.
+
+    [SerializeField] GameObject UseBt;    // 早坂優斗(0622)
 
     [Header("ダウト関連")]
     [SerializeField] GameObject DoubtPanel;
@@ -155,11 +157,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
         WhoseTurn = FIRST_TURN;
         PlayersHP = Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
-        AnimalChildNums = new int[MaxPlayers];
+        //AnimalChildNums = new int[MaxPlayers];
         for (int i = 0; i < MaxPlayers; i++)
         {
             PlayersHP[i] = FirstHP;//HPの初期値を代入.
-            AnimalChildNums[i] = 0;
+            //AnimalChildNums[i] = 0;
         }
         diceBtnFlg = false;
         doubtFlg = false;
@@ -272,6 +274,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         Debug.Log("FinishTurn()起動");
         WaitText.text = "";
+        UseBt.SetActive(false);        // 早坂優斗(0622)
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
     }
 
@@ -375,23 +378,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void StartGame()
     {
-        StandByCanvas.SetActive(false); //準備完了関連のキャンバスを非表示にする.
         NowGameState = GameState.InGame;//ゲーム状態をInGameにする.
+        StandByCanvas.SetActive(false); //準備完了関連のキャンバスを非表示にする.
         MainCamera.SetActive(true);
         CanvasUI.SetActive(true);       //ゲームに必要なキャンバスを表示する.
-        CreateCharacter(AnimalChildNum);
-        int i = 0;                        //詳細情報のY座標を変更するためにローカルな変数iを用意.
         foreach (var player in PhotonNetwork.PlayerList)//プレイヤーの名前を取得.
         {
-            playerList.Add(player);
             PlayersName.Add(player.NickName);//Playerの名前をリストに入れる.
-            //Playerの詳細情報を表示するものを生成する
-            var obj = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
-            obj.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);        //位置を右上に設定.
-            obj.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = player.NickName;                //名前を表示.
-            obj.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[i]];//初期HPを表示.
-            PlayersNameGroup.Add(obj);//詳細情報を入れたオブジェクトをリストに入れる.
-            i++;                      //Y座標を変更するためにiをプラスする.
         }
         StartCoroutine(TurnMessageWindowCoroutine());
     }
@@ -405,11 +398,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("player.GetReady()直後" + PhotonNetwork.LocalPlayer.GetReadyNum());
         StartButton.SetActive(false);                         //ボタンを押したら非表示にする.
         AnimalChildNum = SelectAnimals.ChildNum;
-        AnimalChildNums[PhotonNetwork.LocalPlayer.ActorNumber - 1] = SelectAnimals.ChildNum;
         PhotonNetwork.NickName = InputNickName.transform.GetChild(INPUT_NAME).GetComponent<Text>().text;// プレイヤー自身の名前を入力された名前に設定する
     }
 
-   // [PunRPC]
     private void CountReadyNum()
     {
 
@@ -428,10 +419,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                                 + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
             readyccnt = 0;
         }
-        else if (readyccnt == MaxPlayers)//指定人数に達したらゲームを始める.
+        else//指定人数に達したらゲームを始める.
         {
-            photonView.RPC(nameof(StartGame), RpcTarget.All);
             CreateCharacter(AnimalChildNum);
+            photonView.RPC(nameof(StartGame), RpcTarget.All);
+            for (int i = 0; i < MaxPlayers; i++)
+            {
+                PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
+                PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
+                PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
+                PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
+                PlayersNameGroup.Add(PlayerInfo);
+            }
         }
 
     }
@@ -898,7 +897,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Photon関連のoverride関数
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinOrCreateRoom("Room", new RoomOptions(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("Room1", new RoomOptions(), TypedLobby.Default);
     }
 
     // <summary>
@@ -929,7 +928,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(doubtFlg);
             stream.SendNext(Ranks);
             stream.SendNext(AnimalChildNum);
-            stream.SendNext(AnimalChildNums);
         }
         else
         {
@@ -939,7 +937,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             doubtFlg = (bool)stream.ReceiveNext();
             Ranks = (int[])stream.ReceiveNext();
             AnimalChildNum = (int)stream.ReceiveNext();
-            AnimalChildNums = (int[])stream.ReceiveNext();
         }
     }
     #endregion

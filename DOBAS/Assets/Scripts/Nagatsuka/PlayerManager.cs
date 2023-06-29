@@ -35,6 +35,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     // 早坂
     private int RandomNum;
     public bool NowCardMove = false;
+    // 早坂(0622)
+    CardCreateManager CCM;
 
     #region public・SerializeField宣言
     [Header("[SerializeField]宣言")]
@@ -56,15 +58,18 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     Animator animator; // Animator
     Vector3 PlayerPos;      // プレイヤー位置情報
     public GameObject[] effectObject;   // エフェクトのプレハブ配列
-    public AnimalsManager animalsManager;
 
     #region Unityイベント(Start・Update・OnTrigger)
 
     private void Start()
     {
-        animalsManager = this.GetComponent<AnimalsManager>();
         gameManager = GameObject.Find("GameManager").GetComponent<GameManager>();
         mapManager  = GameObject.Find("MapManager").GetComponent<MapManager>();
+        CCM = GameObject.Find("CardInfoPanel").GetComponent<CardCreateManager>();
+        if (photonView.IsMine)
+        {
+            SendCardList();
+        }
         animator = GetComponent<Animator>();
         //ResultCamera = GameObject.Find("ResultCamera");
         //最初のマスに配置.
@@ -405,7 +410,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 他のプレイヤーを攻撃するための関数
     /// 乱数を取得し、乱数と一致したIDをもつプレイヤーを攻撃する.
     /// </summary>
-    [PunRPC]
     public void EnemyAttack(int powNum)//引数追加(早坂)
     {
         Debug.Log("EnemyAttack()起動");
@@ -413,25 +417,24 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         while (true)
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
-            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける.
-            //if (Player.ID != rnd)//自分自身でない場合ループを抜ける.
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd && gameManager.PlayersHP[rnd - 1] != 0)//自分自身でない場合ループを抜ける.
             {
                 break;
             }
         }
         Debug.Log("ループを抜けました");
         Debug.Log("取得したrnd" + rnd);
-        FinishFlg = true;
-        photonView.RPC(nameof(ChangeHP), RpcTarget.All, powNum, rnd);
+        gameManager.ShowMessage("カード使用！\n" + gameManager.PlayersName[rnd - 1] + "に攻撃！", PhotonNetwork.LocalPlayer.ActorNumber);
+        gameManager.EnemyAttack(powNum, rnd);
     }
-    #endregion
+        #endregion
 
-    /// <summary>
-    /// HPが変化するときに呼び出す関数
-    /// 変化量を引数にし、HPを変えた後UIにも反映する.
-    /// 第二引数には自分自身が呼び出したのかを判定.
-    /// </summary>
-    void ChangeHP(int addHP, int subject)
+        /// <summary>
+        /// HPが変化するときに呼び出す関数
+        /// 変化量を引数にし、HPを変えた後UIにも反映する.
+        /// 第二引数には自分自身が呼び出したのかを判定.
+        /// </summary>
+        void ChangeHP(int addHP, int subject)
     {
             gameManager.ChangePlayersHP(addHP, subject);
     }
@@ -457,7 +460,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 Debug.Log("カード１枚ゲット！");
                 yield return new WaitForSeconds(2);
-               // SendCardList(); // 早坂(未完)
+                SendCardList(); // 早坂
             }
             else if (tag == "Move") // 移動マス
             {
@@ -509,15 +512,17 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         // コルーチンの開始
         StartCoroutine("DelayMove", num);
     }
+
     /// <summary>
-    /// 数値の出目を受け取ったら呼び出す関数(オーバーロード)
+    /// 数値の出目を受け取ったら呼び出す関数
     /// 引数に出目を受け取り移動用コルーチンを起動する.
     /// </summary>
     public void StartDelay(int num, bool cardMove) // 第二引数追加(早坂)
     {
         Debug.Log("StartDeley(OverLoad)起動");
         NowCardMove = cardMove; //(早坂)
-        StartCoroutine("DelayMove", num);        // コルーチンの開始
+        // コルーチンの開始
+        StartCoroutine("DelayMove", num);
     }
     /// <summary>
     /// 引数で受け取った分マスを移動指せるコルーチン.
@@ -565,7 +570,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     #region 早坂追加
     public void SendCardList()
     {
-        RandomNum = UnityEngine.Random.Range(0, cardManager.GetCardLists().Count);
+        RandomNum = UnityEngine.Random.Range(1, CCM.Card_Manager.GetCardLists().Count);
+        CCM.GetCardID_AddInfo(RandomNum);
     }
     #endregion
 }
