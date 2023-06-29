@@ -361,5 +361,29 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         RandomNum = UnityEngine.Random.Range(0,CCM.Card_Manager.GetCardLists().Count);
         CCM.GetCardID_AddInfo(RandomNum);
     }
+    //public void CardMix()
+    //{
+
+    //}
+    //public void PositionMix()
+    //{
+    //    int rnd;//乱数用.
+
+    //    while (true)
+    //    {
+    //        rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
+
+    //        if (PhotonNetwork.LocalPlayer.ActorNumber != rnd)//自分自身でない場合ループを抜ける
+    //        {
+    //            break;
+    //        }
+    //    }
+    //    photonView.RPC(nameof(ChangePos), RpcTarget.All,rnd);
+    //}
+    //[PunRPC]
+    //public void ChangePos(int random)
+    //{
+    //    gameManager.ChangePlayersPos(random);
+    //}
     #endregion
 }

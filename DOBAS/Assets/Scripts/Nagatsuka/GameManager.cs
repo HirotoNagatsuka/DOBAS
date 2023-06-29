@@ -607,4 +607,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             PlayersHP = (int[])stream.ReceiveNext();
         }
     }
+    #region 早坂追加(位置ミックス)
+    //public void ChangePlayersPos(int random)//subjectは対象という意味.
+    //{
+    //    if (random == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+    //    {
+    //        photonView.RPC(nameof(ChangePos), RpcTarget.All, random);
+    //    }
+    //}
+    ///// <summary>
+    ///// 対象と引数を指定し、全員にHP状態を同期する.
+    ///// </summary>
+    //[PunRPC]
+    //void ChangePos(int random)
+    //{
+    //    Players[0].transform.position = Players[random].transform.position;
+
+    //    Players[random].transform.position = Players[0].transform.position;
+    //}
+    #endregion
 }

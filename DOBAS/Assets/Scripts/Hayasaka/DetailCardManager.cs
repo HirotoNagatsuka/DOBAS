@@ -49,6 +49,14 @@ public class DetailCardManager : MonoBehaviour
                 Debug.Log("移動");
                 gameManager.Players[0].GetComponent<PlayerManager>().StartDelay(MoveParam, true);
                 break;
+            //case 3:
+            //    Debug.Log("カードミックス(未完成)");
+            //    //gameManager.Players[0].GetComponent<PlayerManager>().StartDelay(MoveParam, true);
+            //    break;
+            //case 4:
+            //    Debug.Log("位置ミックス(未完成)");
+            //    //gameManager.Players[0].GetComponent<PlayerManager>().PositionMix();
+            //    break;
             default:
                 break;
         }
