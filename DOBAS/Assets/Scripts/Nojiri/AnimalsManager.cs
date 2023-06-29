@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Photon.Pun;
+using Photon.Realtime;
 
-public class AnimalsManager : MonoBehaviour
+public class AnimalsManager : MonoBehaviourPunCallbacks, IPunObservable
 {
     public GameObject[] effectObject;   // エフェクトのプレハブ配列
     public GameObject Camera;           // カメラ取得
@@ -18,6 +20,9 @@ public class AnimalsManager : MonoBehaviour
     Vector3 PlayerPos;      // プレイヤー位置情報
 
     GameManager gameManager;
+
+    int animationState;
+
     //Start is called before the first frame update
     void Start()
     {
@@ -39,6 +44,10 @@ public class AnimalsManager : MonoBehaviour
                 transform.Rotate(Vector3.up, rotation);
             }
         }
+        else
+        {
+            transform.GetChild(ChildNum).gameObject.SetActive(true);
+        }
     }
 
     #region キャラ生成
@@ -58,7 +67,8 @@ public class AnimalsManager : MonoBehaviour
         {
             // 選択したものをアクティブ
             transform.GetChild(gameManager.AnimalChildNum).gameObject.SetActive(true);
-            ChildObject = transform.GetChild(gameManager.AnimalChildNum).gameObject;
+            ChildNum = gameManager.AnimalChildNum;
+            ChildObject = transform.GetChild(ChildNum).gameObject;
             ChildAnimator = ChildObject.GetComponent<Animator>();
         }
     }
@@ -171,6 +181,11 @@ public class AnimalsManager : MonoBehaviour
             StartCoroutine("EffectPreview", "Death");
         }
     }
+
+    public void Jump()
+    {
+        ChildAnimator.SetTrigger("Jump");
+    }
     #endregion
 
     #region エフェクト生成
@@ -232,4 +247,19 @@ public class AnimalsManager : MonoBehaviour
         }
     }
     #endregion
+
+    /// <summary>
+    /// PUNを使って変数を同期する.
+    /// </summary>
+    void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        if (stream.IsWriting)
+        {
+            stream.SendNext(ChildNum);
+        }
+        else
+        {
+            ChildNum = (int)stream.ReceiveNext();
+        }
+    }
 }

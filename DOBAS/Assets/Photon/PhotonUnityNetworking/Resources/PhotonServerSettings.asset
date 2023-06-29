@@ -56,6 +56,8 @@ MonoBehaviour:
   - RpcSendText
   - ShowMessageAll
   - PushChat
+  - TurnMessageWindowCoroutine
+  - CountReadyNum
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

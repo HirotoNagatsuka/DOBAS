@@ -2769,6 +2769,9 @@ GameObject:
   - component: {fileID: 494972358968800946}
   - component: {fileID: 6338547742858097855}
   - component: {fileID: 6338547742858097854}
+  - component: {fileID: 4172143480317980961}
+  - component: {fileID: 4582334995788251299}
+  - component: {fileID: 7674991308285625000}
   m_Layer: 0
   m_Name: Herring
   m_TagString: Untagged
@@ -2785,7 +2788,7 @@ Transform:
   m_GameObject: {fileID: 3325289378515089025}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5456603043820214068}
@@ -2863,6 +2866,73 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &4172143480317980961
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3325289378515089025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &4582334995788251299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3325289378515089025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &7674991308285625000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3325289378515089025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 6338547742858097854}
+  - {fileID: 4172143480317980961}
+  - {fileID: 4582334995788251299}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &3495001017707289458
 GameObject:
   m_ObjectHideFlags: 0
@@ -3290,6 +3360,7 @@ GameObject:
   - component: {fileID: 4361501175774906267}
   - component: {fileID: 4361501175774906264}
   - component: {fileID: -6034870888955582763}
+  - component: {fileID: 2361460564593131899}
   m_Layer: 0
   m_Name: Animals
   m_TagString: Untagged
@@ -3362,16 +3433,23 @@ MonoBehaviour:
   OwnershipTransfer: 0
   observableSearch: 2
   ObservedComponents:
+  - {fileID: 4361501175774906265}
   - {fileID: 4361501175774906264}
   - {fileID: -6034870888955582763}
-  - {fileID: 7587543249605805984}
   - {fileID: 5925864413737099541}
+  - {fileID: 8753721037205134315}
   - {fileID: 6338547742858097854}
+  - {fileID: 4172143480317980961}
   - {fileID: 4878998817608926311}
+  - {fileID: 515500784860797630}
   - {fileID: 7118770484103536614}
+  - {fileID: 8827515821278674437}
   - {fileID: 7111911956083706849}
+  - {fileID: 752764608414995051}
   - {fileID: 4936590371450546970}
+  - {fileID: 8809793108665401119}
   - {fileID: 4639614189847580166}
+  - {fileID: 7803380681945038707}
   sceneViewId: 0
   InstantiationId: 0
   isRuntimeInstantiated: 0
@@ -3407,14 +3485,29 @@ MonoBehaviour:
   NowCardMove: 0
   Player:
     Name: 
-    MaxHP: 0
     HP: 0
     Attack: 0
     ID: 0
   doubtFlg: 0
   CoroutineFlg: 0
   Sum: 0
-  Card: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!65 &2361460564593131899
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4361501175774906261}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4412022380782076059
 GameObject:
   m_ObjectHideFlags: 0
@@ -4493,6 +4586,9 @@ GameObject:
   - component: {fileID: 323709042210964636}
   - component: {fileID: 6051224319714134155}
   - component: {fileID: 4936590371450546970}
+  - component: {fileID: 8809793108665401119}
+  - component: {fileID: 5961934958133456027}
+  - component: {fileID: 1262948428328542267}
   m_Layer: 0
   m_Name: Squid
   m_TagString: Untagged
@@ -4509,7 +4605,7 @@ Transform:
   m_GameObject: {fileID: 6105254462258795273}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 259553230469888705}
@@ -4587,6 +4683,70 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &8809793108665401119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6105254462258795273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &5961934958133456027
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6105254462258795273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &1262948428328542267
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6105254462258795273}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &6225167744396433490
 GameObject:
   m_ObjectHideFlags: 0
@@ -5108,6 +5268,9 @@ GameObject:
   - component: {fileID: 7745976841654871121}
   - component: {fileID: 4361501177326207470}
   - component: {fileID: 5925864413737099541}
+  - component: {fileID: 8753721037205134315}
+  - component: {fileID: 4593566028184127253}
+  - component: {fileID: 3239560169212522360}
   m_Layer: 0
   m_Name: Gecko
   m_TagString: Untagged
@@ -5124,7 +5287,7 @@ Transform:
   m_GameObject: {fileID: 7093839986168303911}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1197968726530881737}
@@ -5202,6 +5365,70 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &8753721037205134315
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7093839986168303911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &4593566028184127253
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7093839986168303911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &3239560169212522360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7093839986168303911}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &7111911954915541244
 GameObject:
   m_ObjectHideFlags: 0
@@ -5462,6 +5689,9 @@ GameObject:
   - component: {fileID: 7111911956083706845}
   - component: {fileID: 7111911956083706843}
   - component: {fileID: 7111911956083706849}
+  - component: {fileID: 752764608414995051}
+  - component: {fileID: 2757410760480726748}
+  - component: {fileID: 1639741357177090096}
   m_Layer: 0
   m_Name: Sparrow
   m_TagString: Untagged
@@ -5478,7 +5708,7 @@ Transform:
   m_GameObject: {fileID: 7111911956083706847}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 6660232562414263956}
@@ -5556,6 +5786,70 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &752764608414995051
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7111911956083706847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &2757410760480726748
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7111911956083706847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &1639741357177090096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7111911956083706847}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &7111911956488271854
 GameObject:
   m_ObjectHideFlags: 0
@@ -5911,6 +6205,9 @@ GameObject:
   - component: {fileID: 3708673022214190622}
   - component: {fileID: 4361501176635274415}
   - component: {fileID: 7587543249605805984}
+  - component: {fileID: 2718771943634297594}
+  - component: {fileID: 1262576996890503996}
+  - component: {fileID: 5777026153559746160}
   m_Layer: 0
   m_Name: Colobus
   m_TagString: Untagged
@@ -5927,7 +6224,7 @@ Transform:
   m_GameObject: {fileID: 7587543249605805985}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3885550078978342881}
@@ -6003,8 +6300,94 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ShowLayerWeightsInspector: 1
   ShowParameterInspector: 1
-  m_SynchronizeParameters: []
-  m_SynchronizeLayers: []
+  m_SynchronizeParameters:
+  - Type: 9
+    SynchronizeType: 0
+    Name: Attack
+  - Type: 9
+    SynchronizeType: 0
+    Name: Jump
+  - Type: 9
+    SynchronizeType: 0
+    Name: Hit
+  - Type: 9
+    SynchronizeType: 0
+    Name: Death
+  - Type: 4
+    SynchronizeType: 0
+    Name: Walk
+  m_SynchronizeLayers:
+  - SynchronizeType: 0
+    LayerIndex: 0
+  - SynchronizeType: 0
+    LayerIndex: 1
+--- !u!114 &2718771943634297594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587543249605805985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &1262576996890503996
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587543249605805985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &5777026153559746160
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7587543249605805985}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents:
+  - {fileID: 7587543249605805984}
+  - {fileID: 2718771943634297594}
+  - {fileID: 1262576996890503996}
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &7595868108457214366
 GameObject:
   m_ObjectHideFlags: 0
@@ -6267,6 +6650,9 @@ GameObject:
   - component: {fileID: 7118770484103536615}
   - component: {fileID: 7626440557515598245}
   - component: {fileID: 7118770484103536614}
+  - component: {fileID: 8827515821278674437}
+  - component: {fileID: 9124386617502358502}
+  - component: {fileID: 2343543434930905324}
   m_Layer: 0
   m_Name: Pudu
   m_TagString: Untagged
@@ -6283,7 +6669,7 @@ Transform:
   m_GameObject: {fileID: 8485488050584658926}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5850983507455211949}
@@ -6361,6 +6747,70 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &8827515821278674437
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8485488050584658926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &9124386617502358502
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8485488050584658926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &2343543434930905324
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8485488050584658926}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &8603622719291661675
 GameObject:
   m_ObjectHideFlags: 0
@@ -6404,6 +6854,9 @@ GameObject:
   - component: {fileID: 6515231389867735854}
   - component: {fileID: 4878998817608926308}
   - component: {fileID: 4878998817608926311}
+  - component: {fileID: 515500784860797630}
+  - component: {fileID: 4778239262363393849}
+  - component: {fileID: 6716318639507328390}
   m_Layer: 0
   m_Name: Muskrat
   m_TagString: Untagged
@@ -6420,7 +6873,7 @@ Transform:
   m_GameObject: {fileID: 8661435154603111619}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2317388729363900925}
@@ -6498,6 +6951,70 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &515500784860797630
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8661435154603111619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &4778239262363393849
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8661435154603111619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &6716318639507328390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8661435154603111619}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &8781622264282556332
 GameObject:
   m_ObjectHideFlags: 0
@@ -6834,6 +7351,9 @@ GameObject:
   - component: {fileID: 756497420972476827}
   - component: {fileID: 1142085207009614736}
   - component: {fileID: 4639614189847580166}
+  - component: {fileID: 7803380681945038707}
+  - component: {fileID: 4437371969517642459}
+  - component: {fileID: 7111955933086223723}
   m_Layer: 0
   m_Name: Taipan
   m_TagString: Untagged
@@ -6850,7 +7370,7 @@ Transform:
   m_GameObject: {fileID: 9096734975487910307}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 1.3, y: 1.3, z: 1.3}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5747418969049006242}
@@ -6928,6 +7448,70 @@ MonoBehaviour:
   ShowParameterInspector: 1
   m_SynchronizeParameters: []
   m_SynchronizeLayers: []
+--- !u!114 &7803380681945038707
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096734975487910307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eefb65a12c499c044855165753c1a974, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  cardManager: {fileID: 0}
+  NowCardMove: 0
+  Player:
+    Name: 
+    HP: 0
+    Attack: 0
+    ID: 0
+  doubtFlg: 0
+  CoroutineFlg: 0
+  Sum: 0
+  MyRank: 0
+  NowPos: {x: 0, y: 0, z: 0}
+  ResultCamera: {fileID: 0}
+  animalsManager: {fileID: 0}
+--- !u!114 &4437371969517642459
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096734975487910307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 627855c7f81362d41938ffe0b1475957, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SynchronizePosition: 1
+  m_SynchronizeRotation: 1
+  m_SynchronizeScale: 0
+  m_UseLocal: 1
+--- !u!114 &7111955933086223723
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9096734975487910307}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa584fbee541324448dd18d8409c7a41, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ObservedComponentsFoldoutOpen: 1
+  Group: 0
+  prefixField: -1
+  Synchronization: 3
+  OwnershipTransfer: 0
+  observableSearch: 2
+  ObservedComponents: []
+  sceneViewId: 0
+  InstantiationId: 0
+  isRuntimeInstantiated: 0
 --- !u!1 &9132640854644000830
 GameObject:
   m_ObjectHideFlags: 0
