@@ -951,6 +951,7 @@ MonoBehaviour:
     ID: 0
   doubtFlg: 0
   CoroutineFlg: 0
+  FinishFlg: 0
   Sum: 0
   MyRank: 0
   NowPos: {x: 0, y: 0, z: 0}
@@ -961,7 +962,6 @@ MonoBehaviour:
   - {fileID: 7053385775836331393, guid: e26671043e6dfb74790f7592259abfc5, type: 3}
   - {fileID: 5880797563127281583, guid: cb879725731cf4c499fa1bbea6a6eadd, type: 3}
   - {fileID: 6855314210357232287, guid: eb288fa9eba31334c9b4655e30b3a71d, type: 3}
-  animalsManager: {fileID: 0}
 --- !u!65 &-5754407707728457425
 BoxCollider:
   m_ObjectHideFlags: 0

@@ -49,7 +49,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
     private bool ActionFlg = true;   // サイコロを振ったかどうか
-    bool FinishFlg = false;
+    public bool FinishFlg = false;
 
     public int Sum = 0;              // 出目の合計
     public int MyRank;
@@ -329,10 +329,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// <returns></returns>
     IEnumerator WaitDoubt(int deme)
     {
-        //Debug.Log("出目" + deme);
-        //Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
-        //Debug.Log("キー入力待ち");
-        //Debug.Log("gameManager.DeclarationFlg" + gameManager.DeclarationFlg);
+        Debug.Log("出目" + deme);
+        Debug.Log("gameManager.DeclarationNum" + gameManager.DeclarationNum);
+        Debug.Log("キー入力待ち");
         yield return new WaitUntil(() => gameManager.DeclarationFlg == true); // 待機処理
         if (!gameManager.FailureDoubt)//嘘をついていた時に指摘されていたら動かさない
         {
@@ -356,7 +355,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         gameManager.DeclarationFlg = false;
         ResetFlg();
         yield return new WaitUntil(() => FinishFlg == true); // 待機処理
-        if (GameManager.WhoseTurn == PhotonNetwork.LocalPlayer.ActorNumber)
+        Debug.Log("待機処理は抜けてる");
+        int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
+        if (turn == PhotonNetwork.LocalPlayer.ActorNumber)
         {
             Debug.Log("Player側でのgameManager.FinishTurn()起動");
             gameManager.FinishTurn();
