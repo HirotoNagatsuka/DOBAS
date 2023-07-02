@@ -9866,7 +9866,6 @@ MonoBehaviour:
   ReasoningPanel: {fileID: 397416621}
   GameEndPanel: {fileID: 87281000}
   Ranks: 
-  PlayersHP: 
   WaitText: {fileID: 2034527780}
   PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
   Players: []

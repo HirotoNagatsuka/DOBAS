@@ -394,9 +394,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         while (true)
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
-            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd && gameManager.PlayersHP[rnd-1] != 0)//自分自身でない場合ループを抜ける.
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd && PhotonNetwork.LocalPlayer.GetPlayerHP() != 0)//自分自身でない場合ループを抜ける.
             {
-                        break;                
+                break;
             }
         }
         //Debug.Log("ループを抜けました");
@@ -418,7 +418,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         while (true)
         {
             rnd = UnityEngine.Random.Range(1, GameManager.MaxPlayersNum + 1);
-            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd && gameManager.PlayersHP[rnd - 1] != 0)//自分自身でない場合ループを抜ける.
+            if (PhotonNetwork.LocalPlayer.ActorNumber != rnd && PhotonNetwork.LocalPlayer.GetPlayerHP() != 0)//自分自身でない場合ループを抜ける.
             {
                 break;
             }

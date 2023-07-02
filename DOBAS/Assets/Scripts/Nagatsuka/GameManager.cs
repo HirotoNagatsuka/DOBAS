@@ -110,9 +110,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int[] Ranks;
 
     [Header("外部アクセス用変数")]
-    public int[] PlayersHP;//Player側からHPの参照を行う用.
+    //public int[] PlayersHP;//Player側からHPの参照を行う用.
     public static int MaxPlayersNum;//他スクリプトからアクセスする用.
-    public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
+    //public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
     public Text WaitText;   //他の人の行動待ちを表示するテキスト.
     [SerializeField] GameObject PlayersNameGroupPrefab;//右上に表示する名前を生成する用.
     public List<GameObject> Players = new List<GameObject>(); // プレイヤー参照用
@@ -150,6 +150,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
     public Text TestWhoseTurnText;
+    bool startflg = false;
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -158,15 +159,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // プレイヤー自身の名前を"Player"に設定する
         PhotonNetwork.NickName = "Player";
         PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.LocalPlayer.SetPlayerHP(FirstHP);
+        Debug.Log(PhotonNetwork.LocalPlayer.GetPlayerHP());
+        Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
 
-        WhoseTurn = FIRST_TURN;
-        PlayersHP = Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
-        //AnimalChildNums = new int[MaxPlayers];
-        for (int i = 0; i < MaxPlayers; i++)
-        {
-            PlayersHP[i] = FirstHP;//HPの初期値を代入.
-            //AnimalChildNums[i] = 0;
-        }
         diceBtnFlg = false;
         doubtFlg = false;
         timeflg = false;
@@ -221,10 +217,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     private void InGameRoop()
     {
-        if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンなら
+        int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
+        if (PhotonNetwork.LocalPlayer.ActorNumber == turn)//自分のターンなら
         {
             WaitText.text = "";
-            if (PlayersHP[WhoseTurn - 1] > 0)//0以上であれば行動可能.
+            if (PhotonNetwork.LocalPlayer.GetPlayerHP() > 0)//0以上であれば行動可能.
             {
                 if (!diceBtnFlg)
                 {
@@ -242,8 +239,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else//自分のターンでないなら.
         {
             WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
-            WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
-            WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
+            WhoseTurnText.text = PlayersName[turn - 1] + "のターン";//誰のターンかをテキストに表示.
+            WaitText.text = PlayersName[turn - 1] + "が行動しています";
             ShakeDiceButton.SetActive(false);//サイコロを振るボタンを表示.
             CardButton.SetActive(false);
         }
@@ -295,7 +292,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
         {
             PlayersNameGroup[i].transform.GetChild(5).gameObject.SetActive(false);
-            if (PlayersHP[i] == 0)//HPが0のプレイヤーを数える.
+            if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 0)//HPが0のプレイヤーを数える.
             {
                 cnt++;
             }
@@ -304,7 +301,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             for (int i = 0; i < MaxPlayers; i++)
             {
-                if (PlayersHP[i] > 0)
+                if (PhotonNetwork.LocalPlayer.GetPlayerHP() > 0)
                 {
                     PlayersRank[0] = PlayersName[i];
                 }
@@ -313,17 +310,17 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else
         {
-            if (WhoseTurn == MaxPlayers)
+            int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
+            if (turn == MaxPlayers)
             {
-                WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
+                //WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
                 customProperties["Turn"] = FIRST_TURN;
             }
             else
             {
-                int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
                 turn++;
                 customProperties["Turn"] = turn;
-                WhoseTurn++;           //次の人のターンにする.
+                //WhoseTurn++;           //次の人のターンにする.
             }
             PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
             customProperties.Clear();
@@ -355,24 +352,28 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void ChangeHP(int addHP, int subject)
     {
-        if (PlayersHP[subject - 1] == 5)
+        if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
         {
-            Debug.Log("HP上限");
+            if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 5)
+            {
+                Debug.Log("HP上限");
+            }
+            else if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 0)
+            {
+                return;
+            }
+            else
+            {
+                int hp = PhotonNetwork.LocalPlayer.GetPlayerHP() + addHP;
+                PhotonNetwork.LocalPlayer.SetPlayerHP(hp);
+            }
         }
-        else if (PlayersHP[subject - 1] == 0)
-        {
-            return;
-        }
-        else
-        {
-            PlayersHP[subject - 1] += addHP;
-        }
-        PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[subject - 1]];
-        if (PlayersHP[subject - 1] == 0)
+        PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()-1];
+        if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 0)
         {
             Debug.Log("HP0になった人" + PlayersName[subject - 1]);
             PlayersRank[Rankcnt - 1] = PlayersName[subject - 1];
-            if (PlayersHP[subject - 1] == PhotonNetwork.LocalPlayer.ActorNumber)
+            if (PhotonNetwork.LocalPlayer.GetPlayerHP() == PhotonNetwork.LocalPlayer.ActorNumber)
             {
                 Debug.Log("MyRank代入");
                 Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1] = Rankcnt;
@@ -406,16 +407,43 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void PushGameStart()
     {
-        PhotonNetwork.LocalPlayer.SetReadyNum(true);
+        
         Debug.Log("player.GetReady()直後" + PhotonNetwork.LocalPlayer.GetReadyNum());
         StartButton.SetActive(false);                         //ボタンを押したら非表示にする.
         AnimalChildNum = SelectAnimals.ChildNum;
         PhotonNetwork.NickName = InputNickName.transform.GetChild(INPUT_NAME).GetComponent<Text>().text;// プレイヤー自身の名前を入力された名前に設定する
+        PhotonNetwork.LocalPlayer.SetReadyNum(true);
+        photonView.RPC(nameof(Readycount), RpcTarget.All);
+        StartCoroutine(WaitStart());
+    }
+
+    [PunRPC]
+    void Readycount()
+    {
+        foreach (var player in PhotonNetwork.PlayerList)
+        {
+            if (player.GetReadyNum())
+            {
+                readyccnt++;
+            }
+        }
+        Debug.Log("readycnt数" + readyccnt);
+        if (readyccnt != MaxPlayers)//入室した人数が指定した数に満たない場合
+        {
+            StandByGroup.SetActive(true);                     //待機人数を表示するキャンバスを表示する.
+            HelloPlayerText.text = PhotonNetwork.NickName + "さんようこそ！";
+            StandByText.text = "あと" + (MaxPlayers - readyccnt)
+                                + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
+            readyccnt = 0;
+        }
+        else
+        {
+            startflg = true;
+        }
     }
 
     private void CountReadyNum()
     {
-
         foreach (var player in PhotonNetwork.PlayerList)
         {
             if (player.GetReadyNum())
@@ -433,18 +461,40 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else//指定人数に達したらゲームを始める.
         {
-            CreateCharacter(AnimalChildNum);
-            photonView.RPC(nameof(StartGame), RpcTarget.All);
-            for (int i = 0; i < MaxPlayers; i++)
-            {
-                PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
-                PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
-                PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
-                PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
-                PlayersNameGroup.Add(PlayerInfo);
-            }
+            Debug.Log("ゲームを始めます");
+            startflg = true;
+            //CreateCharacter(AnimalChildNum);
+            //photonView.RPC(nameof(StartGame), RpcTarget.All);
+            //for (int i = 0; i < MaxPlayers; i++)
+            //{
+            //    PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
+            //    PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
+            //    PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()];//初期HPを表示.
+            //    PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
+            //    PlayersNameGroup.Add(PlayerInfo);
+            //}
         }
 
+    }
+
+    /// <summary>
+    /// 他のプレイヤーの開始を待つコルーチン
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator WaitStart()
+    {
+        yield return new WaitUntil(() => startflg == true); // 待機処理
+        CreateCharacter(AnimalChildNum);
+        photonView.RPC(nameof(StartGame), RpcTarget.All);
+        for (int i = 0; i < MaxPlayers; i++)
+        {
+            PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
+            PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
+            PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()];//初期HPを表示.
+            PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
+            PlayersNameGroup.Add(PlayerInfo);
+        }
+        yield break;
     }
 
     /// <summary>
@@ -560,6 +610,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void DeclarationDoubt(int subject)
     {
+        int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
         ReasoningPanel.SetActive(false);//他プレイヤーのパネルを強制的に閉じる.
         Debug.Log("DeclarationDoubt起動");
         Debug.Log("呼び出したPlayer" + PlayersName[subject - 1]);
@@ -568,16 +619,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (doubtFlg)//嘘をついていた場合の処理.
         {
             FailureDoubt = true;
-            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんは嘘をついていました";
-            DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[WhoseTurn - 1] + "さんに1ダメージ";
-            if (WhoseTurn == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[turn - 1] + "さんは嘘をついていました";
+            DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[turn - 1] + "さんに1ダメージ";
+            if (turn == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
             {
-                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, WhoseTurn);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, turn);
             }
         }
         else//嘘をついていなかった場合の処理.
         {
-            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんは嘘をついていませんでした";
+            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[turn - 1] + "さんは嘘をついていませんでした";
             DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[subject - 1] + "さんに1ダメージ";
             if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
             {
@@ -801,8 +852,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     private IEnumerator TurnMessageWindowCoroutine()
     {
+        int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
         MessageWindow.SetActive(true);
-        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんのターンです";
+        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[turn - 1] + "さんのターンです";
         // 2秒間待つ
         yield return new WaitForSeconds(2);
         MessageWindow.SetActive(false);
@@ -910,7 +962,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Photon関連のoverride関数
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinOrCreateRoom("Room1", new RoomOptions(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("RoomTNC", new RoomOptions(), TypedLobby.Default);
     }
 
     // <summary>
@@ -943,8 +995,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(HaveTime);// timeを送信する
-            stream.SendNext(WhoseTurn);
-            stream.SendNext(PlayersHP);
+            //stream.SendNext(WhoseTurn);
+            //stream.SendNext(PlayersHP);
             stream.SendNext(doubtFlg);
             stream.SendNext(Ranks);
             stream.SendNext(AnimalChildNum);
@@ -952,8 +1004,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             HaveTime = (float)stream.ReceiveNext(); // timeを受信する
-            WhoseTurn = (int)stream.ReceiveNext();
-            PlayersHP = (int[])stream.ReceiveNext();
+            //WhoseTurn = (int)stream.ReceiveNext();
+            //PlayersHP = (int[])stream.ReceiveNext();
             doubtFlg = (bool)stream.ReceiveNext();
             Ranks = (int[])stream.ReceiveNext();
             AnimalChildNum = (int)stream.ReceiveNext();
@@ -967,7 +1019,7 @@ public static class PhotonCustumPropertie
     private const string GameStatusKey = "Gs";
     private const string InitStatusKey = "Is";
     private const string ReadyNum = "Rn";
-    private const string WhoseTurn = "WT";
+    private const string PlayerHP = "P_HP";
 
     private static readonly ExitGames.Client.Photon.Hashtable propsToSet = new ExitGames.Client.Photon.Hashtable();
 
@@ -1041,20 +1093,15 @@ public static class PhotonCustumPropertie
         propsToSet.Clear();
     }
 
-    public static int GetWhoseTurn(this Room room)
+    public static int GetPlayerHP(this Player player)
     {
-        return (room.CustomProperties[WhoseTurn] is int status) ? status : 0;
+        return (player.CustomProperties[PlayerHP] is int status) ? status : 0;
     }
 
-    /// <summary>
-    /// 引数でPhotonのプレイヤーと初期化状態を渡すことで
-    /// 他プレイヤーに送信する
-    /// </summary>
-    /// <param name="player"></param>
-    public static void SetWhoswTurn(this Room room, int status)
+    public static void SetPlayerHP(this Player player, int status)
     {
-        propsToSet[WhoseTurn] = status;
-        room.SetCustomProperties(propsToSet);
+        propsToSet[PlayerHP] = status;
+        player.SetCustomProperties(propsToSet);
         propsToSet.Clear();
     }
 }
