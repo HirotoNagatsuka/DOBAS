@@ -44,7 +44,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     PlayerStatus Player;//Playerのクラスをインスペクター上で見れるようにする.
     #endregion
 
-    public bool doubtFlg;//嘘をついているか判定.
     public bool CoroutineFlg;//スマートではないので修正したい.
 
     private int MoveMasu;            // Moveマスを踏んだ時の進むマス数
@@ -381,7 +380,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     void ResetFlg()
     {
-        CoroutineFlg = doubtFlg = false;
+        CoroutineFlg  = false;
     }
 
     /// <summary>
@@ -480,7 +479,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Debug.Log("HP：" + Player.HP);
                 //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
                 //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
-                gameManager.ChangePlayersHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
+                int hp = PhotonNetwork.LocalPlayer.GetPlayerHP() + 1;
+                PhotonNetwork.LocalPlayer.SetPlayerHP(hp);
+                gameManager.ChangePlayersHP(0, PhotonNetwork.LocalPlayer.ActorNumber);
             }
             else if (tag == "HpDown") // HPマス
             {

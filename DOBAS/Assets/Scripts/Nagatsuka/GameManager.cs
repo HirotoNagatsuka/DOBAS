@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     const int INPUT_NAME = 2;//名前入力の子オブジェクトを参照用.
 
     const int ATTACK = 4;//攻撃出目の数字.
-    const int DOUBT = 6; //ダウト目の数字(5か6の場合).
+    const int DOUBT = 5; //ダウト目の数字(5か6の場合).
     //プレイヤーの詳細パネルの参照用.
     const int PLAYER_NAME = 1;
     const int PLAYER_HP = 2;
@@ -337,10 +337,11 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void ChangePlayersHP(int addHP, int subject)//subjectは対象という意味.
     {
         //Debug.Log("ChangeHP起動：対象：" + subject);
-        if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
-        {
-            photonView.RPC(nameof(ChangeHP), RpcTarget.All, addHP, subject);
-        }
+        photonView.RPC(nameof(ChangeHP), RpcTarget.All, addHP, subject);
+        //if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+        //{
+        //    photonView.RPC(nameof(ChangeHP), RpcTarget.All, addHP, subject);
+        //}
     }
     public void EnemyAttack(int attackNum, int subject)
     {
@@ -366,10 +367,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
-                int hp = PhotonNetwork.LocalPlayer.GetPlayerHP() + addHP;
+                int hp = 0;
+                hp = PhotonNetwork.LocalPlayer.GetPlayerHP() + addHP;
                 Debug.Log("HP変化後" + hp);
                 PhotonNetwork.LocalPlayer.SetPlayerHP(hp);
-                
             }
         }
         foreach (var player in PhotonNetwork.PlayerList)//プレイヤーのHPを取得.

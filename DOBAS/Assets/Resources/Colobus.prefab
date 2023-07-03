@@ -949,7 +949,6 @@ MonoBehaviour:
     HP: 0
     Attack: 0
     ID: 0
-  doubtFlg: 0
   CoroutineFlg: 0
   FinishFlg: 0
   Sum: 0

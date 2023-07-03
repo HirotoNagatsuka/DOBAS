@@ -18,7 +18,7 @@ public class DiceStage : MonoBehaviour
     {
         if (collider.gameObject.name == "Doubt")
             {
-                number = 6;
+                number = 5;
             }
             else if (collider.gameObject.name == "Attack")
             {
