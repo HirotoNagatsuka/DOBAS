@@ -100,7 +100,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 Vector3 position =  Vector3.zero;
                 Debug.Log("PlayerEndGame‹N“®");
-                switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber-1]) {
+                switch (PhotonNetwork.LocalPlayer.GetMyRank()) {
                     case 0:
                         Debug.Log("MyRank0");
                         position = new Vector3(11.29004f, 0.3792114f, 9.680443f);
@@ -121,7 +121,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Vector3 TargetRot = ResultCamera.transform.position - transform.position;
                 transform.rotation = Quaternion.LookRotation(TargetRot);
                 //Jump();
-                switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1])
+                switch (PhotonNetwork.LocalPlayer.GetMyRank())
                 {
                     case 0:
                         Jump();

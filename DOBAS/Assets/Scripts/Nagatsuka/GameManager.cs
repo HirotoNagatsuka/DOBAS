@@ -13,7 +13,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     const int INPUT_NAME = 2;//名前入力の子オブジェクトを参照用.
 
     const int ATTACK = 4;//攻撃出目の数字.
-    const int DOUBT = 5; //ダウト目の数字(5か6の場合).
+    const int DOUBT = 6; //ダウト目の数字(5か6の場合).
     //プレイヤーの詳細パネルの参照用.
     const int PLAYER_NAME = 1;
     const int PLAYER_HP = 2;
@@ -107,7 +107,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     [Header("ゲーム終了関連")]
     [SerializeField] GameObject GameEndPanel;
-    public int[] Ranks;
+    //public int[] Ranks;
 
     [Header("外部アクセス用変数")]
     //public int[] PlayersHP;//Player側からHPの参照を行う用.
@@ -161,7 +161,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.ConnectUsingSettings();
         PhotonNetwork.LocalPlayer.SetPlayerHP(FirstHP);
         Debug.Log(PhotonNetwork.LocalPlayer.GetPlayerHP());
-        Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
+        //Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
 
         diceBtnFlg = false;
         doubtFlg = false;
@@ -369,25 +369,37 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 int hp = PhotonNetwork.LocalPlayer.GetPlayerHP() + addHP;
                 Debug.Log("HP変化後" + hp);
                 PhotonNetwork.LocalPlayer.SetPlayerHP(hp);
+                
             }
         }
         foreach (var player in PhotonNetwork.PlayerList)//プレイヤーのHPを取得.
         {
-            PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[player.GetPlayerHP()-1];
+            PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[player.GetPlayerHP() - 1];
         }
-        //PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()-1];
+        StartCoroutine("CheckHP");
+    }
+
+    /// <summary>
+    /// 通信の遅延からコルーチンでHP0判定を確認
+    /// </summary>
+    /// <returns></returns>
+    IEnumerator CheckHP()
+    {
+        yield return new WaitForSeconds(1);
         if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 0)
         {
-            Debug.Log("HP0になった人" + PlayersName[subject - 1]);
-            PlayersRank[Rankcnt - 1] = PlayersName[subject - 1];
+            //PlayersRank[Rankcnt - 1] = PlayersName[subject - 1];
             if (PhotonNetwork.LocalPlayer.GetPlayerHP() == PhotonNetwork.LocalPlayer.ActorNumber)
             {
                 Debug.Log("MyRank代入");
-                Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1] = Rankcnt;
+                PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
             }
             Rankcnt--;
         }
+        Debug.Log("check終了");
+        yield break;
     }
+
     #endregion
 
     #region 準備完了操作関連
@@ -789,7 +801,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void ReceiveDeme(int deme)
     {
-        if (DeclarationNum == 5 || DeclarationNum == 6)
+        if (DeclarationNum == DOUBT)
         {
             Debug.Log("ダウト目が出ている");
         }
@@ -980,7 +992,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             //stream.SendNext(WhoseTurn);
             //stream.SendNext(PlayersHP);
             stream.SendNext(doubtFlg);
-            stream.SendNext(Ranks);
+            //stream.SendNext(Ranks);
             stream.SendNext(AnimalChildNum);
         }
         else
@@ -989,7 +1001,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             //WhoseTurn = (int)stream.ReceiveNext();
             //PlayersHP = (int[])stream.ReceiveNext();
             doubtFlg = (bool)stream.ReceiveNext();
-            Ranks = (int[])stream.ReceiveNext();
+            //Ranks = (int[])stream.ReceiveNext();
             AnimalChildNum = (int)stream.ReceiveNext();
         }
     }
