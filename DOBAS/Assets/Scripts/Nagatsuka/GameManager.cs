@@ -352,11 +352,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void ChangeHP(int addHP, int subject)
     {
+        //Debug.Log("addHPの値" + addHP);
         if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
         {
             if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 5)
             {
                 Debug.Log("HP上限");
+                return;
             }
             else if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 0)
             {
@@ -365,10 +367,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             else
             {
                 int hp = PhotonNetwork.LocalPlayer.GetPlayerHP() + addHP;
+                Debug.Log("HP変化後" + hp);
                 PhotonNetwork.LocalPlayer.SetPlayerHP(hp);
             }
         }
-        PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()-1];
+        foreach (var player in PhotonNetwork.PlayerList)//プレイヤーのHPを取得.
+        {
+            PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[player.GetPlayerHP()-1];
+        }
+        //PlayersNameGroup[subject - 1].transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()-1];
         if (PhotonNetwork.LocalPlayer.GetPlayerHP() == 0)
         {
             Debug.Log("HP0になった人" + PlayersName[subject - 1]);
@@ -407,40 +414,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     public void PushGameStart()
     {
-        
         Debug.Log("player.GetReady()直後" + PhotonNetwork.LocalPlayer.GetReadyNum());
         StartButton.SetActive(false);                         //ボタンを押したら非表示にする.
         AnimalChildNum = SelectAnimals.ChildNum;
         PhotonNetwork.NickName = InputNickName.transform.GetChild(INPUT_NAME).GetComponent<Text>().text;// プレイヤー自身の名前を入力された名前に設定する
         PhotonNetwork.LocalPlayer.SetReadyNum(true);
-        photonView.RPC(nameof(Readycount), RpcTarget.All);
         StartCoroutine(WaitStart());
     }
 
-    [PunRPC]
-    void Readycount()
-    {
-        foreach (var player in PhotonNetwork.PlayerList)
-        {
-            if (player.GetReadyNum())
-            {
-                readyccnt++;
-            }
-        }
-        Debug.Log("readycnt数" + readyccnt);
-        if (readyccnt != MaxPlayers)//入室した人数が指定した数に満たない場合
-        {
-            StandByGroup.SetActive(true);                     //待機人数を表示するキャンバスを表示する.
-            HelloPlayerText.text = PhotonNetwork.NickName + "さんようこそ！";
-            StandByText.text = "あと" + (MaxPlayers - readyccnt)
-                                + "人待っています・・・";//最大人数と現在の人数を引いて待っている人数を表示.
-            readyccnt = 0;
-        }
-        else
-        {
-            startflg = true;
-        }
-    }
 
     private void CountReadyNum()
     {
@@ -463,18 +444,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             Debug.Log("ゲームを始めます");
             startflg = true;
-            //CreateCharacter(AnimalChildNum);
-            //photonView.RPC(nameof(StartGame), RpcTarget.All);
-            //for (int i = 0; i < MaxPlayers; i++)
-            //{
-            //    PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
-            //    PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
-            //    PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PhotonNetwork.LocalPlayer.GetPlayerHP()];//初期HPを表示.
-            //    PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
-            //    PlayersNameGroup.Add(PlayerInfo);
-            //}
         }
-
     }
 
     /// <summary>
@@ -506,6 +476,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         InputNickName.text = OMAKASE_NAMES[rnd];
     }
 
+    /// <summary>
+    /// 選択したアバターを生成する.
+    /// </summary>
     void CreateCharacter(int num)
     {
         GameObject p = null;
@@ -584,7 +557,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("AddThroughNum()起動");
         PlayersNameGroup[subject - 1].transform.GetChild(5).gameObject.SetActive(true);
         ThroughNum++;
-        if (MaxPlayers - 1 == ThroughNum)
+        int cnt = 0;
+        foreach (var player in PhotonNetwork.PlayerList)//プレイヤーの名前を取得.
+        {
+            if (player.GetPlayerHP() > 0)
+            {
+                cnt++;
+            }
+        }
+        Debug.Log("cnt数" + cnt);
+        if (cnt - 1 == ThroughNum)
         {
             DeclarationFlg = true;
 
@@ -1014,6 +996,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 }
 
+/// <summary>
+/// カスタムプロパティを設定する静的クラス.
+/// </summary>
 public static class PhotonCustumPropertie
 {
     private const string GameStatusKey = "Gs";
