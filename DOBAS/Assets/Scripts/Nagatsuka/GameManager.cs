@@ -1005,6 +1005,7 @@ public static class PhotonCustumPropertie
     private const string InitStatusKey = "Is";
     private const string ReadyNum = "Rn";
     private const string PlayerHP = "P_HP";
+    private const string MyRank = "MyRank";
 
     private static readonly ExitGames.Client.Photon.Hashtable propsToSet = new ExitGames.Client.Photon.Hashtable();
 
@@ -1086,6 +1087,17 @@ public static class PhotonCustumPropertie
     public static void SetPlayerHP(this Player player, int status)
     {
         propsToSet[PlayerHP] = status;
+        player.SetCustomProperties(propsToSet);
+        propsToSet.Clear();
+    }
+    public static int GetMyRank(this Player player)
+    {
+        return (player.CustomProperties[MyRank] is int status) ? status : 0;
+    }
+
+    public static void SetMyRank(this Player player, int status)
+    {
+        propsToSet[MyRank] = status;
         player.SetCustomProperties(propsToSet);
         propsToSet.Clear();
     }
