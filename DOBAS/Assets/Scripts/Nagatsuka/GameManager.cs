@@ -358,6 +358,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PlayersHP[subject - 1] == 5)
         {
             Debug.Log("HPè„å¿");
+            return;
         }
         else if (PlayersHP[subject - 1] == 0)
         {
