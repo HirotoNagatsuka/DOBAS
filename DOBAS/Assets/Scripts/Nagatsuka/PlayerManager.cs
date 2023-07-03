@@ -88,6 +88,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Vector3 PlayerPos = transform.position;
                 Vector3 TargetPos = mapManager.MasumeList[Sum].position;
 
+
                 // ˆÚ“®ƒ‚[ƒVƒ‡ƒ“
                 transform.position = Vector3.MoveTowards(PlayerPos, TargetPos, MOVE_SPEED * Time.deltaTime);
                 if (gameManager.DiceFinishFlg && CoroutineFlg == false)
