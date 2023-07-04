@@ -845,29 +845,75 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region　遊び方説明関連
+
+    [SerializeField] GameObject nextButton;  // 次のページボタン
+    [SerializeField] GameObject frontButton; // 前のページボタン
+    [SerializeField] GameObject skipButton;  // スキップボタン(最後のページへ飛ぶ)
+    [SerializeField] GameObject closeButton; // 閉じるボタン
+
+    private int MaxPageNum = 5; // 最大ページ数
+    private int MinPageNum = 0; // 初期ページ
+
     public void PushWakabaTutorial()
     {
         TutorialCanvas.SetActive(true);
     }
-    public void PushSkipTutorial()
+    public void PushCloseTutorial()
     {
         TutorialCanvas.SetActive(false);
     }
     public void PushNextTutorial()
     {
-        if (NowTutorial < 4)
+        if (NowTutorial < MaxPageNum)
         {
             NowTutorial++;
-        }        
-        TutorialCanvas.transform.GetChild(1).GetComponent<Image>().sprite = TutorialSprites[NowTutorial];
+            SwitchingUI();
+        }
     }
     public void PushFrontTutorial()
     {
-        if (NowTutorial > 0)
+        if (NowTutorial > MinPageNum)
         {
             NowTutorial--;
+            SwitchingUI();
         }
+    }
+    public void PushSkipTutorial()
+    {
+        NowTutorial = MaxPageNum;
+        SwitchingUI();
+    }
+
+    // ボタンとイメージ表示切替
+    void SwitchingUI()
+    {
+        // 現在のイメージ切り替え
         TutorialCanvas.transform.GetChild(1).GetComponent<Image>().sprite = TutorialSprites[NowTutorial];
+
+        // 最後のページのとき
+        if (NowTutorial == MaxPageNum)
+        {
+            nextButton.SetActive(false); // 次ページボタン非表示
+            skipButton.SetActive(false); // スキップボタン非表示
+            closeButton.SetActive(true); // 閉じるボタン表示
+        }
+        else
+        {
+            nextButton.SetActive(true);   // 次ページボタン表示
+            skipButton.SetActive(true);   // スキップボタン表示
+            closeButton.SetActive(false); // 閉じるボタン非表示
+        }
+
+        // 最後のページのとき
+        if (NowTutorial == MinPageNum)
+        {
+            frontButton.SetActive(false); // 戻るボタン非表示
+        }
+        else
+        {
+            frontButton.SetActive(true); // 戻るボタン表示
+        }
+
     }
     #endregion
 
