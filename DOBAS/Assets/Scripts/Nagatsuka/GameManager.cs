@@ -114,7 +114,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("外部アクセス用変数")]
     public int[] PlayersHP;//Player側からHPの参照を行う用.
     public static int MaxPlayersNum;//他スクリプトからアクセスする用.
-    public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
+    //public static int WhoseTurn;//誰のターンか（プレイヤーIDを参照してこの変数と比べてターン制御をする）.
     public Text WaitText;   //他の人の行動待ちを表示するテキスト.
 
     public List<GameObject> Players = new List<GameObject>(); // プレイヤー参照用
@@ -164,7 +164,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.NickName = "Player";
         PhotonNetwork.ConnectUsingSettings();
 
-        WhoseTurn = FIRST_TURN;
+        //WhoseTurn = FIRST_TURN;
         PlayersHP = Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
         for (int i = 0; i < MaxPlayers; i++)
         {
@@ -235,10 +235,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// </summary>
     private void InGameRoop()
     {
-        if (PhotonNetwork.LocalPlayer.ActorNumber == WhoseTurn)//自分のターンなら
+        if (PhotonNetwork.LocalPlayer.ActorNumber == (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"])//自分のターンなら
         {
             WaitText.text = "";
-            if (PlayersHP[WhoseTurn - 1] > 0)//0以上であれば行動可能.
+            if (PlayersHP[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] > 0)//0以上であれば行動可能.
             {
                 if (!diceBtnFlg)
                 {
@@ -256,8 +256,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else//自分のターンでないなら.
         {
             WhoseTurnText.color = Color.white;//ターンテキストの色を白に変更.
-            WhoseTurnText.text = PlayersName[WhoseTurn - 1] + "のターン";//誰のターンかをテキストに表示.
-            WaitText.text = PlayersName[WhoseTurn - 1] + "が行動しています";
+            WhoseTurnText.text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "のターン";//誰のターンかをテキストに表示.
+            WaitText.text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "が行動しています";
             ShakeDiceButton.SetActive(false);//サイコロを振るボタンを表示.
             CardButton.SetActive(false);
         }
@@ -310,9 +310,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         //Debug.Log("ChangeTurn起動");
 
-        if (WhoseTurn == MaxPlayers)
+        if ((int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] == MaxPlayers)
         {
-            WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
+            //WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
             customProperties["Turn"] = FIRST_TURN;
         }
         else
@@ -320,7 +320,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
             turn++;
             customProperties["Turn"] = turn;
-            WhoseTurn++;           //次の人のターンにする.
+            //WhoseTurn++;           //次の人のターンにする.
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
         customProperties.Clear();
@@ -395,9 +395,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             for (int i = 0; i < MaxPlayers; i++)
             {
-                if (PlayersHP[i] > 0)
+                if (PlayersHP[i] > 0 && PhotonNetwork.LocalPlayer.ActorNumber == i) 
                 {
                     PlayersRank[0] = PlayersName[i];
+                    PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
                 }
             }
             NowGameState = GameState.EndGame;
@@ -592,16 +593,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (doubtFlg)//嘘をついていた場合の処理.
         {
             FailureDoubt = true;
-            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんは嘘をついていました";
-            DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[WhoseTurn - 1] + "さんに1ダメージ";
-            if (WhoseTurn == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんは嘘をついていました";
+            DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんに1ダメージ";
+            if ((int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
             {
-                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, WhoseTurn);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"]);
             }
         }
         else//嘘をついていなかった場合の処理.
         {
-            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんは嘘をついていませんでした";
+            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんは嘘をついていませんでした";
             DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[subject - 1] + "さんに1ダメージ";
             if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
             {
@@ -827,7 +828,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private IEnumerator TurnMessageWindowCoroutine()
     {
         MessageWindow.SetActive(true);
-        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[WhoseTurn - 1] + "さんのターンです";
+        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんのターンです";
         // 2秒間待つ
         yield return new WaitForSeconds(2);
         MessageWindow.SetActive(false);
@@ -968,7 +969,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (stream.IsWriting)
         {
             stream.SendNext(HaveTime);// timeを送信する
-            stream.SendNext(WhoseTurn);
             stream.SendNext(PlayersHP);
             stream.SendNext(doubtFlg);
             stream.SendNext(Ranks);
@@ -977,7 +977,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else
         {
             HaveTime = (float)stream.ReceiveNext(); // timeを受信する
-            WhoseTurn = (int)stream.ReceiveNext();
             PlayersHP = (int[])stream.ReceiveNext();
             doubtFlg = (bool)stream.ReceiveNext();
             Ranks = (int[])stream.ReceiveNext();
@@ -989,8 +988,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
 public static class PhotonCustumPropertie
 {
-    private const string GameStatusKey = "Gs";
-    private const string InitStatusKey = "Is";
     private const string ReadyNum = "Rn";
     private const string WhoseTurn = "WT";
     private const string MyRank = "MyRank";

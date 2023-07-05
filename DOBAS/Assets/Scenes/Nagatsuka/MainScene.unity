@@ -9837,7 +9837,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
-  MaxPlayers: 3
+  MaxPlayers: 2
   FirstHP: 2
   HaveTime: 60
   MainCamera: {fileID: 1513246636}
