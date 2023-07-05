@@ -59,6 +59,7 @@ MonoBehaviour:
   - TurnMessageWindowCoroutine
   - CountReadyNum
   - ChackHP
+  - ShowDeathMessage
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

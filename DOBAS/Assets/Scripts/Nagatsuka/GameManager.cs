@@ -238,7 +238,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PhotonNetwork.LocalPlayer.ActorNumber == (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"])//自分のターンなら
         {
             WaitText.text = "";
-            if (PlayersHP[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] > 0)//0以上であれば行動可能.
+            //if (PlayersHP[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] > 0)//0以上であれば行動可能.
+            if(!PhotonNetwork.LocalPlayer.GetPlayerDeath())//死亡していなければ行動可能.
             {
                 if (!diceBtnFlg)
                 {
@@ -250,7 +251,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
-                FinishTurn();
+
+                photonView.RPC(nameof(ShowDeathMessage), RpcTarget.All);
             }
         }
         else//自分のターンでないなら.
@@ -309,18 +311,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void ChangeTurn()
     {
         //Debug.Log("ChangeTurn起動");
-
+        for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
+        {
+            PlayersNameGroup[i].transform.GetChild(5).gameObject.SetActive(false);//スルーアイコンを非表示に.
+        }
         if ((int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] == MaxPlayers)
         {
-            //WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
-            customProperties["Turn"] = FIRST_TURN;
+            customProperties["Turn"] = FIRST_TURN;//Turnがプレイヤーの最大数を超えたら最初の人に戻す.
         }
         else
         {
             int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
             turn++;
-            customProperties["Turn"] = turn;
-            //WhoseTurn++;           //次の人のターンにする.
+            customProperties["Turn"] = turn;//次の人のターンにする.   
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
         customProperties.Clear();
@@ -822,6 +825,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         StartCoroutine(WaitMessageWindowCoroutine());
     }
 
+    [PunRPC]
+    private void ShowDeathMessage()
+    {
+        MessageWindow.SetActive(true);
+        MessageWindow.transform.GetChild(0).GetComponent<Text>().text =
+        PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんは\n死亡しています";
+        StartCoroutine(WaitDeathMessage());
+    }
+
     /// <summary>
     /// ターン開始時にメッセージ通知を出すコルーチン.
     /// </summary>
@@ -847,6 +859,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         yield return new WaitForSeconds(2);
         MessageWindow.SetActive(false);
         FinMessage = true;
+        yield break;
+    }
+
+    /// <summary>
+    /// 3秒経過でメッセージウィンドウを閉じるコルーチン.
+    /// </summary>
+    private IEnumerator WaitDeathMessage()
+    {
+        // 2秒間待つ
+        yield return new WaitForSeconds(2);
+        MessageWindow.SetActive(false);
+        FinMessage = true;
+        FinishTurn();
         yield break;
     }
 
