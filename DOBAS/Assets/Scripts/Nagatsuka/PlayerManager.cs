@@ -58,6 +58,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     Animator animator; // Animator
     Vector3 PlayerPos;      // プレイヤー位置情報
     public GameObject[] effectObject;   // エフェクトのプレハブ配列
+    GameObject nameObject;
+
+
 
     #region Unityイベント(Start・Update・OnTrigger)
 
@@ -76,6 +79,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
         MyRank = 0;
+        nameObject = transform.GetChild(0).gameObject;
+        NamePosSet();
     }
 
     private void Update()
@@ -582,6 +587,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         }
 
 
+    }
+
+    void NamePosSet()
+    {
+        nameObject.transform.localPosition = new Vector3(0, 0, -1.5f);
+        nameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
     }
     #region 早坂追加
     public void SendCardList()

@@ -150,6 +150,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] Sprite[] DiceSprites = new Sprite[4]; //サイコロの出目の画像.
     #endregion
 
+    [SerializeField] GameObject nextButton;  // 次のページボタン
+    [SerializeField] GameObject frontButton; // 前のページボタン
+    [SerializeField] GameObject skipButton;  // スキップボタン(最後のページへ飛ぶ)
+    [SerializeField] GameObject closeButton; // 閉じるボタン
+
+    private int MaxPageNum = 5; // 最大ページ数
+    private int MinPageNum = 0; // 初期ページ
+
     //ルームのカスタムプロパティを設定する為の宣言.
     ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
     public Text TestWhoseTurnText;//デバック用ターン表示テキスト.
@@ -467,6 +475,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
                 PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
+                //PlayerInfo.transform.GetChild(PLAYER_NAME).transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
                 PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
                 PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
                 PlayersNameGroup.Add(PlayerInfo);
@@ -908,29 +917,69 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #endregion
 
     #region　遊び方説明関連
+
+
+
     public void PushWakabaTutorial()
     {
         TutorialCanvas.SetActive(true);
     }
-    public void PushSkipTutorial()
+    public void PushCloseTutorial()
     {
         TutorialCanvas.SetActive(false);
     }
     public void PushNextTutorial()
     {
-        if (NowTutorial < 4)
+        if (NowTutorial < MaxPageNum)
         {
             NowTutorial++;
+            SwitchingUI();
         }
-        TutorialCanvas.transform.GetChild(1).GetComponent<Image>().sprite = TutorialSprites[NowTutorial];
     }
     public void PushFrontTutorial()
     {
-        if (NowTutorial > 0)
+        if (NowTutorial > MinPageNum)
         {
             NowTutorial--;
+            SwitchingUI();
         }
+    }
+    public void PushSkipTutorial()
+    {
+        NowTutorial = MaxPageNum;
+        SwitchingUI();
+    }
+
+    // ボタンとイメージ表示切替
+    void SwitchingUI()
+    {
+        // 現在のイメージ切り替え
         TutorialCanvas.transform.GetChild(1).GetComponent<Image>().sprite = TutorialSprites[NowTutorial];
+
+        // 最後のページのとき
+        if (NowTutorial == MaxPageNum)
+        {
+            nextButton.SetActive(false); // 次ページボタン非表示
+            skipButton.SetActive(false); // スキップボタン非表示
+            closeButton.SetActive(true); // 閉じるボタン表示
+        }
+        else
+        {
+            nextButton.SetActive(true);   // 次ページボタン表示
+            skipButton.SetActive(true);   // スキップボタン表示
+            closeButton.SetActive(false); // 閉じるボタン非表示
+        }
+
+        // 最後のページのとき
+        if (NowTutorial == MinPageNum)
+        {
+            frontButton.SetActive(false); // 戻るボタン非表示
+        }
+        else
+        {
+            frontButton.SetActive(true); // 戻るボタン表示
+        }
+
     }
     #endregion
 
