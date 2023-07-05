@@ -100,7 +100,8 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 Vector3 position =  Vector3.zero;
                 Debug.Log("PlayerEndGameãNìÆ");
-                switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber-1]) {
+                //switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1]){
+                switch (PhotonNetwork.LocalPlayer.GetMyRank()) {
                     case 0:
                         Debug.Log("MyRank0");
                         position = new Vector3(11.29004f, 0.3792114f, 9.680443f);
@@ -112,6 +113,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                         transform.position = position;
                         break;
                     case 2:
+                        Debug.Log("MyRank2");
                         position = new Vector3(14.78003f, 0.3792114f, 9.680443f);
                         transform.position = position;
                         break;
@@ -390,6 +392,19 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     void EnemyAttack()
     {
         Debug.Log("EnemyAttack()ãNìÆ");
+        int cnt = 0;
+        foreach(var player in PhotonNetwork.PlayerList)
+        {
+            if (player.GetPlayerDeath())
+            {
+                cnt++;
+            }
+        }
+        Debug.Log("éÄñSêî" + cnt);
+        if(cnt== GameManager.MaxPlayersNum - 1)
+        {
+            return;
+        }
         int rnd;//óêêîóp.
         while (true)
         {

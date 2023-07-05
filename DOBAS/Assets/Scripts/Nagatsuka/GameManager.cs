@@ -154,6 +154,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
     public Text TestWhoseTurnText;//デバック用ターン表示テキスト.
 
+    public int MyRankTest;
+
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
     void Start()
@@ -190,6 +192,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
+        MyRankTest = PhotonNetwork.LocalPlayer.GetMyRank();
         switch (NowGameState)//ゲームモードによって処理を分岐する.
         {
             case GameState.InitGame:
@@ -213,6 +216,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                     Debug.Log("人数不足");
                 }
                 TestWhoseTurnText.text = (string)PhotonNetwork.CurrentRoom.CustomProperties["Turn"].ToString() ;
+
                 break;
             case GameState.EndGame:
                 EndGame();
@@ -305,45 +309,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private void ChangeTurn()
     {
         //Debug.Log("ChangeTurn起動");
-        int cnt = 0;
-        for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
+
+        if (WhoseTurn == MaxPlayers)
         {
-            PlayersNameGroup[i].transform.GetChild(5).gameObject.SetActive(false);
-            if (PlayersHP[i] == 0)//HPが0のプレイヤーを数える.
-            {
-                cnt++;
-            }
-        }
-        if (cnt == MaxPlayers - 1)//残り1人になった場合ゲーム終了.
-        {
-            for (int i = 0; i < MaxPlayers; i++)
-            {
-                if (PlayersHP[i] > 0)
-                {
-                    PlayersRank[0] = PlayersName[i];
-                }
-            }
-            NowGameState = GameState.EndGame;
+            WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
+            customProperties["Turn"] = FIRST_TURN;
         }
         else
         {
-            if (WhoseTurn == MaxPlayers)
-            {
-                WhoseTurn = FIRST_TURN;//WhoseTurnがプレイヤーの最大数を超えたら最初の人に戻す.
-                customProperties["Turn"] = FIRST_TURN;
-            }
-            else
-            {
-                int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
-                turn++;
-                customProperties["Turn"] = turn;
-                WhoseTurn++;           //次の人のターンにする.
-            }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
-            customProperties.Clear();
-            StartCoroutine(TurnMessageWindowCoroutine());
-            photonView.RPC(nameof(StartTimer), RpcTarget.All);
+            int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
+            turn++;
+            customProperties["Turn"] = turn;
+            WhoseTurn++;           //次の人のターンにする.
         }
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+        customProperties.Clear();
+        StartCoroutine(TurnMessageWindowCoroutine());
+        //photonView.RPC(nameof(StartTimer), RpcTarget.All);
     }
     #endregion
 
@@ -389,7 +371,36 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             Debug.Log("MyRank代入");
             PlayersRank[Rankcnt - 1] = PlayersName[subject - 1];
             Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1] = Rankcnt;
+            PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
+            PhotonNetwork.LocalPlayer.SetPlayerDeath(true);
             Rankcnt--;
+        }
+
+        photonView.RPC(nameof(ChackHP), RpcTarget.All);
+    }
+
+    [PunRPC]
+    void ChackHP()
+    {
+        int cnt = 0;
+        for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
+        {
+            PlayersNameGroup[i].transform.GetChild(5).gameObject.SetActive(false);
+            if (PlayersHP[i] == 0)//HPが0のプレイヤーを数える.
+            {
+                cnt++;
+            }
+        }
+        if (cnt == MaxPlayers - 1)//残り1人になった場合ゲーム終了.
+        {
+            for (int i = 0; i < MaxPlayers; i++)
+            {
+                if (PlayersHP[i] > 0)
+                {
+                    PlayersRank[0] = PlayersName[i];
+                }
+            }
+            NowGameState = GameState.EndGame;
         }
     }
     #endregion
@@ -924,7 +935,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Photon関連のoverride関数
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinOrCreateRoom("Room1", new RoomOptions(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("RoomTNC", new RoomOptions(), TypedLobby.Default);
     }
 
     // <summary>

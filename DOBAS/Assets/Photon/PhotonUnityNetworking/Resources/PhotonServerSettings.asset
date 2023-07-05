@@ -58,6 +58,7 @@ MonoBehaviour:
   - PushChat
   - TurnMessageWindowCoroutine
   - CountReadyNum
+  - ChackHP
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
