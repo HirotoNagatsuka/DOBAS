@@ -71,6 +71,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         transform.position = mapManager.MasumeList[0].position;//èâä˙íl0.
         Player.ID = gameManager.Give_ID_Player();
         MyRank = 0;
+        NamePosSet();
     }
 
     private void Update()
@@ -568,4 +569,12 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         RandomNum = UnityEngine.Random.Range(0, cardManager.GetCardLists().Count);
     }
     #endregion
+
+    [SerializeField] GameObject nameObject;
+
+    void NamePosSet()
+    {
+        nameObject.transform.localPosition = new Vector3(0, 0, -1.5f);
+        nameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
+    }
 }
