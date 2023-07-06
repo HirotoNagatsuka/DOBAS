@@ -12,10 +12,10 @@ public class PlayerNameDisplay : MonoBehaviourPunCallbacks
         Oya = transform.parent.gameObject;
         nameLabel= GetComponent<TextMesh>();
         // プレイヤー名とプレイヤーIDを表示する
-        nameLabel.text = $"{photonView.Owner.NickName}";
+        nameLabel.text = $"{photonView.Owner.NickName}({photonView.OwnerActorNr})";
     }
     private void Update()
     {
-        nameLabel.text = $"{photonView.Owner.NickName}";
+        nameLabel.text = $"{photonView.Owner.NickName}({photonView.OwnerActorNr})";
     }
 }

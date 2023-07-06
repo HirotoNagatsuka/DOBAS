@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Move4Card
   m_EditorClassIdentifier: 
   Id: 5
-  Koc: 1
+  Koc: 2
   Icon: {fileID: 2028646061, guid: b31d9b9fc0e0b8a4c9bd1dd89761ec8b, type: 3}
-  CardName: "4\u79FB\u52D5"
+  CardName: "4\u30DE\u30B9\u79FB\u52D5\u3067\u304D\u308B"
   Power: 0
   Move: 4

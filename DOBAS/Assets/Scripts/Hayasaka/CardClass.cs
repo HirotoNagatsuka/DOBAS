@@ -10,6 +10,7 @@ public class CardClass : ScriptableObject
 	// ƒJ[ƒh‚ÌŒø‰Êˆê——
     public enum KindOfCard
     {
+		Nomal,
         Atack,
         Move,
         CardMix,

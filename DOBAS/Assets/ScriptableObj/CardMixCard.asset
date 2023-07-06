@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: CardMixCard
   m_EditorClassIdentifier: 
   Id: 7
-  Koc: 2
+  Koc: 3
   Icon: {fileID: -318954503, guid: b31d9b9fc0e0b8a4c9bd1dd89761ec8b, type: 3}
   CardName: "\u30AB\u30FC\u30C9\u30B7\u30E3\u30C3\u30D5\u30EB"
   Power: 0

@@ -1179,22 +1179,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 1262948428328542267, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 3
-      objectReference: {fileID: 0}
-    - target: {fileID: 1639741357177090096, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 4
-      objectReference: {fileID: 0}
-    - target: {fileID: 2343543434930905324, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 5
-      objectReference: {fileID: 0}
-    - target: {fileID: 3239560169212522360, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 8
-      objectReference: {fileID: 0}
     - target: {fileID: 4361501175774906261, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
       propertyPath: m_Name
       value: Animals
@@ -1250,22 +1234,6 @@ PrefabInstance:
     - target: {fileID: 4361501175774906267, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
       propertyPath: sceneViewId
       value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 5777026153559746160, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 9
-      objectReference: {fileID: 0}
-    - target: {fileID: 6716318639507328390, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 6
-      objectReference: {fileID: 0}
-    - target: {fileID: 7111955933086223723, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 7674991308285625000, guid: d919532b0a1b25a4588129a5c914167f, type: 3}
-      propertyPath: sceneViewId
-      value: 7
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: d919532b0a1b25a4588129a5c914167f, type: 3}

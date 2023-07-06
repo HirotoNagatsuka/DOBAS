@@ -221,7 +221,6 @@ MonoBehaviour:
   MyRank: 0
   NowPos: {x: 0, y: 0, z: 0}
   ResultCamera: {fileID: 0}
-  effectObject: []
   animalsManager: {fileID: 0}
 --- !u!114 &8095048837821938304
 MonoBehaviour:

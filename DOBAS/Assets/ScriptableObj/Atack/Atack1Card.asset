@@ -13,8 +13,8 @@ MonoBehaviour:
   m_Name: Atack1Card
   m_EditorClassIdentifier: 
   Id: 1
-  Koc: 0
-  Icon: {fileID: 0}
-  CardName: "1\u30C0\u30E1\u30FC\u30B8"
-  Power: 1
+  Koc: 1
+  Icon: {fileID: -2107270343, guid: d20e6e4952646bd488920e227e2f854b, type: 3}
+  CardName: "\u30E9\u30F3\u30C0\u30E0\u306A\u30D7\u30EC\u30A4\u30E4\u30FC\u306B1\u30C0\u30E1\u30FC\u30B8"
+  Power: -1
   Move: 0
