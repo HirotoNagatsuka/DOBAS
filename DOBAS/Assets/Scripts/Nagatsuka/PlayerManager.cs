@@ -103,24 +103,21 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (gameManager.NowGameState == GameManager.GameState.EndGame)
             {
-                Vector3 position =  Vector3.zero;
                 Debug.Log("PlayerEndGameãNìÆ");
-                //switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1]){
                 switch (PhotonNetwork.LocalPlayer.GetMyRank()) {
                     case 0:
                         Debug.Log("MyRank0");
-                        position = new Vector3(11.29004f, 0.3792114f, 9.680443f);
-                        transform.position = position;
+                        transform.position = new Vector3(11.29004f, 0.3792114f, 9.680443f);
+                        Jump();
                         break;
                     case 1:
                         Debug.Log("MyRank1");
-                        position = new Vector3(12.96002f, 0.3792114f, 9.680443f);
-                        transform.position = position;
+                        transform.position = new Vector3(12.96002f, 0.3792114f, 9.680443f);
                         break;
                     case 2:
                         Debug.Log("MyRank2");
-                        position = new Vector3(14.78003f, 0.3792114f, 9.680443f);
-                        transform.position = position;
+                        transform.position = new Vector3(14.78003f, 0.3792114f, 9.680443f);
+                        Death();
                         break;
                 }
                 // ÉJÉÅÉâÇ…å¸Ç©ÇπÇÈ
@@ -128,16 +125,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
                 Vector3 TargetRot = ResultCamera.transform.position - transform.position;
                 transform.rotation = Quaternion.LookRotation(TargetRot);
                 //Jump();
-                switch (gameManager.Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1])
-                {
-                    case 0:
-                        Jump();
-                        break;
-                    default:
-                        Death();
-                        break;
-                }
-
             }
         }
     }

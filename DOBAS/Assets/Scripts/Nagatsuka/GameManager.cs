@@ -105,7 +105,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     [Header("ゲーム終了関連")]
     [SerializeField] GameObject GameEndPanel;
-    public int[] Ranks;
+    //public int[] Ranks;
     public string[] PlayersRank = new string[4];
     public int Rankcnt;//順位が決まった人数をカウント.
 
@@ -174,7 +174,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         PhotonNetwork.ConnectUsingSettings();
 
         //WhoseTurn = FIRST_TURN;
-        PlayersHP = Ranks = new int[MaxPlayers];//Playerの人数分HP配列を用意.
+        PlayersHP = new int[MaxPlayers];//Playerの人数分HP配列を用意.
         for (int i = 0; i < MaxPlayers; i++)
         {
             PlayersHP[i] = FirstHP;//HPの初期値を代入.
@@ -194,7 +194,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         DiceFlg = false;      //サイコロを振っていない状態にする.
         DiceFinishFlg = false;//サイコロを振り終わっていない状態にする.
         DeathMessageFlg = false;
-        Rankcnt = MaxPlayers;
+        Rankcnt = MaxPlayers-1;
         PlayersRank = new string[MaxPlayers];
         diceCameradefPos = DiceCamera.transform.position;
     }
@@ -225,7 +225,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 {
                     Debug.Log("人数不足");
                 }
-                TestWhoseTurnText.text = (string)PhotonNetwork.CurrentRoom.CustomProperties["Turn"].ToString() ;
+                TestWhoseTurnText.text = PhotonNetwork.LocalPlayer.GetMyRank().ToString();
 
                 break;
             case GameState.EndGame:
@@ -261,8 +261,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else
             {
+                Debug.Log("死亡FinishTurn");
                 //DeathFinishTurn();
-                //FinishTurn();
+                FinishTurn();
                 if (!DeathMessageFlg)
                 {
                     //DeathMessageFlg = true;
@@ -316,6 +317,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         Debug.Log("FinishTurn()起動");
         WaitText.text = "";
         //UseBt.SetActive(false);        // 早坂優斗(0622)
+        int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
+        if (turn == MaxPlayers)
+        {
+            customProperties["Turn"] = FIRST_TURN;//Turnがプレイヤーの最大数を超えたら最初の人に戻す.
+        }
+        else
+        {
+            turn++;
+            customProperties["Turn"] = turn;//次の人のターンにする.   
+        }
+        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
+        customProperties.Clear();
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
     }
 
@@ -331,42 +344,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     private void ChangeTurn()
     {
-        int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
         //Debug.Log("ChangeTurn起動");
         for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
         {
             PlayersNameGroup[i].transform.GetChild(5).gameObject.SetActive(false);//スルーアイコンを非表示に.
         }
-
-        if (turn == MaxPlayers)
-        {
-            customProperties["Turn"] = FIRST_TURN;//Turnがプレイヤーの最大数を超えたら最初の人に戻す.
-        }
-        else
-        {
-            turn++;
-            customProperties["Turn"] = turn;//次の人のターンにする.   
-        }
-        PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
-        customProperties.Clear();
-
-        if (PlayersHP[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] == 0)
-        {
-            if (turn == MaxPlayers)
-            {
-                customProperties["Turn"] = FIRST_TURN;//Turnがプレイヤーの最大数を超えたら最初の人に戻す.
-            }
-            else
-            {
-                turn++;
-                customProperties["Turn"] = turn;//次の人のターンにする.   
-            }
-            PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
-            customProperties.Clear();
-        }
         StartCoroutine(TurnMessageWindowCoroutine());
         DeathMessageFlg = false;
-        //photonView.RPC(nameof(StartTimer), RpcTarget.All);
     }
     #endregion
 
@@ -410,10 +394,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         if (PlayersHP[subject - 1] == 0)
         {
             Debug.Log("MyRank代入");
-            PlayersRank[Rankcnt - 1] = PlayersName[subject - 1];
-            Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1] = Rankcnt;
-            PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
-            PhotonNetwork.LocalPlayer.SetPlayerDeath(true);
+            PlayersRank[Rankcnt] = PlayersName[subject - 1];
+            // Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1] = Rankcnt;
+            if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
+            {
+                PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
+                PhotonNetwork.LocalPlayer.SetPlayerDeath(true);
+            }
             Rankcnt--;
         }
 
@@ -426,7 +413,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         int cnt = 0;
         for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
         {
-            PlayersNameGroup[i].transform.GetChild(5).gameObject.SetActive(false);
             if (PlayersHP[i] == 0)//HPが0のプレイヤーを数える.
             {
                 cnt++;
@@ -438,9 +424,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (PlayersHP[i] > 0 && PhotonNetwork.LocalPlayer.ActorNumber == i) 
                 {
-                    PlayersRank[0] = PlayersName[i];
+                    //PlayersRank[0] = PlayersName[i];
                     PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
+                    Debug.Log("SetMyRank" + Rankcnt);
                 }
+            }
+            int j;
+            foreach(var player in PhotonNetwork.PlayerList)
+            {
+                j = player.GetMyRank();
+                PlayersRank[j] = player.NickName;
             }
             NowGameState = GameState.EndGame;
         }
@@ -583,7 +576,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public void PushBelieveButton()
     {
         int subject = PhotonNetwork.LocalPlayer.ActorNumber;
-        photonView.RPC(nameof(AddThroughNum), RpcTarget.All, subject);
+        int cnt = 0;
+        foreach (var player in PhotonNetwork.PlayerList)
+        {
+            if (player.GetPlayerDeath())
+            {
+                cnt++;
+            }
+        }
+        photonView.RPC(nameof(AddThroughNum), RpcTarget.All, subject,cnt);
         ReasoningPanel.SetActive(false);
         WaitText.text = "他のプレイヤーの宣言をまっています";
     }
@@ -592,12 +593,13 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     /// 信じる人数がプレイ人数(サイコロを振った人がいるので-1)と一致したらマスを進ませる.
     /// </summary>
     [PunRPC]
-    void AddThroughNum(int subject)
+    void AddThroughNum(int subject,int cnt)
     {
         Debug.Log("AddThroughNum()起動");
         PlayersNameGroup[subject - 1].transform.GetChild(5).gameObject.SetActive(true);
         ThroughNum++;
-        if (MaxPlayers - 1 == ThroughNum)
+        
+        if ( MaxPlayers -  cnt - 1 == ThroughNum)
         {
             DeclarationFlg = true;
 
@@ -833,9 +835,19 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [PunRPC]
     void ActiveEnemyResult(int deme)
     {
-        WaitText.text = "";
-        ReasoningPanel.SetActive(true);
-        ReasoningPanel.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = DiceSprites[deme - 1];
+        if (!PhotonNetwork.LocalPlayer.GetPlayerDeath())
+        {
+            ReasoningPanel.SetActive(true);
+            ReasoningPanel.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = DiceSprites[deme - 1];
+        }
+        else
+        {
+            WaitText.text = "";
+            ReasoningPanel.SetActive(true);
+            ReasoningPanel.transform.GetChild(1).gameObject.GetComponent<Image>().sprite = DiceSprites[deme - 1];
+            ReasoningPanel.transform.GetChild(2).gameObject.SetActive(false);
+            ReasoningPanel.transform.GetChild(3).gameObject.SetActive(false);
+        }
     }
 
     #endregion
@@ -893,7 +905,15 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private IEnumerator TurnMessageWindowCoroutine()
     {
         MessageWindow.SetActive(true);
-        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"]] + "さんのターンです";
+        if(((int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"]==PhotonNetwork.LocalPlayer.ActorNumber)&&
+            PlayersHP[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"]-1] <= 0) {
+            MessageWindow.transform.GetChild(0).GetComponent<Text>().text =
+        PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんは\n死亡しています";
+        }
+        
+        yield return new WaitForSeconds(2);
+        MessageWindow.transform.GetChild(0).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"]-1] + "さんのターンです";
+
         // 2秒間待つ
         yield return new WaitForSeconds(2);
         MessageWindow.SetActive(false);
@@ -1092,16 +1112,18 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             stream.SendNext(HaveTime);// timeを送信する
             stream.SendNext(PlayersHP);
             stream.SendNext(doubtFlg);
-            stream.SendNext(Ranks);
+            //stream.SendNext(Ranks);
             stream.SendNext(AnimalChildNum);
+            //stream.SendNext(PlayersRank);
         }
         else
         {
             HaveTime = (float)stream.ReceiveNext(); // timeを受信する
             PlayersHP = (int[])stream.ReceiveNext();
             doubtFlg = (bool)stream.ReceiveNext();
-            Ranks = (int[])stream.ReceiveNext();
+            //Ranks = (int[])stream.ReceiveNext();
             AnimalChildNum = (int)stream.ReceiveNext();
+            //PlayersRank = (string[])stream.ReceiveNext();
         }
     }
     #endregion

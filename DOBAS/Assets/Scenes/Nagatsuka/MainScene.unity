@@ -10277,7 +10277,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NowGameState: 0
-  MaxPlayers: 3
+  MaxPlayers: 2
   FirstHP: 2
   HaveTime: 60
   MainCamera: {fileID: 1513246636}
@@ -10306,7 +10306,6 @@ MonoBehaviour:
   - {fileID: 1795448903}
   ReasoningPanel: {fileID: 397416621}
   GameEndPanel: {fileID: 87281000}
-  Ranks: 
   PlayersRank: []
   Rankcnt: 0
   PlayersNameGroupPrefab: {fileID: 7222474341195301582, guid: 0ec4485ce15ede049af33ee0eba00ea9, type: 3}
