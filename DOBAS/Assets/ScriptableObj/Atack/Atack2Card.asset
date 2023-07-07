@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9718f7a53ad6cc4f9d0c903dc47c313, type: 3}
   m_Name: Atack2Card
   m_EditorClassIdentifier: 
-  Id: 2
+  Id: 5
   Koc: 1
   Icon: {fileID: 192655307, guid: d20e6e4952646bd488920e227e2f854b, type: 3}
-  CardName: "\u30E9\u30F3\u30C0\u30E0\u306A\u30D7\u30EC\u30A4\u30E4\u30FC\u306B2\u30C0\u30E1\u30FC\u30B8"
+  CardName: "\u30E9\u30F3\u30C0\u30E02\u30C0\u30E1\u30FC\u30B8\u30AB\u30FC\u30C9"
   Power: -2
   Move: 0

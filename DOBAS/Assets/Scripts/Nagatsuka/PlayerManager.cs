@@ -59,7 +59,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     Vector3 PlayerPos;      // プレイヤー位置情報
     public GameObject[] effectObject;   // エフェクトのプレハブ配列
     GameObject nameObject;
-
+    bool cardflg;
 
 
     #region Unityイベント(Start・Update・OnTrigger)
@@ -79,6 +79,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         transform.position = mapManager.MasumeList[0].position;//初期値0.
         Player.ID = gameManager.Give_ID_Player();
         MyRank = 0;
+        cardflg = false;
         nameObject = transform.GetChild(0).gameObject;
         NamePosSet();
     }
@@ -278,31 +279,34 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         string message = "";
         bool noneflg = false;
-        switch (tag)
+        if (!gameManager.cardflg)//カードを使っていなければ.
         {
-            case "Start":
-                message = "周回ボーナスゲット！　攻撃力＋１";
-                break;
-            case "Card":
-                message = "カードを１枚ゲット！";
-                break;
-            case "Move":
-                message = "3マス進む！";
-                break;
-            case "Hp":
-                message = "HPが１回復！";
-                break;
-            case "Attack":
-                message = "他のプレイヤーを攻撃！";
-                break;
-            default:
-                //message = "効果なし";
-                noneflg = true;
-                break;
-        }
-        if (!noneflg)
-        {
-            gameManager.ShowMessage(message, PhotonNetwork.LocalPlayer.ActorNumber);
+            switch (tag)
+            {
+                case "Start":
+                    message = "周回ボーナスゲット！　攻撃力＋１";
+                    break;
+                case "Card":
+                    message = "カードを１枚ゲット！";
+                    break;
+                case "Move":
+                    message = "3マス進む！";
+                    break;
+                case "Hp":
+                    message = "HPが１回復！";
+                    break;
+                case "Attack":
+                    message = "他のプレイヤーを攻撃！";
+                    break;
+                default:
+                    //message = "効果なし";
+                    noneflg = true;
+                    break;
+            }
+            if (!noneflg)
+            {
+                gameManager.ShowMessage(message, PhotonNetwork.LocalPlayer.ActorNumber);
+            }
         }
     }
     #endregion

@@ -13,9 +13,6 @@ MonoBehaviour:
   m_Name: CardManager
   m_EditorClassIdentifier: 
   CardLists:
-  - {fileID: 11400000, guid: 761f25eedea45204c9f0d503d6a38188, type: 2}
-  - {fileID: 11400000, guid: 19939144cc2b2fd40a44f5f4ae76ea32, type: 2}
-  - {fileID: 11400000, guid: 3486b47f16440ab4ea332362d45159e6, type: 2}
   - {fileID: 11400000, guid: 27fed10f592d7c8449f8db0d103badae, type: 2}
   - {fileID: 11400000, guid: bb5b25a0229485b4cbdd47ad04e677b7, type: 2}
   - {fileID: 11400000, guid: 02c097b5dcb8f7d48b09aadbdf9c8f99, type: 2}

@@ -28,7 +28,7 @@ public class CardParam : MonoBehaviour
 
 		ParentPanel = GameObject.Find("CardInfoPanel");
 
-		CardDetailPanel = ParentPanel.transform.GetChild(2).gameObject;
+		CardDetailPanel = ParentPanel.transform.GetChild(3).gameObject;
 	}
 
     // Update is called once per frame
@@ -38,7 +38,7 @@ public class CardParam : MonoBehaviour
     }
 	public void DrawDetailCard() // カードの詳細画面表示
 	{
-		ParentPanel.transform.GetChild(2).gameObject.SetActive(true);
+		ParentPanel.transform.GetChild(3).gameObject.SetActive(true);
 		SendParam();
 	}
 	void SendParam() // カードの種類や効果などの詳細情報を挿入

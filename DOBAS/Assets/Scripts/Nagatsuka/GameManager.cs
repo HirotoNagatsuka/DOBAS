@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private int NowTutorial = 0;//遊び方用パネルの開いている場所.
     #region おまかせName配列
     private static readonly string[] OMAKASE_NAMES = new string[] { "すねえく", "くらあけん", "さかな","いか","ねずみ","ごりら",
-        "さかなくん","いっぬ","おすすめです","オススメです","海賊王"};
+        "ちんあなご","いっぬ","おすすめです","オススメです","海賊王"};
     #endregion
 
     #endregion 
@@ -135,6 +135,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [Header("メッセージ関連")]
     [SerializeField] GameObject MessageWindow;//メッセージを表示するパネル（子供にメッセージ用テキスト）.
     [SerializeField] GameObject MessageLogWindow;//メッセージのログを表示するパネル.
+    [SerializeField] GameObject UseCardMsg;// 早坂優斗
     #endregion
 
     #region チャット関連
@@ -148,6 +149,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] Sprite[] TutorialSprites = new Sprite[6];//遊び方説明画像.
     [SerializeField] Sprite[] HeartSprites = new Sprite[6];//HP用の画像(0番目に死亡用のどくろを入れる).
     [SerializeField] Sprite[] DiceSprites = new Sprite[4]; //サイコロの出目の画像.
+    [SerializeField] Sprite[] CardSprites = new Sprite[3];
     #endregion
 
     [SerializeField] GameObject nextButton;  // 次のページボタン
@@ -160,10 +162,12 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
 
     //ルームのカスタムプロパティを設定する為の宣言.
     ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
-    public Text TestWhoseTurnText;//デバック用ターン表示テキスト.
 
     public int MyRankTest;
     bool DeathMessageFlg;
+    public bool cardflg;
+
+    [SerializeField] GameObject ErrorPanel;
 
     #region Unityイベント(Start・Update)
     // Start is called before the first frame update
@@ -224,9 +228,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 if (players.Length != MaxPlayers)
                 {
                     Debug.Log("人数不足");
+                    ErrorPanel.SetActive(true);
                 }
-                TestWhoseTurnText.text = PhotonNetwork.LocalPlayer.GetMyRank().ToString();
-
                 break;
             case GameState.EndGame:
                 EndGame();
@@ -316,7 +319,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         Debug.Log("FinishTurn()起動");
         WaitText.text = "";
-        //UseBt.SetActive(false);        // 早坂優斗(0622)
+        UseBt.SetActive(false);        // 早坂優斗(0622)
         int turn = (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"];
         if (turn == MaxPlayers)
         {
@@ -329,6 +332,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         PhotonNetwork.CurrentRoom.SetCustomProperties(customProperties);
         customProperties.Clear();
+        cardflg = false;
         photonView.RPC(nameof(ChangeTurn), RpcTarget.All);//WhoseTurnを増やしてターンを変える.
     }
 
@@ -616,8 +620,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     }
 
     /// <summary>
-    /// ダウト宣言ボタンを押した際に呼び出す関数
-    /// 先着1人が起動でき、起動したら他の人のフラグをONにする
+    /// 早坂追加(ダウトメッセージ)
     /// </summary>
     [PunRPC]
     void DeclarationDoubt(int subject)
@@ -625,13 +628,40 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         ReasoningPanel.SetActive(false);//他プレイヤーのパネルを強制的に閉じる.
         Debug.Log("DeclarationDoubt起動");
         Debug.Log("呼び出したPlayer" + PlayersName[subject - 1]);
+
         DoubtPanel.SetActive(true);
-        DoubtPanel.transform.GetChild(0).GetComponent<Text>().text = PlayersName[subject - 1] + "さんがダウト宣言を行いました";
+        DoubtPanel.transform.GetChild(0).gameObject.SetActive(true);
+        StartCoroutine(WaitDoubtMsg(subject));
+
+    }
+    /// <summary>
+    /// 早坂追加
+    /// </summary>
+    private IEnumerator WaitDoubtMsg(int sub)
+    {
+        // 3秒間待つ
+        yield return new WaitForSeconds(3);
+        DoubtPanel.transform.GetChild(0).gameObject.SetActive(false);
+
+        DoubtPanel.transform.GetChild(1).gameObject.SetActive(true);
+        DoubtPanel.transform.GetChild(1).gameObject.transform.GetChild(0).GetComponent<Text>().text =
+                   PlayersName[sub - 1] + "が" + PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "の宣言をダウトと指摘！";
+        // 1秒間待つ
+        yield return new WaitForSeconds(1);
+        DoubtPanel.transform.GetChild(2).gameObject.SetActive(true);
+        DoubtPanel.transform.GetChild(2).GetComponent<Text>().text =
+                             PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "の宣言は・・・";
+        // 2秒間待つ
+        yield return new WaitForSeconds(2);
+        DoubtPanel.transform.GetChild(2).gameObject.SetActive(false);
         if (doubtFlg)//嘘をついていた場合の処理.
         {
             FailureDoubt = true;
-            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんは嘘をついていました";
-            DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんに1ダメージ";
+            DoubtPanel.transform.GetChild(3).gameObject.SetActive(true);
+            DoubtPanel.transform.GetChild(4).gameObject.SetActive(true);
+            DoubtPanel.transform.GetChild(5).gameObject.SetActive(true);
+            DoubtPanel.transform.GetChild(4).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "の宣言はダウトだった！";
+            DoubtPanel.transform.GetChild(5).GetComponent<Text>().text = "ダウトを見破られた" + PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "に1ダメージ";
             if ((int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
             {
                 photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, (int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"]);
@@ -639,15 +669,23 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         }
         else//嘘をついていなかった場合の処理.
         {
-            DoubtPanel.transform.GetChild(1).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "さんは嘘をついていませんでした";
-            DoubtPanel.transform.GetChild(2).GetComponent<Text>().text = "ダウト失敗した" + PlayersName[subject - 1] + "さんに1ダメージ";
-            if (subject == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
+            DoubtPanel.transform.GetChild(3).gameObject.SetActive(true);
+            DoubtPanel.transform.GetChild(4).gameObject.SetActive(true);
+            DoubtPanel.transform.GetChild(5).gameObject.SetActive(true);
+            DoubtPanel.transform.GetChild(4).GetComponent<Text>().text = PlayersName[(int)PhotonNetwork.CurrentRoom.CustomProperties["Turn"] - 1] + "の宣言は本当だった！";
+            DoubtPanel.transform.GetChild(5).GetComponent<Text>().text = "指摘を間違えた" + PlayersName[sub - 1] + "に1ダメージ";
+            if (sub == PhotonNetwork.LocalPlayer.ActorNumber)//自分自身が対象の場合のみHPを変化させる関数を呼ぶ.
             {
-                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, subject);
+                photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, sub);
             }
         }
+
+        // 3秒間待つ
+        yield return new WaitForSeconds(3);
         StartCoroutine(WaitDoubtPanelCoroutine());
+        yield break;
     }
+
     private IEnumerator WaitDoubtPanelCoroutine()
     {
         // 2秒間待つ
@@ -660,6 +698,33 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         yield break;
     }
     #endregion
+
+    /// <summary>
+    /// 早坂追加(カードメッセージ)
+    /// </summary>
+    public void GetCardInfo(/*Sprite img,*/string tx)
+    {
+        int subject = PhotonNetwork.LocalPlayer.ActorNumber;
+
+        photonView.RPC(nameof(DeclarationCard), RpcTarget.All, /*img, */subject, tx);
+    }
+    [PunRPC]
+    void DeclarationCard(/*Sprite img,*/int subject, string tx)
+    {
+        //UseCardMsg.transform.GetChild(0).GetComponent<Image>().sprite = img;
+        UseCardMsg.transform.GetChild(1).GetComponent<Text>().text = PlayersName[subject - 1] + "が";
+        UseCardMsg.transform.GetChild(2).GetComponent<Text>().text = tx + "を使用！";
+        UseCardMsg.SetActive(true);
+        StartCoroutine(WaitCardMsgEndCoroutine());
+    }
+    private IEnumerator WaitCardMsgEndCoroutine()
+    {
+        // 3秒間待つ
+        yield return new WaitForSeconds(3);
+
+        UseCardMsg.SetActive(false);
+        yield break;
+    }
 
     #region サイコロ関連関数
     /// <summary>
@@ -1074,7 +1139,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     #region Photon関連のoverride関数
     public override void OnConnectedToMaster()
     {
-        PhotonNetwork.JoinOrCreateRoom("RoomTNC", new RoomOptions(), TypedLobby.Default);
+        PhotonNetwork.JoinOrCreateRoom("Roomttt", new RoomOptions(), TypedLobby.Default);
     }
 
     // <summary>

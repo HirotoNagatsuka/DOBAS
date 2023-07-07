@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9718f7a53ad6cc4f9d0c903dc47c313, type: 3}
   m_Name: DieAtackCard
   m_EditorClassIdentifier: 
-  Id: 3
+  Id: 6
   Koc: 1
   Icon: {fileID: 379863255, guid: b74d129a7ea4c6543ba31422ef1159f8, type: 3}
-  CardName: "\u30E9\u30F3\u30C0\u30E0\u306A\u30D7\u30EC\u30A4\u30E4\u30FC\u304C\u5373\u6B7B"
+  CardName: "\u30E9\u30F3\u30C0\u30E0\u5373\u6B7B\u30AB\u30FC\u30C9"
   Power: -100
   Move: 0
