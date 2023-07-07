@@ -166,6 +166,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     public int MyRankTest;
     bool DeathMessageFlg;
     public bool cardflg;
+    private bool createInfo;
 
     [SerializeField] GameObject ErrorPanel;
 
@@ -198,6 +199,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         DiceFlg = false;      //サイコロを振っていない状態にする.
         DiceFinishFlg = false;//サイコロを振り終わっていない状態にする.
         DeathMessageFlg = false;
+        createInfo = false;
         Rankcnt = MaxPlayers-1;
         PlayersRank = new string[MaxPlayers];
         diceCameradefPos = DiceCamera.transform.position;
@@ -219,6 +221,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 }
                 break;
             case GameState.InGame:
+                if (!createInfo)
+                {
+                    createInfo = true;
+                    GameObject PlayerInfo;
+                    for (int i = 0; i < MaxPlayers; i++)
+                    {
+                        PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
+                        PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
+                        PlayerInfo.transform.GetChild(PLAYER_NAME).transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+                        PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
+                        PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
+                        PlayersNameGroup.Add(PlayerInfo);
+                    }
+                }
                 InGameRoop();
                 // PhotonのPlayerオブジェクトを取得
                 Player[] players = PhotonNetwork.PlayerList;
@@ -495,16 +511,16 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             CreateCharacter(AnimalChildNum);
             photonView.RPC(nameof(StartGame), RpcTarget.All);
-            GameObject PlayerInfo;
-            for (int i = 0; i < MaxPlayers; i++)
-            {
-                PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
-                PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
-                PlayerInfo.transform.GetChild(PLAYER_NAME).transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-                PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
-                PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
-                PlayersNameGroup.Add(PlayerInfo);
-            }
+            //GameObject PlayerInfo;
+            //for (int i = 0; i < MaxPlayers; i++)
+            //{
+            //    PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
+            //    PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
+            //    PlayerInfo.transform.GetChild(PLAYER_NAME).transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
+            //    PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
+            //    PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
+            //    PlayersNameGroup.Add(PlayerInfo);
+            //}
         }
     }
 
@@ -567,6 +583,21 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     {
         ChatLog2.text = ChatLog.text;
         ChatLog.text = PlayersName[master - 1] + ":" + chat;
+    }
+
+    #endregion
+
+    #region スタンプ機能関連
+    public void PushStampButton()
+    {
+        string chat = InputChat.text;
+        int master = PhotonNetwork.LocalPlayer.ActorNumber;//送信者の番号(全員がActorNumberを呼ばないために代入)..
+        photonView.RPC(nameof(PushChat), RpcTarget.All, master, chat);
+    }
+    [PunRPC]
+    void PushStamp(int master, string chat)
+    {
+
     }
 
     #endregion
