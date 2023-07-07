@@ -43,7 +43,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private int NowTutorial = 0;//遊び方用パネルの開いている場所.
     #region おまかせName配列
     private static readonly string[] OMAKASE_NAMES = new string[] { "すねえく", "くらあけん", "さかな","いか","ねずみ","ごりら",
-        "さかなくん","いっぬ","おすすめです","オススメです","おっと要チェック！","海賊王"};
+        "さかなくん","いっぬ","おすすめです","オススメです","海賊王"};
     #endregion
 
     #endregion 
@@ -410,9 +410,9 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     void ChackHP()
     {
         int cnt = 0;
-        for (int i = 0; i < MaxPlayers; i++)//プレイヤーの数分ループを動かす.
+        foreach (var player in PhotonNetwork.PlayerList)
         {
-            if (PlayersHP[i] == 0)//HPが0のプレイヤーを数える.
+            if (player.GetPlayerDeath())
             {
                 cnt++;
             }

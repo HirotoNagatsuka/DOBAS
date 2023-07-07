@@ -578,7 +578,7 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
 
     void NamePosSet()
     {
-        nameObject.transform.localPosition = new Vector3(0, 0, -1.5f);
+        nameObject.transform.localPosition = new Vector3(0f, 0, -1.5f);
         nameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
     }
     #region ëÅç‚í«â¡
