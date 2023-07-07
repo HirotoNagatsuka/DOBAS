@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e9718f7a53ad6cc4f9d0c903dc47c313, type: 3}
   m_Name: Move5Card
   m_EditorClassIdentifier: 
-  Id: 6
+  Id: 3
   Koc: 2
   Icon: {fileID: -1097105292, guid: b31d9b9fc0e0b8a4c9bd1dd89761ec8b, type: 3}
-  CardName: "5\u30DE\u30B9\u79FB\u52D5\u3067\u304D\u308B"
+  CardName: "5\u30DE\u30B9\u79FB\u52D5\u30AB\u30FC\u30C9"
   Power: 0
   Move: 5

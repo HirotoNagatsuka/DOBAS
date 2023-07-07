@@ -5,10 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: 
-    guid: 00000000000000000000000000000000
   - enabled: 1
-    path: Assets/Scenes/Nojiri/Tutorial.unity
-    guid: 32a58c92c49079e4f909e1e9e547e74c
+    path: Assets/Scenes/Nagatsuka/MainScene.unity
+    guid: 8c4a7c4cfab7d2548885028b4bc7b308
   m_configObjects: {}

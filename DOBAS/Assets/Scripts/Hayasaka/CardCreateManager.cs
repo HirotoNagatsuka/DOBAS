@@ -17,6 +17,7 @@ public class CardCreateManager : MonoBehaviour
 
     [SerializeField] GameObject UseBt;
 
+    [SerializeField] GameObject NotHoldBt;
     private int AddNum = 0;
     // Start is called before the first frame update
     void Start()
@@ -59,11 +60,22 @@ public class CardCreateManager : MonoBehaviour
     // カードリスト表示、非表示
     public void DrawCardList()
     {
+        Debug.Log("ボタンを押した"+CardObj.Count); 
+        if (CardObj.Count == 0)
+        {
+            //Debug.Log(CardObj);
+            NotHoldBt.SetActive(true);
+        }
+        else
+        {
+            NotHoldBt.SetActive(false);
+        }
         CardList.SetActive(true);
         CloseBt.SetActive(true);
     }
     public void FalseCardList()
     {
+        NotHoldBt.SetActive(false);
         CardList.SetActive(false);
         CloseBt.SetActive(false);
     }
@@ -73,17 +85,13 @@ public class CardCreateManager : MonoBehaviour
     {
         for (int i = 0; i < CardObj.Count;i++)
         {
-            // IDが一致したカードをリストから削除
             if (CardObj[i].GetComponent<CardParam>().Id == id)
-            {
+            {               
                 Destroy(CardObj[i]);
                 CardObj.RemoveAt(i);
                 break;
             }
-            else
-            {
-                break;
-            }
+           
         }
         CardList.SetActive(false);
         CloseBt.SetActive(false);
