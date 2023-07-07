@@ -395,7 +395,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         {
             Debug.Log("MyRank‘ã“ü");
             PlayersRank[Rankcnt] = PlayersName[subject - 1];
-            // Ranks[PhotonNetwork.LocalPlayer.ActorNumber - 1] = Rankcnt;
             if (PhotonNetwork.LocalPlayer.ActorNumber == subject)
             {
                 PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
@@ -424,7 +423,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             {
                 if (PlayersHP[i] > 0 && PhotonNetwork.LocalPlayer.ActorNumber == i) 
                 {
-                    //PlayersRank[0] = PlayersName[i];
                     PhotonNetwork.LocalPlayer.SetMyRank(Rankcnt);
                     Debug.Log("SetMyRank" + Rankcnt);
                 }
@@ -604,7 +602,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
             DeclarationFlg = true;
 
             ThroughNum = 0;
-            //WaitText.text = "";
             DiceInit();
         }
     }
