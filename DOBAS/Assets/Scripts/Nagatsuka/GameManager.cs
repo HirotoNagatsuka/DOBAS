@@ -715,6 +715,10 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         // 2秒間待つ
         yield return new WaitForSeconds(4);
         Debug.Log("コルーチン呼び出し終了");
+        for (int i = 0; i < DoubtPanel.transform.childCount; i++)
+        {
+            DoubtPanel.transform.GetChild(i).gameObject.SetActive(false); // NewDoubtPanelの子オブジェクトをすべてfalse
+        }
         DoubtPanel.SetActive(false);
         DeclarationFlg = true;
         DiceInit();
