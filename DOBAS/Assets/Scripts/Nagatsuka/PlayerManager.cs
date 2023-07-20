@@ -585,8 +585,9 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
         nameObject.transform.localPosition = new Vector3(0f, 0, -1.5f);
         nameObject.transform.localScale = new Vector3(0.05f, 0.05f, 0.05f);
     }
+
     #region ëÅç‚í«â¡
-    public void SendCardList()
+    void SendCardList()
     {
         RandomNum = UnityEngine.Random.Range(1, CCM.Card_Manager.GetCardLists().Count);
         CCM.GetCardID_AddInfo(RandomNum);
