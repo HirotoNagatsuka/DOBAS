@@ -20,6 +20,20 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     const int PLAYER_ATTACK = 4;
 
     const int SAIKORO_RESULT = 1;//サイコロの出目を他の人に通知するパネル用.
+
+    //アバターのマジックナンバー対策の列挙体.
+    enum Animals {
+        Colobus,
+        Gecko,
+        Herring,
+        Muskrat,
+        Pudu,
+        Sparrow,
+        Squid,
+        Taipan,
+        AnimalsAll
+    }
+
     #endregion
 
     #region private変数
@@ -43,7 +57,7 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     private int NowTutorial = 0;//遊び方用パネルの開いている場所.
     #region おまかせName配列
     private static readonly string[] OMAKASE_NAMES = new string[] { "すねえく", "くらあけん", "さかな","いか","ねずみ","ごりら",
-        "ちんあなご","いっぬ","おすすめです","オススメです","海賊王"};
+        "ちんあなご","いっぬ"};
     #endregion
 
     #endregion 
@@ -157,13 +171,14 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     [SerializeField] GameObject skipButton;  // スキップボタン(最後のページへ飛ぶ)
     [SerializeField] GameObject closeButton; // 閉じるボタン
 
-    private int MaxPageNum = 5; // 最大ページ数
+    [SerializeField] GameObject StampCanvas;
+
+    private int MaxPageNum = 6; // 最大ページ数
     private int MinPageNum = 0; // 初期ページ
 
     //ルームのカスタムプロパティを設定する為の宣言.
     ExitGames.Client.Photon.Hashtable customProperties = new ExitGames.Client.Photon.Hashtable();
 
-    public int MyRankTest;
     bool DeathMessageFlg;
     public bool cardflg;
     private bool createInfo;
@@ -208,7 +223,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
     // Update is called once per frame
     void Update()
     {
-        MyRankTest = PhotonNetwork.LocalPlayer.GetMyRank();
         switch (NowGameState)//ゲームモードによって処理を分岐する.
         {
             case GameState.InitGame:
@@ -240,7 +254,6 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
                 Player[] players = PhotonNetwork.PlayerList;
 
                 // 部屋の人数を取得
-                //Debug.Log("人数" + players.Length);
                 if (players.Length != MaxPlayers)
                 {
                     Debug.Log("人数不足");
@@ -510,17 +523,8 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         else//指定人数に達したらゲームを始める.
         {
             CreateCharacter(AnimalChildNum);
+            StampCanvas.SetActive(true);
             photonView.RPC(nameof(StartGame), RpcTarget.All);
-            //GameObject PlayerInfo;
-            //for (int i = 0; i < MaxPlayers; i++)
-            //{
-            //    PlayerInfo = Instantiate(PlayersNameGroupPrefab, new Vector3(0f, 0f, 0f), Quaternion.identity, CanvasUI.transform);
-            //    PlayerInfo.transform.GetChild(PLAYER_NAME).GetComponent<Text>().text = PlayersName[i];                //名前を表示.
-            //    PlayerInfo.transform.GetChild(PLAYER_NAME).transform.localScale = new Vector3(0.8f, 0.8f, 0.8f);
-            //    PlayerInfo.transform.GetChild(PLAYER_HP).GetComponent<Image>().sprite = HeartSprites[PlayersHP[PhotonNetwork.LocalPlayer.ActorNumber - 1]];//初期HPを表示.
-            //    PlayerInfo.GetComponent<RectTransform>().localPosition = new Vector3(760f, 465f - 150f * i, 0f);
-            //    PlayersNameGroup.Add(PlayerInfo);
-            //}
         }
     }
 
@@ -538,32 +542,29 @@ public class GameManager : MonoBehaviourPunCallbacks, IPunObservable
         GameObject p = null;
         switch (num)
         {
-            case 0:
+            case (int)Animals.Colobus:
                 p = PhotonNetwork.Instantiate("Colobus", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 1:
+            case (int)Animals.Gecko:
                 p = PhotonNetwork.Instantiate("Gecko", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 2:
+            case (int)Animals.Herring:
                 p = PhotonNetwork.Instantiate("Herring", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 3:
+            case (int)Animals.Muskrat:
                 p = PhotonNetwork.Instantiate("Muskrat", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 4:
+            case (int)Animals.Pudu:
                 p = PhotonNetwork.Instantiate("Pudu", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 5:
+            case (int)Animals.Sparrow:
                 p = PhotonNetwork.Instantiate("Sparrow", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 6:
+            case (int)Animals.Squid:
                 p = PhotonNetwork.Instantiate("Squid", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
-            case 7:
+            case (int)Animals.Taipan:
                 p = PhotonNetwork.Instantiate("Taipan", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
-                break;
-            case 8:
-                p = PhotonNetwork.Instantiate("Colobus", Vector3.zero, Quaternion.identity);//プレイヤーを生成する.
                 break;
         }
         Players.Add(p);

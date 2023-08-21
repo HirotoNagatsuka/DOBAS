@@ -61,6 +61,8 @@ MonoBehaviour:
   - ChackHP
   - ShowDeathMessage
   - DeclarationCard
+  - PushStamp
+  - ShowStamp
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

@@ -441,16 +441,6 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
     }
         #endregion
 
-        /// <summary>
-        /// HPが変化するときに呼び出す関数
-        /// 変化量を引数にし、HPを変えた後UIにも反映する.
-        /// 第二引数には自分自身が呼び出したのかを判定.
-        /// </summary>
-        void ChangeHP(int addHP, int subject)
-    {
-            gameManager.ChangePlayersHP(addHP, subject);
-    }
-
     #region 移動関連
     /// <summary>
     /// OnTriggerで取得したタグごとに効果を発動するコルーチン
@@ -470,13 +460,13 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (tag == "Card") // カードマス
             {
-                Debug.Log("カード１枚ゲット！");
+               // Debug.Log("カード１枚ゲット！");
                 yield return new WaitForSeconds(2);
                 SendCardList(); // 早坂
             }
             else if (tag == "Move") // 移動マス
             {
-                Debug.Log("3マス進む！");
+                //Debug.Log("3マス進む！");
                 yield return new WaitForSeconds(2);
 
                 MoveMasu = mapManager.GetComponent<MapManager>().Move(MoveMasu, tag);  // MapManagerのMove関数処理を行う
@@ -484,31 +474,25 @@ public class PlayerManager : MonoBehaviourPunCallbacks, IPunObservable
             }
             else if (tag == "Hp") // HPマス
             {
-                Debug.Log("HP１回復！！");
+                //Debug.Log("HP１回復！！");
                 yield return new WaitForSeconds(2);
-
-                Debug.Log("HP：" + Player.HP);
-                //photonView.RPC(nameof(ChangeHP), RpcTarget.All, 1, Player.ID);
-                //ChangeHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
                 gameManager.ChangePlayersHP(1, PhotonNetwork.LocalPlayer.ActorNumber);
             }
             else if (tag == "HpDown") // HPマス
             {
                 //Debug.Log("HP１回復！！");
                 yield return new WaitForSeconds(2);
-                //photonView.RPC(nameof(ChangeHP), RpcTarget.All, -1, Player.ID);
-                //ChangeHP(-1, PhotonNetwork.LocalPlayer.ActorNumber);
                 gameManager.ChangePlayersHP(-1, PhotonNetwork.LocalPlayer.ActorNumber);
             }
             else if (tag == "Attack") //攻撃マス
             {
-                Debug.Log("他のプレイヤーを攻撃！");
+                //Debug.Log("他のプレイヤーを攻撃！");
                 yield return new WaitForSeconds(2);
                 EnemyAttack();
             }
             else // ノーマルマス
             {
-                Debug.Log("普通のマス");
+                //Debug.Log("普通のマス");
                 yield return new WaitForSeconds(2);
             }
             FinishFlg = true;
